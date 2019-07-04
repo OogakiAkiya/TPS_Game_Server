@@ -97,20 +97,12 @@ public class UserController : MonoBehaviour
                     break;
             }
         }
+
         //移動処理
         Vector3 velocity = Vector3.zero;
-        if (key.W)
-        {
-            velocity += this.transform.forward;
-        }
-        if (key.S)
-        {
-            velocity += -this.transform.forward;
-        }
-        if (key.A)
-        {
-            velocity += -this.transform.right;
-        }
+        if (key.W)velocity += this.transform.forward;
+        if (key.S)velocity += -this.transform.forward;
+        if (key.A)velocity += -this.transform.right;
         if (key.D) velocity += this.transform.right;
 
         this.transform.Translate(velocity.normalized *moveSpeed*Time.deltaTime);
