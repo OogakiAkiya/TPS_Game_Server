@@ -9,12 +9,17 @@ public class TCP_ServerController : MonoBehaviour
     public string IPAddr="127.0.0.1";
     public int port=12345;
     private TCP_Server socket = new TCP_Server();
-    
+    private GameController gameController;
+
     // Start is called before the first frame update
     void Start()
     {
-        //Server
+        gameController = this.GetComponent<GameController>();
+
+        //TCPServerサーバー設定
         socket.Init(IPAddr, port);
+
+        //待ち受け開始
         var task = socket.StartAccept();
 
     }
@@ -34,7 +39,6 @@ public class TCP_ServerController : MonoBehaviour
                     RecvRoutine(data);
 
                 }
-                //this.GetComponent<UDP_ServerController>().SendAllClientData();
             }
         }
 
@@ -48,16 +52,18 @@ public class TCP_ServerController : MonoBehaviour
         //初接続
         if (_data[0] == HeaderConstant.ID_INIT)
         {
-            byte[] b_userId = new byte[12];
+            byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
             Array.Copy(_data, sizeof(byte), b_userId, 0, b_userId.Length);
             string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
             //同じユーザーで複数ログインを防ぐ
             if (!GameObject.Find(userId.Trim()))
             {
-                this.GetComponent<GameController>().AddNewUser(userId.Trim());
+                gameController.AddNewUser(userId.Trim());
+                gameController.UsersUpdate();
+
             }
-            
+
 
         }
 
@@ -68,14 +74,14 @@ public class TCP_ServerController : MonoBehaviour
             Array.Copy(_data, sizeof(byte), b_userId, 0, b_userId.Length);
             string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
-            var objects = GameObject.FindGameObjectsWithTag("users");
-            foreach (var obj in objects)
+            foreach (var user in gameController.users)
             {
-                if (obj.name.Equals(userId.Trim()))
+                if (user.name.Equals(userId.Trim()))
                 {
                     if (_data[sizeof(byte) + HeaderConstant.USERID_LENGTH] == HeaderConstant.CODE_GAME_BASICDATA)
                     {
-                        obj.GetComponent<UserController>().AddInputKeyList(_data[sizeof(byte) * 2 + 12]);
+                        Key addData = (Key)_data[sizeof(byte) * 2 + HeaderConstant.USERID_LENGTH];
+                        user.GetComponent<UserController>().AddInputKeyList(addData);
                     }
                 }
             }

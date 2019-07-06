@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
 {
     private GameObject userPrefab;
     private int count = 0;
+    public GameObject[] users { get; private set; } = new GameObject[0];
 
     //FPS回数
     int frameCount;
@@ -50,5 +51,10 @@ public class GameController : MonoBehaviour
         add.GetComponent<UserController>().SetUserID(_userID);
         count++;
 
+    }
+
+    public void UsersUpdate()
+    {
+        users = GameObject.FindGameObjectsWithTag("users");
     }
 }

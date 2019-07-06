@@ -8,20 +8,18 @@ using UnityEngine;
 
 public class UDP_ServerController : MonoBehaviour
 {
-    //========================
-    //UDP
-    //=======================
     private UDP_Server socket = new UDP_Server();
     public int port = 12344;
     public int sendPort = 12343;
     public List<string> clientIPList = new List<string>();
+    private GameController gameController;
 
     // Start is called before the first frame update
     void Start()
     {
-        //udp
-        socket.Init(port, sendPort);
+        gameController = this.GetComponent<GameController>();
 
+        socket.Init(port, sendPort);
     }
 
     // Update is called once per frame
@@ -31,8 +29,8 @@ public class UDP_ServerController : MonoBehaviour
         {
             var data = socket.server.GetRecvData();
             clientIPList.Add(data.Key.Address.ToString());
-            //Send(server.GetRecvData());
         }
+
         SendAllClientData();
 
     }
@@ -40,9 +38,9 @@ public class UDP_ServerController : MonoBehaviour
     public void SendAllClientData()
     {
         //sendData作成
-        var userList = GameObject.FindGameObjectsWithTag("users");
+        //var userList = GameObject.FindGameObjectsWithTag("users");
         List<byte[]> sendData = new List<byte[]>();
-        foreach (var user in userList)
+        foreach (var user in gameController.users)
         {
             System.Text.Encoding enc = System.Text.Encoding.UTF8;
             byte[] userName = enc.GetBytes(System.String.Format("{0, -" + HeaderConstant.USERID_LENGTH + "}", user.name));              //12byteに設定する
@@ -59,6 +57,7 @@ public class UDP_ServerController : MonoBehaviour
             sendData.Add(addData);
         }
 
+        //送信処理
         socket.AllClietnSend(clientIPList,sendData);
     }
 }

@@ -85,7 +85,7 @@ class TCP_Client
             while (recvTempDataList.Count > sizeof(int))
             {
                 int byteSize = (int)recvTempDataList[0];
-                Console.WriteLine("Routine size={0}\n", byteSize);
+                //Console.WriteLine("Routine size={0}\n", byteSize);
                 if (recvTempDataList.Count >= byteSize + sizeof(int))
                 {
                     byte[] addData;

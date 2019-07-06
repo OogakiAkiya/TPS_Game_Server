@@ -2,46 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct NowKey
+public enum Key : short
 {
-    public bool W;
-    public bool S;
-    public bool A;
-    public bool D;
-
-    public NowKey(bool _w=false, bool _s = false, bool _a = false, bool _d = false)
-    {
-        this.W = _w;
-        this.S = _s;
-        this.A = _a;
-        this.D = _d;
-    }
+    W = 0x001,
+    S = 0x002,
+    A = 0x004,
+    D = 0x008,
+    G = 0x010,
+    R = 0x020,
+    SHIFT = 0x040,
+    LEFT_BUTTON = 0x080,
+    RIGHT_BUTTON = 0x100
 }
+
 
 public class UserController : MonoBehaviour
 {
-    //Key
-    enum Key : byte
-    {
-        W_UP = 0x0001,
-        S_UP = 0x0002,
-        A_UP = 0x0003,
-        D_UP = 0x0004,
-        W_DOWN=0x0005,
-        S_DOWN = 0x0006,
-        A_DOWN = 0x0007,
-        D_DOWN = 0x0008
-
-    }
 
 
     private List<byte[]> recvDataList = new List<byte[]>();
-    private List<byte> inputKeyList = new List<byte>();
+    private List<Key> inputKeyList = new List<Key>();
 
     public string userId;
     public string IPaddr { get; set; }
     public float moveSpeed=1.0f;
-    private NowKey key = new NowKey();
+    private Key nowKey=0;
 
     void Start()
     {
@@ -62,49 +47,28 @@ public class UserController : MonoBehaviour
             byte[] recvData = GetRecvData();
         }
 
-
         while (inputKeyList.Count > 0)
         {
-            byte recv = GetInputKey();
+            //入力値取得
+            Key inputKey = GetInputKey();
 
-            switch (recv)
-            {
-                case (byte)Key.W_UP:
-                    key.W = false;
-                    break;
-                case (byte)Key.S_UP:
-                    key.S = false;
-                    break;
-                case (byte)Key.A_UP:
-                    key.A = false;
-                    break;
-                case (byte)Key.D_UP:
-                    key.D = false;
-                    break;
-                case (byte)Key.W_DOWN:
-                    key.W = true;
-                    break;
-                case (byte)Key.S_DOWN:
-                    key.S = true;
-                    break;
-                case (byte)Key.A_DOWN:
-                    key.A = true;
-                    break;
-                case (byte)Key.D_DOWN:
-                    key.D = true;
-                    break;
-                default:
-                    break;
-            }
+            //現在のキーを保存
+            Key oldKey = nowKey;
+
+            //新しいキー入力を加算
+            nowKey |= inputKey;
+            //二度目のキー入力でフラグOFF
+            nowKey = oldKey ^ inputKey;
         }
 
-        //移動処理
+        //移動量算出
         Vector3 velocity = Vector3.zero;
-        if (key.W)velocity += this.transform.forward;
-        if (key.S)velocity += -this.transform.forward;
-        if (key.A)velocity += -this.transform.right;
-        if (key.D) velocity += this.transform.right;
+        if(nowKey.HasFlag(Key.W)) velocity += this.transform.forward;
+        if (nowKey.HasFlag(Key.S)) velocity += -this.transform.forward;
+        if (nowKey.HasFlag(Key.A)) velocity += -this.transform.right;
+        if (nowKey.HasFlag(Key.D)) velocity += this.transform.right;
 
+        //移動
         this.transform.Translate(velocity.normalized *moveSpeed*Time.deltaTime);
 
     }
@@ -115,14 +79,14 @@ public class UserController : MonoBehaviour
         recvDataList.Add(_addData);
     }
 
-    public void AddInputKeyList(byte _addData)
+    public void AddInputKeyList(Key _addData)
     {
         inputKeyList.Add(_addData);
     }
 
-    public byte GetInputKey()
+    public Key GetInputKey()
     {
-        byte returnData;
+        Key returnData;
         returnData = inputKeyList[0];
         inputKeyList.RemoveAt(0);
         return returnData;
