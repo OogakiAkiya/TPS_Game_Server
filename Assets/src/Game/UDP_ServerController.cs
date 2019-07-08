@@ -42,22 +42,38 @@ public class UDP_ServerController : MonoBehaviour
         List<byte[]> sendData = new List<byte[]>();
         foreach (var user in gameController.users)
         {
-            System.Text.Encoding enc = System.Text.Encoding.UTF8;
-            byte[] userName = enc.GetBytes(System.String.Format("{0, -" + HeaderConstant.USERID_LENGTH + "}", user.name));              //12byteに設定する
-            byte[] positionData = new byte[sizeof(float) * 3];
-            Buffer.BlockCopy(BitConverter.GetBytes(user.transform.position.x), 0, positionData, 0 * sizeof(float), sizeof(float));
-            Buffer.BlockCopy(BitConverter.GetBytes(user.transform.position.y), 0, positionData, 1 * sizeof(float), sizeof(float));
-            Buffer.BlockCopy(BitConverter.GetBytes(user.transform.position.z), 0, positionData, 2 * sizeof(float), sizeof(float));
-
-            byte[] addData = new byte[sizeof(byte) * 2 + userName.Length + sizeof(float) * 3];
-            addData[0] = HeaderConstant.ID_GAME;
-            userName.CopyTo(addData, sizeof(byte));
-            addData[sizeof(byte) + userName.Length] = HeaderConstant.CODE_GAME_BASICDATA;
-            positionData.CopyTo(addData, sizeof(byte) * 2 + userName.Length);
-            sendData.Add(addData);
+            sendData.Add(StatusGet(user));
         }
 
         //送信処理
         socket.AllClietnSend(clientIPList,sendData);
+    }
+
+    private byte[] StatusGet(GameObject _user)
+    {
+        List<byte> returnData=new List<byte>();
+        System.Text.Encoding enc = System.Text.Encoding.UTF8;
+        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + HeaderConstant.USERID_LENGTH + "}", _user.name));              //12byteに設定する
+        byte[] positionData = new byte[sizeof(float) * 3];
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.x), 0, positionData, 0 * sizeof(float), sizeof(float));
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.y), 0, positionData, 1 * sizeof(float), sizeof(float));
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.z), 0, positionData, 2 * sizeof(float), sizeof(float));
+        byte[] rotationData = new byte[sizeof(float) * 3];
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.x), 0, rotationData, 0 * sizeof(float), sizeof(float));
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.y), 0, rotationData, 1 * sizeof(float), sizeof(float));
+        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.z), 0, rotationData, 2 * sizeof(float), sizeof(float));
+        byte[] state = new byte[sizeof(int) *2];
+        Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().animationState.currentKey), 0, state, 0, sizeof(int));
+        Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().hp), 0, state,sizeof(int), sizeof(int));
+
+
+        returnData.Add(HeaderConstant.ID_GAME);
+        returnData.AddRange(userName);
+        returnData.Add(HeaderConstant.CODE_GAME_BASICDATA);
+        returnData.AddRange(positionData);
+        returnData.AddRange(rotationData);
+        returnData.AddRange(state);
+
+        return returnData.ToArray();
     }
 }

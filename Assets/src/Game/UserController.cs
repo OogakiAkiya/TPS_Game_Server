@@ -33,7 +33,10 @@ public class UserController : MonoBehaviour
     private List<byte[]> recvDataList = new List<byte[]>();
     private List<Key> inputKeyList = new List<Key>();
     private Key nowKey=0;
-    private StateMachine<AnimationKey> animationState = new StateMachine<AnimationKey>();
+    public StateMachine<AnimationKey> animationState { get; private set; } = new StateMachine<AnimationKey>();
+
+    public int hp { get; set; } = 100;
+
     void Start()
     {
         AddStates();

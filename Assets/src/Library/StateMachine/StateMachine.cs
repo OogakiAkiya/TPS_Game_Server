@@ -33,7 +33,7 @@ public class StateMachine<T>
 
     private Dictionary<T, State> stateDirectinary=new Dictionary<T, State>();
     private State currentState;
-
+    public T currentKey { get; set; }
     public void AddState(T _key, Action _enter = null, Action _update = null, Action _end = null)
     {
         stateDirectinary.Add(_key ,new State( _enter, _update, _end));
@@ -44,6 +44,7 @@ public class StateMachine<T>
         currentState?.End();
 
         //新しいstate代入
+        currentKey = _key;
         currentState = stateDirectinary?[_key];
         currentState?.Enter();
     }
