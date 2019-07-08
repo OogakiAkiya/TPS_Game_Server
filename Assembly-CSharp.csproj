@@ -61,14 +61,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\src\Constant.cs" />
-    <Compile Include="Assets\src\GameController.cs" />
-    <Compile Include="Assets\src\OpenSocket\TCP_Client.cs" />
-    <Compile Include="Assets\src\OpenSocket\TCP_Server.cs" />
-    <Compile Include="Assets\src\OpenSocket\UDP_Client.cs" />
-    <Compile Include="Assets\src\OpenSocket\UDP_Server.cs" />
-    <Compile Include="Assets\src\TCP_ServerController.cs" />
-    <Compile Include="Assets\src\UDP_ServerController.cs" />
-    <Compile Include="Assets\src\UserController.cs" />
+    <Compile Include="Assets\src\Game\GameController.cs" />
+    <Compile Include="Assets\src\Game\TCP_ServerController.cs" />
+    <Compile Include="Assets\src\Game\UDP_ServerController.cs" />
+    <Compile Include="Assets\src\Game\UserController.cs" />
+    <Compile Include="Assets\src\Library\OpenSocket\TCP_Client.cs" />
+    <Compile Include="Assets\src\Library\OpenSocket\TCP_Server.cs" />
+    <Compile Include="Assets\src\Library\OpenSocket\UDP_Client.cs" />
+    <Compile Include="Assets\src\Library\OpenSocket\UDP_Server.cs" />
+    <Compile Include="Assets\src\Library\StateMachine\StateMachine.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>/Users/oogakiakiya/Desktop/GameServer/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
