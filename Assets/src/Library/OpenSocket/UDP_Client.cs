@@ -60,6 +60,7 @@ class UDP_Client
 
     int port = 0;
     int sendPort = 12344;
+    uint sequence = 0;
 
     public void Init(int _port)
     {
@@ -81,8 +82,23 @@ class UDP_Client
     //本来ならsendPortはportに変わる
     public void Send(KeyValuePair<IPEndPoint, byte[]> _data)
     {
-        sender.socket.SendAsync(_data.Value, _data.Value.Length, _data.Key.Address.ToString(), sendPort);
+
+        List<byte> sendData = new List<byte>();
+        sendData.AddRange(BitConverter.GetBytes(sequence));
+        sendData.AddRange(_data.Value);
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
+        CountUPSequence();
+
     }
+    private void CountUPSequence()
+    {
+        sequence++;
+        if (sequence > 4200000000)
+        {
+            sequence = 0;
+        }
+    }
+
 
     private void ReceiveCallback(IAsyncResult ar)
     {
