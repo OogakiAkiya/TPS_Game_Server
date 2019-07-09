@@ -41,9 +41,9 @@ public class UDP_ServerController : MonoBehaviour
 
 
                 Vector3 vect = Vector3.zero;
-                vect.x = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 0 * sizeof(float));
+                //vect.x = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 0 * sizeof(float));
                 vect.y = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 1 * sizeof(float));
-                vect.z = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 2 * sizeof(float));
+                //vect.z = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 2 * sizeof(float));
 
                 var objects=GameObject.FindGameObjectsWithTag("users");
                 foreach(var obj in objects)
