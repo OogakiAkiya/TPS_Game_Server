@@ -3,8 +3,10 @@
     <Files>
       <File FileName="Assets/src/Constant.cs" Line="1" Column="1" />
       <File FileName="Assets/src/Game/UserController.cs" Line="179" Column="1" />
-      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="92" Column="130" />
-      <File FileName="Assets/src/Game/TCP_ServerController.cs" Line="34" Column="1" />
+      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="75" Column="1" />
+      <File FileName="Assets/src/Game/TCP_ServerController.cs" Line="1" Column="1" />
+      <File FileName="Assets/src/Library/OpenSocket/UDP_Client.cs" Line="59" Column="63" />
+      <File FileName="Assets/src/Library/OpenSocket/UDP_Server.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -28,7 +30,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="350a89ce-2a4f-4067-8a9c-e55f7d038d3e" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="be7e452b-ddae-4afc-a827-f011b7904784" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 class ClientState
 {
     public UdpClient socket = null;
-    public IPEndPoint endPoint;
+    public IPEndPoint endPoint=null;
     private List<KeyValuePair<IPEndPoint, byte[]>> recvDataList = new List<KeyValuePair<IPEndPoint, byte[]>>();
     private System.Object lockObject = new System.Object();
 
@@ -55,12 +55,14 @@ class ClientState
 
 class UDP_Client
 {
-    public ClientState server = new ClientState();
+    
+    public ServerState server { get; private set; } = new ServerState();
     private ClientState sender = new ClientState();
 
     int port = 0;
     int sendPort = 12344;
     uint sequence = 0;
+
 
     public void Init(int _port)
     {
@@ -90,6 +92,18 @@ class UDP_Client
         CountUPSequence();
 
     }
+
+    public void Send(byte[] _data, string _IP, int _port)
+    {
+
+        List<byte> sendData = new List<byte>();
+        sendData.AddRange(BitConverter.GetBytes(sequence));
+        sendData.AddRange(_data);
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
+        CountUPSequence();
+
+    }
+
     private void CountUPSequence()
     {
         sequence++;
@@ -99,7 +113,6 @@ class UDP_Client
         }
     }
 
-
     private void ReceiveCallback(IAsyncResult ar)
     {
         ServerState client = (ServerState)ar.AsyncState;
@@ -107,5 +120,5 @@ class UDP_Client
         client.AddRecvData(client.endPoint, buf);
         client.socket.BeginReceive(ReceiveCallback, client);
     }
-
+    
 }

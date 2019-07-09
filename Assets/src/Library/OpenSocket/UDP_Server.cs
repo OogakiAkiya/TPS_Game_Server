@@ -56,11 +56,10 @@ class ServerState
 class UDP_Server
 {
     public ServerState server { get; private set; } = new ServerState();
-    private ServerState sender = new ServerState();
-
+    private ClientState sender = new ClientState();
+    uint sequence = 0;
     int port = 0;
     int sendPort = 12343;
-    uint sequence = 0;
 
     public void Init(int _port)
     {
@@ -90,10 +89,21 @@ class UDP_Server
     //本来ならsendPortはportに変わる
     public void Send(KeyValuePair<IPEndPoint, byte[]> _data)
     {
-        List<byte> sendData = new List<byte>();
+        List<byte> sendData=new List<byte>();
         sendData.AddRange(BitConverter.GetBytes(sequence));
         sendData.AddRange(_data.Value);
         sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
+        CountUPSequence();
+
+    }
+
+    public void Send(byte[] _data, string _IP, int _port)
+    {
+
+        List<byte> sendData = new List<byte>();
+        sendData.AddRange(BitConverter.GetBytes(sequence));
+        sendData.AddRange(_data);
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
         CountUPSequence();
 
     }
@@ -113,7 +123,6 @@ class UDP_Server
             }
         }
         CountUPSequence();
-
     }
 
     private void CountUPSequence()
