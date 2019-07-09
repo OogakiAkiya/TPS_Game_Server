@@ -28,7 +28,32 @@ public class UDP_ServerController : MonoBehaviour
         if (socket.server.GetRecvDataSize() > 0)
         {
             var data = socket.server.GetRecvData();
-            clientIPList.Add(data.Key.Address.ToString());
+            if (data.Value[HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_INIT)
+            {
+                clientIPList.Add(data.Key.Address.ToString());
+
+            }
+            if(data.Value[HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_GAME)
+            {
+                byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
+                System.Array.Copy(data.Value, 0, b_userId, 0, b_userId.Length);
+                string userId = System.Text.Encoding.UTF8.GetString(b_userId);
+
+
+                Vector3 vect = Vector3.zero;
+                vect.x = BitConverter.ToSingle(data.Value, sizeof(byte) * 1 + 12 + 0 * sizeof(float));
+                vect.y = BitConverter.ToSingle(data.Value, sizeof(byte) * 1 + 12 + 1 * sizeof(float));
+                vect.z = BitConverter.ToSingle(data.Value, sizeof(byte) * 1 + 12 + 2 * sizeof(float));
+
+                var objects=GameObject.FindGameObjectsWithTag("users");
+                foreach(var obj in objects)
+                {
+                    if (obj.name == userId.Trim())
+                    {
+                        obj.transform.rotation = Quaternion.Euler(vect);
+                    }
+                }
+            }
         }
 
         SendAllClientData();
@@ -65,7 +90,6 @@ public class UDP_ServerController : MonoBehaviour
         byte[] state = new byte[sizeof(int) *2];
         Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().animationState.currentKey), 0, state, 0, sizeof(int));
         Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().hp), 0, state,sizeof(int), sizeof(int));
-
 
         returnData.Add(HeaderConstant.ID_GAME);
         returnData.AddRange(userName);

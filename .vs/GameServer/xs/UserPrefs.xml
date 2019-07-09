@@ -1,12 +1,10 @@
 ﻿<Properties StartupConfiguration="{F9F77F06-66D7-EF2A-06E6-48CD1F3E7407}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/src/Library/OpenSocket/UDP_Server.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/src/Game/UDP_ServerController.cs">
     <Files>
       <File FileName="Assets/src/Constant.cs" Line="1" Column="1" />
-      <File FileName="Assets/src/Game/UserController.cs" Line="33" Column="38" />
-      <File FileName="Assets/src/Library/StateMachine/StateMachine.cs" />
-      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="68" Column="1" />
-      <File FileName="Assets/src/Library/OpenSocket/UDP_Server.cs" Line="122" Column="9" />
-      <File FileName="Assets/src/Library/OpenSocket/UDP_Client.cs" Line="64" Column="1" />
+      <File FileName="Assets/src/Game/UserController.cs" Line="179" Column="1" />
+      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="92" Column="130" />
+      <File FileName="Assets/src/Game/TCP_ServerController.cs" Line="34" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -14,11 +12,11 @@
           <Node name="GameServer" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="src" expanded="True">
-                <Node name="Game" expanded="True" />
+                <Node name="Game" expanded="True">
+                  <Node name="UDP_ServerController.cs" selected="True" />
+                </Node>
                 <Node name="Library" expanded="True">
-                  <Node name="OpenSocket" expanded="True">
-                    <Node name="UDP_Server.cs" selected="True" />
-                  </Node>
+                  <Node name="OpenSocket" expanded="True" />
                   <Node name="StateMachine" expanded="True" />
                 </Node>
               </Node>
@@ -30,7 +28,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="37f4dd61-07e7-416f-86ab-9bedaffe60a1" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="350a89ce-2a4f-4067-8a9c-e55f7d038d3e" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

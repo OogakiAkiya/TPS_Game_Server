@@ -176,7 +176,6 @@ public class UserController : MonoBehaviour
         if (nowKey.HasFlag(Key.D)) velocity += this.transform.right;
 
         //移動
-        this.transform.Translate(velocity.normalized * _moveSpeed * Time.deltaTime);
-
+        this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
     }
 }
