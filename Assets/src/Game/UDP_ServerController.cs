@@ -33,20 +33,15 @@ public class UDP_ServerController : MonoBehaviour
                 clientIPList.Add(data.Key.Address.ToString());
 
             }
+
             if(data.Value[sizeof(uint) + HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_GAME)
             {
                 byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
                 System.Array.Copy(data.Value, sizeof(uint), b_userId, 0, b_userId.Length);
                 string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
-
-                Vector3 vect = Vector3.zero;
-                //vect.x = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 0 * sizeof(float));
-                vect.y = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 1 * sizeof(float));
-                //vect.z = BitConverter.ToSingle(data.Value, sizeof(uint) + sizeof(byte) * 1 + 12 + 2 * sizeof(float));
-
-                var objects=GameObject.FindGameObjectsWithTag("users");
-                foreach(var obj in objects)
+                Vector3 vect = GetVector3(data.Value, sizeof(uint) + sizeof(byte) * 1 + HeaderConstant.USERID_LENGTH,_x:false,_z:false);
+                foreach(var obj in gameController.users)
                 {
                     if (obj.name == userId.Trim())
                     {
@@ -79,14 +74,8 @@ public class UDP_ServerController : MonoBehaviour
         List<byte> returnData=new List<byte>();
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
         byte[] userName = enc.GetBytes(System.String.Format("{0, -" + HeaderConstant.USERID_LENGTH + "}", _user.name));              //12byteに設定する
-        byte[] positionData = new byte[sizeof(float) * 3];
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.x), 0, positionData, 0 * sizeof(float), sizeof(float));
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.y), 0, positionData, 1 * sizeof(float), sizeof(float));
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.position.z), 0, positionData, 2 * sizeof(float), sizeof(float));
-        byte[] rotationData = new byte[sizeof(float) * 3];
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.x), 0, rotationData, 0 * sizeof(float), sizeof(float));
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.y), 0, rotationData, 1 * sizeof(float), sizeof(float));
-        Buffer.BlockCopy(BitConverter.GetBytes(_user.transform.localEulerAngles.z), 0, rotationData, 2 * sizeof(float), sizeof(float));
+        byte[] positionData = GetByteVector3(_user.transform.position);
+        byte[] rotationData = GetByteVector3(_user.transform.localEulerAngles);
         byte[] state = new byte[sizeof(int) *2];
         Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().animationState.currentKey), 0, state, 0, sizeof(int));
         Buffer.BlockCopy(BitConverter.GetBytes((int)_user.GetComponent<UserController>().hp), 0, state,sizeof(int), sizeof(int));
@@ -100,4 +89,24 @@ public class UDP_ServerController : MonoBehaviour
 
         return returnData.ToArray();
     }
+
+    private Vector3 GetVector3(byte[] _data, int _beginPoint = 0, bool _x = true, bool _y = true, bool _z = true)
+    {
+        Vector3 vect = Vector3.zero;
+        if (_data.Length < sizeof(float) * 3) return vect;
+        if (_x) vect.x = BitConverter.ToSingle(_data, _beginPoint + 0 * sizeof(float));
+        if (_y) vect.y = BitConverter.ToSingle(_data, _beginPoint + 1 * sizeof(float));
+        if (_z) vect.z = BitConverter.ToSingle(_data, _beginPoint + 2 * sizeof(float));
+        return vect;
+    }
+    private byte[] GetByteVector3(Vector3 _vector, bool _x = true, bool _y = true, bool _z = true)
+    {
+        byte[] vect = new byte[sizeof(float) * 3];
+        if(_x)Buffer.BlockCopy(BitConverter.GetBytes(_vector.x), 0, vect, 0 * sizeof(float), sizeof(float));
+        if(_y)Buffer.BlockCopy(BitConverter.GetBytes(_vector.y), 0, vect, 1 * sizeof(float), sizeof(float));
+        if(_z)Buffer.BlockCopy(BitConverter.GetBytes(_vector.z), 0, vect, 2 * sizeof(float), sizeof(float));
+
+        return vect;
+    }
+
 }
