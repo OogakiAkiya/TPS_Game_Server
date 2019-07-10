@@ -35,7 +35,15 @@ public enum AnimationKey : int
 {
     Idle,
     Walk,
+    WalkForward,
+    WalkBack,
+    WalkLeft,
+    WalkRight,
     Run,
+    RunForward,
+    RunBack,
+    RunLeft,
+    RunRight,
     JumpUP,
     JumpStay,
     JumpDown
