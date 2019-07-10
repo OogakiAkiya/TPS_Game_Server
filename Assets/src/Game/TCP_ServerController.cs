@@ -80,7 +80,8 @@ public class TCP_ServerController : MonoBehaviour
                 {
                     if (_data[sizeof(byte) + HeaderConstant.USERID_LENGTH] == HeaderConstant.CODE_GAME_BASICDATA)
                     {
-                        Key addData = (Key)_data[sizeof(byte) * 2 + HeaderConstant.USERID_LENGTH];
+                        Key addData = (Key)BitConverter.ToInt16(_data, sizeof(byte) * 2 + HeaderConstant.USERID_LENGTH);
+
                         user.GetComponent<UserController>().AddInputKeyList(addData);
                     }
                 }

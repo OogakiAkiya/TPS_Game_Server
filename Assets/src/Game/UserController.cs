@@ -2,30 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Key : short
-{
-    W = 0x001,
-    S = 0x002,
-    A = 0x004,
-    D = 0x008,
-    SHIFT = 0x010,
-    G = 0x020,
-    R = 0x040,
-    LEFT_BUTTON = 0x080,
-    RIGHT_BUTTON = 0x100
-}
-
-public enum AnimationKey :int
-{
-    Idle,
-    Walk,
-    Run,
-    Jump
-}
 
 public class UserController : MonoBehaviour
 {
     public string userId;
+    public float jumpPower=1.0f;
+    public float jumpMoveSpeed = 0.3f;
     public float walkSpeed = 1.0f;
     public float runSpeed = 2.0f;
 
@@ -34,13 +16,19 @@ public class UserController : MonoBehaviour
     private List<Key> inputKeyList = new List<Key>();
     private Key nowKey=0;
     public StateMachine<AnimationKey> animationState { get; private set; } = new StateMachine<AnimationKey>();
+    private Animator animator;
+    private AnimatorBehaviour animatorBehaviour;
+
 
     public int hp { get; set; } = 100;
 
     void Start()
     {
+        animator = this.GetComponent<Animator>();
+        animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         AddStates();
         animationState.ChangeState(AnimationKey.Idle);
+
     }
 
     public void SetUserID(string _userId)
@@ -53,13 +41,13 @@ public class UserController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (recvDataList.Count > 0)
         {
             byte[] recvData = GetRecvData();
         }
 
         InputRoutine();
-
         animationState.Update();
     }
 
@@ -102,26 +90,47 @@ public class UserController : MonoBehaviour
 
             //新しいキー入力を加算
             nowKey |= inputKey;
+
             //二度目のキー入力でフラグOFF
             nowKey = oldKey ^ inputKey;
         }
     }
 
+
+    //=================================================================
+    //statesの情報設定
+    //=================================================================
     private void AddStates()
     {
         //Idle
         animationState.AddState(AnimationKey.Idle,
             _update: () =>
             {
-                if ((short)nowKey << 12 > 0) animationState.ChangeState(AnimationKey.Walk);
+                //ジャンプ
+                if (nowKey.HasFlag(Key.SPACE))
+                {
+                    animationState.ChangeState(AnimationKey.JumpUP);
+                    return;
+                }
+                //歩き
+                if ((short)nowKey << 12 > 0)
+                {
+                    animationState.ChangeState(AnimationKey.Walk);
+                }
             });
 
         //Walk
         animationState.AddState(AnimationKey.Walk,
             _update: () =>
             {
+                //ジャンプ
+                if (nowKey.HasFlag(Key.SPACE))
+                {
+                    animationState.ChangeState(AnimationKey.JumpUP);
+                    return;
+                }
                 //WASDのどれか一つでも押されているかチェック
-                if((short)nowKey << 12 == 0)
+                if ((short)nowKey << 12 == 0)
                 {
                     animationState.ChangeState(AnimationKey.Idle);
                     return;
@@ -141,6 +150,12 @@ public class UserController : MonoBehaviour
         animationState.AddState(AnimationKey.Run,
             _update: () =>
             {
+                //ジャンプ
+                if (nowKey.HasFlag(Key.SPACE))
+                {
+                    animationState.ChangeState(AnimationKey.JumpUP);
+                    return;
+                }
                 //WASDのどれか一つでも押されているかチェック
                 if ((short)nowKey << 12 == 0)
                 {
@@ -149,21 +164,58 @@ public class UserController : MonoBehaviour
                 }
 
                 //SHIFTが押されているかチェック
-                if(!nowKey.HasFlag(Key.SHIFT))
+                if (!nowKey.HasFlag(Key.SHIFT))
                 {
                     animationState.ChangeState(AnimationKey.Walk);
                     return;
-                }
+                }                
 
                 Move(runSpeed);
             });
-
-        //Jump
-        animationState.AddState(AnimationKey.Jump,
-            _update: () =>
+        
+        //JumpUP
+        animationState.AddState(AnimationKey.JumpUP,
+            () =>
             {
+               animator.CrossFadeInFixedTime("JumpUP", 0.0f);
+            },
+            () =>
+            {
+                if (animatorBehaviour.NormalizedTime >= 1.0f) animationState.ChangeState(AnimationKey.JumpStay);
+                Move(jumpMoveSpeed);
             }
             );
+
+        //JumpStay
+        animationState.AddState(AnimationKey.JumpStay,
+            () =>
+            {
+                animator.CrossFadeInFixedTime("JumpStay", 0.0f);
+            },
+            () =>
+            {
+                if (animatorBehaviour.NormalizedTime >= 1.0f) animationState.ChangeState(AnimationKey.JumpDown);
+                Move(jumpMoveSpeed);
+            }
+            );
+
+
+        //JumpDown
+        animationState.AddState(AnimationKey.JumpDown,
+            () =>
+            {
+                animator.CrossFadeInFixedTime("JumpDown", 0.0f);
+            },
+            () =>
+            {
+                if (animatorBehaviour.NormalizedTime >= 1.0f)
+                {
+                    animationState.ChangeState(AnimationKey.Idle);
+                }
+            }
+            );
+            
+
     }
 
     private void Move(float _moveSpeed)
