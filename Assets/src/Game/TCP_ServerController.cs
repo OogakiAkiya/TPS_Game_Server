@@ -63,8 +63,6 @@ public class TCP_ServerController : MonoBehaviour
                 gameController.UsersUpdate();
 
             }
-
-
         }
 
         //ゲーム処理
@@ -76,13 +74,13 @@ public class TCP_ServerController : MonoBehaviour
 
             foreach (var user in gameController.users)
             {
-                if (user.name.Equals(userId.Trim()))
+                if (user.userId.Equals(userId.Trim()))
                 {
                     if (_data[sizeof(byte) + HeaderConstant.USERID_LENGTH] == HeaderConstant.CODE_GAME_BASICDATA)
                     {
                         Key addData = (Key)BitConverter.ToInt16(_data, sizeof(byte) * 2 + HeaderConstant.USERID_LENGTH);
 
-                        user.GetComponent<UserController>().AddInputKeyList(addData);
+                        user.AddInputKeyList(addData);
                     }
                 }
             }

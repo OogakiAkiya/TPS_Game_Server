@@ -540,6 +540,7 @@ GameObject:
   - component: {fileID: 2056617935303516239}
   - component: {fileID: 2056617935303516238}
   - component: {fileID: 2056617935303516225}
+  - component: {fileID: 5548051460454910786}
   m_Layer: 0
   m_Name: user
   m_TagString: users
@@ -625,8 +626,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userId: 
+  jumpPower: 1
+  jumpMoveSpeed: 0.3
   walkSpeed: 1
   runSpeed: 2
+--- !u!114 &5548051460454910786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056617935303516224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e666067c3bd4716aee0f062d16f878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2056617935317980745
 GameObject:
   m_ObjectHideFlags: 0
