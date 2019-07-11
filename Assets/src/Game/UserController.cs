@@ -15,7 +15,6 @@ public class UserController : MonoBehaviour
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
-
     public int hp { get; set; } = 100;
 
     void Start()

@@ -11,10 +11,14 @@ public class UserAnimation : MonoBehaviour
     private AnimatorBehaviour animatorBehaviour;
 
     public float jumpPower = 1.0f;
-    public float jumpMoveSpeed = 0.3f;
+    public float jumpMoveSpeed = 1.0f;
     public float walkSpeed = 1.0f;
     public float runSpeed = 2.0f;
-
+    public string checkLayer = "Ground";
+    public float groundCheckRadius = 0.2f;
+    public bool groundflg=true;
+    private int layerNo=0;
+    private bool jumpFlg = false;
     void Start()
     {
         
@@ -24,13 +28,26 @@ public class UserAnimation : MonoBehaviour
         
         AddStates();
         animationState.ChangeState(AnimationKey.Idle);
+
+        // レイヤーの管理番号を取得
+        layerNo = LayerMask.NameToLayer(checkLayer);
+
     }
 
     public void Update()
     {
+        groundflg = true;
+        if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
+
+
         nowKey = userController.nowKey;
         animationState.Update();
 
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius);
     }
     //=================================================================
     //statesの情報設定
@@ -58,11 +75,17 @@ public class UserAnimation : MonoBehaviour
             () =>
             {
                 animator.CrossFadeInFixedTime("JumpUP", 0.0f);
+                jumpFlg = false;
             },
             () =>
             {
-                if (animatorBehaviour.NormalizedTime >= 1.0f) animationState.ChangeState(AnimationKey.JumpStay);
-                Move(jumpMoveSpeed);
+                if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
+                {
+                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    jumpFlg = true;
+                }
+                if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(AnimationKey.JumpStay);
+
             }
             );
 
@@ -74,7 +97,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
-                if (animatorBehaviour.NormalizedTime >= 1.0f) animationState.ChangeState(AnimationKey.JumpDown);
+                if (groundflg) animationState.ChangeState(AnimationKey.JumpDown);
                 Move(jumpMoveSpeed);
             }
             );
@@ -88,19 +111,19 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
-                if (animatorBehaviour.NormalizedTime >= 1.0f)
+                if (animatorBehaviour.NormalizedTime >= 0.95f)
                 {
                     animationState.ChangeState(AnimationKey.Idle);
                 }
             }
             );
-        
+
         //Walk関係
         AddWalkState();
 
         //Run関係
         AddRunState();
-        
+
     }
 
     private void AddWalkState()
