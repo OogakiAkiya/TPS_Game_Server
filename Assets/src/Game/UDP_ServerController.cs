@@ -40,11 +40,15 @@ public class UDP_ServerController : MonoBehaviour
                 System.Array.Copy(data.Value, sizeof(uint), b_userId, 0, b_userId.Length);
                 string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
-                Vector3 vect = Convert.GetVector3(data.Value, sizeof(uint) + sizeof(byte) * 1 + HeaderConstant.USERID_LENGTH,_x:false,_z:false);
-                foreach(var obj in gameController.users)
+                //Vector3 vect = Convert.GetVector3(data.Value, sizeof(uint) + sizeof(byte) * 1 + HeaderConstant.USERID_LENGTH,_x:false,_z:false);
+                Vector3 vect = Convert.GetVector3(data.Value, sizeof(uint) + sizeof(byte) * 1 + HeaderConstant.USERID_LENGTH);
+                foreach (var obj in gameController.users)
                 {
                     if (obj.userId == userId.Trim())
                     {
+                        obj.rotat = vect;
+                        vect.x = 0;
+                        vect.z = 0;
                         obj.transform.rotation = Quaternion.Euler(vect);
                     }
                 }

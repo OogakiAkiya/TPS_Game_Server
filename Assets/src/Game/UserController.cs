@@ -9,19 +9,31 @@ public class UserController : MonoBehaviour
     public string userId;
     public string IPaddr { get; set; }
     public Key nowKey { get; private set; } = 0;
+    public int hp = 100;
 
     private List<byte[]> recvDataList = new List<byte[]>();
     private List<Key> inputKeyList = new List<Key>();
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
-    public int hp  = 100;
+
+    //Ray判定用
+    private Camera cam;
+    private RectTransform imageRect;
+    private Canvas canvas;
+    public Vector3 rotat=Vector3.zero;
+
 
     void Start()
     {
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
+
+        //Ray判定用
+        cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        imageRect = GameObject.Find("Canvas").transform.FindChild("Pointer").GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -43,6 +55,8 @@ public class UserController : MonoBehaviour
         {
             byte[] recvData = GetRecvData();
         }
+
+        if (hp < 0) hp = 0;
     }
 
     public void SetUserID(string _userId)
@@ -97,6 +111,42 @@ public class UserController : MonoBehaviour
         returnData.AddRange(BitConverter.GetBytes(currentKey));
         returnData.AddRange(BitConverter.GetBytes(hp));
         return returnData.ToArray();
+    }
+
+
+    public void Shoot()
+    {
+        //レイヤー変更
+        this.gameObject.layer = LayerMask.NameToLayer("Default");
+
+        //playerの移動,回転
+        var nowRotation = this.transform.localEulerAngles;
+        this.transform.rotation = Quaternion.Euler(rotat);
+
+        //レイの作成
+        Ray ray = cam.ScreenPointToRay(GetUIScreenPos(imageRect));
+        //レイの可視化
+        Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
+
+        RaycastHit hit = new RaycastHit();
+        if (Physics.Raycast(ray, out hit,1<<10))
+        {
+            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().hp--;
+        }
+
+        //playerの移動,回転を戻す
+        this.transform.rotation = Quaternion.Euler(nowRotation);
+        this.gameObject.layer = LayerMask.NameToLayer("user");
+
+    }
+
+    private Vector2 GetUIScreenPos(RectTransform rt)
+    {
+
+        //UIのCanvasに使用されるカメラは Hierarchy 上には表示されないので、
+        //変換したいUIが所属しているcanvasを映しているカメラを取得し、 WorldToScreenPoint() で座標変換する
+        return RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rt.position);
+
     }
 
 }

@@ -58,6 +58,7 @@ public class UserAnimation : MonoBehaviour
         animationState.AddState(AnimationKey.Idle,
             _update: () =>
             {
+                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
                 //ジャンプ
                 if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return;
                 //歩き
@@ -296,6 +297,7 @@ public class UserAnimation : MonoBehaviour
 
     private bool WalkInputTemplate()
     {
+        if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
         //ジャンプ
         if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
@@ -317,6 +319,7 @@ public class UserAnimation : MonoBehaviour
 
     private bool RunInputTemplate()
     {
+        if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
         //ジャンプ
         if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
