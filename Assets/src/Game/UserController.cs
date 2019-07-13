@@ -56,7 +56,6 @@ public class UserController : MonoBehaviour
             byte[] recvData = GetRecvData();
         }
 
-        if (hp < 0) hp = 0;
     }
 
     public void SetUserID(string _userId)
@@ -131,7 +130,7 @@ public class UserController : MonoBehaviour
         RaycastHit hit = new RaycastHit();
         if (Physics.Raycast(ray, out hit,1<<10))
         {
-            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().hp--;
+            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().ShootDamage();
         }
 
         //playerの移動,回転を戻す
@@ -149,4 +148,10 @@ public class UserController : MonoBehaviour
 
     }
 
+    public void ShootDamage(int _damage=1)
+    {
+        hp-=_damage;
+        if (hp < 0) hp = 0;
+
+    }
 }

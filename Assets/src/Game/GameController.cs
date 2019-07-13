@@ -26,6 +26,12 @@ public class GameController : MonoBehaviour
         //FPS回数
         frameCount = 0;
         prevTime = 0.0f;
+
+        //Update回数制御
+        
+        QualitySettings.vSyncCount = 0; // VSyncをOFFにする
+        //Application.targetFrameRate = 160; // ターゲットフレームレートを160に設定
+        
     }
 
     // Update is called once per frame
