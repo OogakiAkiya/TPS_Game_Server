@@ -25,16 +25,19 @@ public class UDP_ServerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        socket.Update();
         if (socket.server.GetRecvDataSize() > 0)
         {
             var data = socket.server.GetRecvData();
             if (data.Value[sizeof(uint)+HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_INIT)
             {
                 clientIPList.Add(data.Key.Address.ToString());
+                //Debug.LogFormat("UDP:Login={0}", data.Key.Address.ToString());
+                FileController.GetInstance().Write("UDPLogin",data.Key.Address.ToString());
 
             }
 
-            if(data.Value[sizeof(uint) + HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_GAME)
+            if (data.Value[sizeof(uint) + HeaderConstant.USERID_LENGTH] == HeaderConstant.ID_GAME)
             {
                 byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
                 System.Array.Copy(data.Value, sizeof(uint), b_userId, 0, b_userId.Length);
@@ -52,17 +55,17 @@ public class UDP_ServerController : MonoBehaviour
                         obj.transform.rotation = Quaternion.Euler(vect);
                     }
                 }
+
             }
         }
 
-        SendAllClientData();
+        //SendAllClientData();
 
     }
 
     public void SendAllClientData()
     {
         //sendData作成
-        //var userList = GameObject.FindGameObjectsWithTag("users");
         List<byte[]> sendData = new List<byte[]>();
         foreach (var user in gameController.users)
         {

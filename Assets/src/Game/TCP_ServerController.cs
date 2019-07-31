@@ -38,10 +38,15 @@ public class TCP_ServerController : MonoBehaviour
                     byte[] data = client.GetRecvDataList();
                     RecvRoutine(data);
 
+                    /*test send
+                    List<byte> dlist = new List<byte>();
+                    dlist.Add(0x001);
+                    var te=client.Send(dlist.ToArray(),dlist.Count) ;
+                    */
                 }
             }
         }
-
+        
         socket.EndUpdate();
 
 

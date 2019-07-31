@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Net.Sockets;
 using System.Net;
@@ -83,6 +82,15 @@ class UDP_Server
 
     public void Update()
     {
+        //sendTest
+        /*
+        List<byte> sendData = new List<byte>();
+        sendData.Add(0x0001);
+        sendData.Add(0x0002);
+        sendData.Add(0x0003);
+
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, "106.181.152.244", 12344);
+        */
     }
 
 
@@ -120,6 +128,7 @@ class UDP_Server
                 sendData.AddRange(data);
 
                 sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, IP, sendPort);
+                FileController.GetInstance().Write("UDPSend", "IP=" + IP + ",port=" + sendPort);
             }
         }
         CountUPSequence();

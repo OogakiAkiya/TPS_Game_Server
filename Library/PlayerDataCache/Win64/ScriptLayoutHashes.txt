@@ -1,6 +1,6 @@
 Win64
 PlayerPath?
-/Users/oogakiakiya/Desktop/Unity Build/Server/GameServer.exe
+/Users/oogakiakiya/Desktop/Unity Build/Windows/Server/GameServer.exe
 SceneListBegin?
 Assets/Scenes/SampleScene.unity
 SceneListEnd?

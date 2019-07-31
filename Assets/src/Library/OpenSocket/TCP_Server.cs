@@ -215,7 +215,8 @@ class Tcp_Server_Socket
         //    System.Net.Dns.GetHostEntry(host).AddressList[0];
 
         //TcpListenerオブジェクトを作成する
-        IPEndPoint ipe = new IPEndPoint(ipAdd, _port);
+        //IPEndPoint ipe = new IPEndPoint(ipAdd, _port);
+        IPEndPoint ipe = new IPEndPoint(IPAddress.Any, _port);
         listener = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         listener.Bind(ipe);

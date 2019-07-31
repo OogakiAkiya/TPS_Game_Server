@@ -49,6 +49,7 @@ public class UserController : MonoBehaviour
             nowKey |= inputKey;
             //二度目のキー入力でフラグOFF
             nowKey = oldKey ^ inputKey;
+
         }
 
         if (recvDataList.Count > 0)
@@ -125,7 +126,7 @@ public class UserController : MonoBehaviour
         //レイの作成
         Ray ray = cam.ScreenPointToRay(GetUIScreenPos(imageRect));
         //レイの可視化
-        Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
+        //Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
 
         RaycastHit hit = new RaycastHit();
         if (Physics.Raycast(ray, out hit,1<<10))

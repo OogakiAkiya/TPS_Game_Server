@@ -41,9 +41,12 @@ public class GameController : MonoBehaviour
         ++frameCount;
         float time = Time.realtimeSinceStartup - prevTime;
 
-        if (time >= 0.5f)
+        //60fpsのタイミング
+        if (time >= 0.016f)
         {
-            Debug.LogFormat("{0}fps", frameCount / time);
+            //Debug.LogFormat("{0}fps", frameCount / time);
+            //データ送信
+            this.GetComponent<UDP_ServerController>().SendAllClientData();
 
             frameCount = 0;
             prevTime = Time.realtimeSinceStartup;

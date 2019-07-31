@@ -1,6 +1,6 @@
 Linux64
 PlayerPath?
-/Users/oogakiakiya/Desktop/Unity Build/Server.x86_64
+/Users/oogakiakiya/Desktop/Unity Build/Linux/Server.x86_64
 SceneListBegin?
 Assets/Scenes/SampleScene.unity
 SceneListEnd?
