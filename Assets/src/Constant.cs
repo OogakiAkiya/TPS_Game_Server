@@ -1,16 +1,20 @@
 ﻿using System;
 
 
-public static class HeaderConstant
+public static class Header
 {
     public static readonly int USERID_LENGTH = 12;
+    public enum ID : byte
+    {
+        //byte ID = 0x001,
+        INIT = 0x002,
+        GAME = 0x003
+    }
+    public enum GameCode : byte
+    {
+        BASICDATA = 0x0001
+    }
 
-    //ID
-    public static readonly byte ID_INIT = 0x0002;
-    public static readonly byte ID_GAME = 0x0003;
-
-    //GameCode
-    public static readonly byte CODE_GAME_BASICDATA = 0x0001;
 }
 
 public enum Key : short
@@ -42,5 +46,14 @@ public enum AnimationKey : int
     RunRight,
     JumpUP,
     JumpStay,
-    JumpDown
+    JumpDown,
+    Dying
 }
+
+public enum UDPSTATE : int
+{
+    INIT,
+    GAME,
+    RESULT
+}
+

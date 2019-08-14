@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     private int count = 0;
     //public GameObject[] users { get; private set; } = new GameObject[0];
     public List<UserController> users { get; private set; } = new List<UserController>();
-
+    private UDP_ServerController udp_Controller;
     //FPS回数
     int frameCount;
     float prevTime;
@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        udp_Controller=this.GetComponent<UDP_ServerController>();
         userPrefab = (GameObject)Resources.Load("user");
 
         //FPS回数
@@ -46,7 +47,7 @@ public class GameController : MonoBehaviour
         {
             //Debug.LogFormat("{0}fps", frameCount / time);
             //データ送信
-            this.GetComponent<UDP_ServerController>().SendAllClientData();
+            udp_Controller.SendAllClientData();
 
             frameCount = 0;
             prevTime = Time.realtimeSinceStartup;

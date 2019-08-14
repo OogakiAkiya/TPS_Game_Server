@@ -16,6 +16,7 @@ public class UserAnimation : MonoBehaviour
     public float runSpeed = 2.0f;
     public string checkLayer = "Ground";
     public float groundCheckRadius = 0.2f;
+    public float rebornRange = 2.0f;
     public bool groundflg=true;
     private int layerNo=0;
     private bool jumpFlg = false;
@@ -56,6 +57,11 @@ public class UserAnimation : MonoBehaviour
     {
         //Idle
         animationState.AddState(AnimationKey.Idle,
+             () =>
+             {
+                animator.CrossFadeInFixedTime("Idle", 0.0f);
+             },
+
             _update: () =>
             {
                 if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
@@ -80,6 +86,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
+                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
                     this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
@@ -98,6 +105,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
+                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
                 if (groundflg) animationState.ChangeState(AnimationKey.JumpDown);
                 Move(jumpMoveSpeed);
             }
@@ -112,6 +120,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
+                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
                 if (animatorBehaviour.NormalizedTime >= 0.95f)
                 {
                     animationState.ChangeState(AnimationKey.Idle);
@@ -124,6 +133,24 @@ public class UserAnimation : MonoBehaviour
 
         //Run関係
         AddRunState();
+
+        animationState.AddState(AnimationKey.Dying, () =>
+        {
+            animator.CrossFadeInFixedTime("Dying", 0.0f);
+        },
+        () =>
+        {
+            if (animatorBehaviour.NormalizedTime >= 0.95f)
+            {
+                animationState.ChangeState(AnimationKey.Idle);
+            }
+        },
+        () =>
+        {
+            userController.hp = 100;
+            userController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+        }
+        );
 
     }
 

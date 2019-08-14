@@ -97,15 +97,15 @@ public class UserController : MonoBehaviour
     {
         List<byte> returnData = new List<byte>();
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + HeaderConstant.USERID_LENGTH + "}",this.name));              //12byteに設定する
+        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}",this.name));              //12byteに設定する
         byte[] positionData = Convert.GetByteVector3(this.transform.position);
         byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
         int currentKey = 0;
         if (userAnimation) currentKey = (int)userAnimation.animationState.currentKey;
 
-        returnData.Add(HeaderConstant.ID_GAME);
+        returnData.Add((byte)Header.ID.GAME);
         returnData.AddRange(userName);
-        returnData.Add(HeaderConstant.CODE_GAME_BASICDATA);
+        returnData.Add((byte)Header.GameCode.BASICDATA);
         returnData.AddRange(positionData);
         returnData.AddRange(rotationData);
         returnData.AddRange(BitConverter.GetBytes(currentKey));
@@ -151,8 +151,14 @@ public class UserController : MonoBehaviour
 
     public void ShootDamage(int _damage=1)
     {
+        if (userAnimation.animationState.currentKey == AnimationKey.Dying) return;
+
         hp-=_damage;
-        if (hp < 0) hp = 0;
+        if (hp < 0)
+        {
+            hp = 0;
+            userAnimation.animationState.ChangeState(AnimationKey.Dying);
+        }
 
     }
 }

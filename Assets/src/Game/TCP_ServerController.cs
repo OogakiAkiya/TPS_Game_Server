@@ -11,6 +11,10 @@ public class TCP_ServerController : MonoBehaviour
     private TCP_Server socket = new TCP_Server();
     private GameController gameController;
 
+
+    private StateMachine<Header.ID> state = new StateMachine<Header.ID>();
+    private byte[] recvData;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +26,10 @@ public class TCP_ServerController : MonoBehaviour
         //待ち受け開始
         var task = socket.StartAccept();
 
+
+        state.AddState(Header.ID.INIT,()=>{ },InitUpdate);
+        state.AddState(Header.ID.GAME,()=> { },GameUpdate);
+
     }
 
     // Update is called once per frame
@@ -29,64 +37,60 @@ public class TCP_ServerController : MonoBehaviour
     {
         socket.BeginUpdate();
 
-        if (socket.clientList.Count > 0)
+        //ログインユーザーのチェック
+        if (socket.clientList.Count == 0) return;
+        foreach (Tcp_Server_Socket client in socket.clientList)
         {
-            foreach (Tcp_Server_Socket client in socket.clientList)
+            //受信処理
+            while (client.RecvDataListCount() > 0)
             {
-                while (client.RecvDataListCount() > 0)
-                {
-                    byte[] data = client.GetRecvDataList();
-                    RecvRoutine(data);
+                //受信データのセット
+                recvData = client.GetRecvDataList();
 
-                    /*test send
-                    List<byte> dlist = new List<byte>();
-                    dlist.Add(0x001);
-                    var te=client.Send(dlist.ToArray(),dlist.Count) ;
-                    */
-                }
+                //受信データごとの処理
+                state.ChangeState((Header.ID)recvData[0]);
+                state.Update();
+
+                /*test send
+                List<byte> dlist = new List<byte>();
+                dlist.Add(0x001);
+                var te=client.Send(dlist.ToArray(),dlist.Count) ;
+                */
             }
         }
-        
+
         socket.EndUpdate();
-
-
     }
 
-    private void RecvRoutine(byte[] _data)
+    private void InitUpdate()
     {
-        //初接続
-        if (_data[0] == HeaderConstant.ID_INIT)
+        byte[] b_userId = new byte[Header.USERID_LENGTH];
+        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
+        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
+
+        //同じユーザーで複数ログインを防ぐ
+        if (!GameObject.Find(userId.Trim()))
         {
-            byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
-            Array.Copy(_data, sizeof(byte), b_userId, 0, b_userId.Length);
-            string userId = System.Text.Encoding.UTF8.GetString(b_userId);
-
-            //同じユーザーで複数ログインを防ぐ
-            if (!GameObject.Find(userId.Trim()))
-            {
-                gameController.AddNewUser(userId.Trim());
-                gameController.UsersUpdate();
-
-            }
+            gameController.AddNewUser(userId.Trim());
+            gameController.UsersUpdate();
         }
+    }
 
-        //ゲーム処理
-        if (_data[0] == HeaderConstant.ID_GAME)
+    private void GameUpdate()
+    {
+        byte[] b_userId = new byte[Header.USERID_LENGTH];
+        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
+        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
+
+        foreach (var user in gameController.users)
         {
-            byte[] b_userId = new byte[HeaderConstant.USERID_LENGTH];
-            Array.Copy(_data, sizeof(byte), b_userId, 0, b_userId.Length);
-            string userId = System.Text.Encoding.UTF8.GetString(b_userId);
-
-            foreach (var user in gameController.users)
+            if (user.userId.Equals(userId.Trim()))
             {
-                if (user.userId.Equals(userId.Trim()))
+                if (recvData[sizeof(byte) + Header.USERID_LENGTH] == (byte)Header.GameCode.BASICDATA)
                 {
-                    if (_data[sizeof(byte) + HeaderConstant.USERID_LENGTH] == HeaderConstant.CODE_GAME_BASICDATA)
-                    {
-                        Key addData = (Key)BitConverter.ToInt16(_data, sizeof(byte) * 2 + HeaderConstant.USERID_LENGTH);
+                    Key addData = (Key)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + Header.USERID_LENGTH);
 
-                        user.AddInputKeyList(addData);
-                    }
+                    user.AddInputKeyList(addData);
                 }
             }
         }

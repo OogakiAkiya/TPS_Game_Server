@@ -174,6 +174,8 @@ class Tcp_Server_Socket
     private readonly System.Object lockObj = new System.Object();
     Socket listener;
 
+
+    //接続してきたユーザーの追加
     public void BeginUpdate()
     {
         //addClientListのための排他制御
@@ -187,6 +189,7 @@ class Tcp_Server_Socket
         }
     }
 
+    //deleteFlgがtrueになっているユーザーの削除
     public void EndUpdate()
     {
         if (clientList.Count <= 0) return;
