@@ -64,7 +64,7 @@ public class UserAnimation : MonoBehaviour
 
             _update: () =>
             {
-                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+                Atack();
                 //ジャンプ
                 if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return;
                 //歩き
@@ -86,7 +86,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
-                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+                Atack();
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
                     this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
@@ -105,7 +105,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
-                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+                Atack();
                 if (groundflg) animationState.ChangeState(AnimationKey.JumpDown);
                 Move(jumpMoveSpeed);
             }
@@ -120,7 +120,7 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
-                if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+                Atack();
                 if (animatorBehaviour.NormalizedTime >= 0.95f)
                 {
                     animationState.ChangeState(AnimationKey.Idle);
@@ -324,7 +324,7 @@ public class UserAnimation : MonoBehaviour
 
     private bool WalkInputTemplate()
     {
-        if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+        Atack();
         //ジャンプ
         if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
@@ -346,7 +346,7 @@ public class UserAnimation : MonoBehaviour
 
     private bool RunInputTemplate()
     {
-        if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+        Atack();
         //ジャンプ
         if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
@@ -386,4 +386,15 @@ public class UserAnimation : MonoBehaviour
     }
 
 
+
+    private void Atack()
+    {
+        if (userController.weapon.state.currentKey != WeaponState.WAIT) return;
+        //if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+        if (nowKey.HasFlag(Key.LEFT_BUTTON))
+        {
+            userController.weapon.state.ChangeState(WeaponState.ATACK);
+        }
+
+    }
 }

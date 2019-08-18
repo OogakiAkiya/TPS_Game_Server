@@ -23,6 +23,7 @@ public class UserController : MonoBehaviour
     private Canvas canvas;
     public Vector3 rotat=Vector3.zero;
 
+    public BaseWeapon weapon;
 
     void Start()
     {
@@ -34,11 +35,17 @@ public class UserController : MonoBehaviour
         cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         imageRect = GameObject.Find("Canvas").transform.FindChild("Pointer").GetComponent<RectTransform>();
+
+        weapon = new SubMasingun(Shoot);
     }
 
     // Update is called once per frame
     void Update()
     {
+        weapon.state.Update();
+
+
+
         if (inputKeyList.Count > 0)
         {
             //入力値取得
@@ -129,9 +136,9 @@ public class UserController : MonoBehaviour
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
 
         RaycastHit hit = new RaycastHit();
-        if (Physics.Raycast(ray, out hit,1<<10))
+        if (Physics.Raycast(ray, out hit,weapon.range,1<<10))
         {
-            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().ShootDamage();
+            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().ShootDamage(weapon.power);
         }
 
         //playerの移動,回転を戻す
@@ -160,5 +167,85 @@ public class UserController : MonoBehaviour
             userAnimation.animationState.ChangeState(AnimationKey.Dying);
         }
 
+    }
+}
+
+public enum WeaponState:int
+{
+    WAIT,
+    ATACK,
+    RELOAD
+
+}
+
+public class BaseWeapon
+{
+    public StateMachine<WeaponState> state = new StateMachine<WeaponState>();
+
+    protected long interval;                                //撃つ間隔
+    public int power { get; protected set; }                //威力
+    protected int reloadTime;                               //リロード時間
+    protected int magazine;                                 //弾数
+    public int remainingBullet { get; protected set; }      //残弾数
+    public float range { get; protected set; }              //射程
+
+    protected Action atackMethod;                           //攻撃時メソッド
+    protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+
+}
+
+public class SubMasingun : BaseWeapon
+{
+    public SubMasingun(Action _atack)
+    {
+        interval = 100;
+        power = 10;
+        reloadTime = 1000;      //1秒
+        magazine = 60;
+        remainingBullet = magazine;
+        range = 10;
+        atackMethod = _atack;
+
+        state.AddState(WeaponState.WAIT);
+        state.AddState(WeaponState.ATACK,
+            () =>
+            {
+                timer.Restart();
+            },
+            () =>
+            {
+                if (timer.ElapsedMilliseconds > interval)
+                {
+                    if (remainingBullet <= 0) state.ChangeState(WeaponState.RELOAD);
+                    atackMethod();
+                    remainingBullet--;
+                    state.ChangeState(WeaponState.WAIT);
+                }
+            },
+            () =>
+            {
+                timer.Stop();
+            }
+            );
+        state.AddState(WeaponState.RELOAD,
+            () =>
+            {
+            timer.Restart();
+            },
+            () =>
+            {
+                if (timer.ElapsedMilliseconds > reloadTime)
+                {
+                    remainingBullet = magazine;
+                    state.ChangeState(WeaponState.WAIT);
+                }
+            },
+            () =>
+            {
+                timer.Stop();
+            }
+            );
+
+        state.ChangeState(WeaponState.WAIT);
     }
 }
