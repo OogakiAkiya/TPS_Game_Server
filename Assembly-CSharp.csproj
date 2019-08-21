@@ -67,6 +67,7 @@
     <Compile Include="Assets\src\Game\UserAnimation.cs" />
     <Compile Include="Assets\src\Game\UserController.cs" />
     <Compile Include="Assets\src\Library\Animator\AnimatorBehaviour.cs" />
+    <Compile Include="Assets\src\Library\BaseWeapon.cs" />
     <Compile Include="Assets\src\Library\Convert.cs" />
     <Compile Include="Assets\src\Library\FileController.cs" />
     <Compile Include="Assets\src\Library\OpenSocket\TCP_Client.cs" />

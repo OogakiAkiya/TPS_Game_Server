@@ -17,7 +17,7 @@ public static class Header
 
 }
 
-public enum Key : short
+public enum KEY : short
 {
     W = 0x001,
     S = 0x002,
@@ -31,7 +31,7 @@ public enum Key : short
     SPACE=0x200
 }
 
-public enum AnimationKey : int
+public enum ANIMATION_KEY : int
 {
     Idle,
     Walk,
@@ -47,6 +47,7 @@ public enum AnimationKey : int
     JumpUP,
     JumpStay,
     JumpDown,
+    Reloading,
     Dying
 }
 
@@ -55,5 +56,18 @@ public enum UDPSTATE : int
     INIT,
     GAME,
     RESULT
+}
+
+public enum WEAPONTYPE:int
+{
+    MACHINEGUN
+}
+
+public enum WEAPONSTATE : int
+{
+    WAIT,
+    ATACK,
+    RELOAD
+
 }
 

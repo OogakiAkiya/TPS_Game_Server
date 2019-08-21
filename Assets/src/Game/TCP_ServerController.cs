@@ -6,8 +6,8 @@ using System.Net.Sockets;
 using UnityEngine;
 public class TCP_ServerController : MonoBehaviour
 {
-    public string IPAddr="127.0.0.1";
-    public int port=12345;
+    public string IPAddr = "127.0.0.1";
+    public int port = 12345;
     private TCP_Server socket = new TCP_Server();
     private GameController gameController;
 
@@ -27,14 +27,15 @@ public class TCP_ServerController : MonoBehaviour
         //待ち受け開始
         var task = socket.StartAccept();
 
-        state.AddState(Header.ID.DEBUG, () => {
+        state.AddState(Header.ID.DEBUG, () =>
+        {
             //TestSend((byte)Header.ID.DEBUG);
             DebugSend((byte)Header.ID.DEBUG);
 
             state.ChangeState(Header.ID.INIT);
         });
-        state.AddState(Header.ID.INIT,()=>{ },InitUpdate);
-        state.AddState(Header.ID.GAME,()=> { },GameUpdate);
+        state.AddState(Header.ID.INIT, () => { }, InitUpdate);
+        state.AddState(Header.ID.GAME, () => { }, GameUpdate);
 
     }
 
@@ -97,7 +98,7 @@ public class TCP_ServerController : MonoBehaviour
             {
                 if (recvData[sizeof(byte) + Header.USERID_LENGTH] == (byte)Header.GameCode.BASICDATA)
                 {
-                    Key addData = (Key)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + Header.USERID_LENGTH);
+                    KEY addData = (KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + Header.USERID_LENGTH);
 
                     user.AddInputKeyList(addData);
                 }
@@ -120,12 +121,12 @@ public class TCP_ServerController : MonoBehaviour
     {
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
         byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", "Debug"));              //12byteに設定する
-        List<byte> sendData=new List<byte>();
+        List<byte> sendData = new List<byte>();
         sendData.Add(_id);
         sendData.AddRange(userName);
         sendData.Add(_code);
-        sendData.AddRange(Convert.Conversion(gameController.users.Count-1));
-        var task = sendSocket.Send(sendData.ToArray(),sendData.ToArray().Length);
+        sendData.AddRange(Convert.Conversion(gameController.users.Count - 1));
+        var task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
 
         /*
         byte[] sendData = new byte[sizeof(byte) * 2 + userName.Length];

@@ -8,11 +8,11 @@ public class UserController : MonoBehaviour
 {
     public string userId;
     public string IPaddr { get; set; }
-    public Key nowKey { get; private set; } = 0;
+    public KEY nowKey { get; private set; } = 0;
     public int hp = 100;
 
     private List<byte[]> recvDataList = new List<byte[]>();
-    private List<Key> inputKeyList = new List<Key>();
+    private List<KEY> inputKeyList = new List<KEY>();
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
@@ -36,7 +36,7 @@ public class UserController : MonoBehaviour
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         imageRect = GameObject.Find("Canvas").transform.FindChild("Pointer").GetComponent<RectTransform>();
 
-        weapon = new SubMasingun(Shoot);
+        weapon = new MachineGun(Shoot);
     }
 
     // Update is called once per frame
@@ -49,9 +49,9 @@ public class UserController : MonoBehaviour
         if (inputKeyList.Count > 0)
         {
             //入力値取得
-            Key inputKey = GetInputKey();
+            KEY inputKey = GetInputKey();
             //現在のキーを保存
-            Key oldKey = nowKey;
+            KEY oldKey = nowKey;
             //新しいキー入力を加算
             nowKey |= inputKey;
             //二度目のキー入力でフラグOFF
@@ -78,14 +78,14 @@ public class UserController : MonoBehaviour
         recvDataList.Add(_addData);
     }
 
-    public void AddInputKeyList(Key _addData)
+    public void AddInputKeyList(KEY _addData)
     {
         inputKeyList.Add(_addData);
     }
 
-    public Key GetInputKey()
+    public KEY GetInputKey()
     {
-        Key returnData;
+        KEY returnData;
         returnData = inputKeyList[0];
         inputKeyList.RemoveAt(0);
         return returnData;
@@ -117,6 +117,7 @@ public class UserController : MonoBehaviour
         returnData.AddRange(rotationData);
         returnData.AddRange(BitConverter.GetBytes(currentKey));
         returnData.AddRange(BitConverter.GetBytes(hp));
+        returnData.AddRange(weapon.GetStatus());
         return returnData.ToArray();
     }
 
@@ -158,94 +159,15 @@ public class UserController : MonoBehaviour
 
     public void ShootDamage(int _damage=1)
     {
-        if (userAnimation.animationState.currentKey == AnimationKey.Dying) return;
+        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return;
 
         hp-=_damage;
         if (hp < 0)
         {
             hp = 0;
-            userAnimation.animationState.ChangeState(AnimationKey.Dying);
+            userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
         }
 
     }
 }
 
-public enum WeaponState:int
-{
-    WAIT,
-    ATACK,
-    RELOAD
-
-}
-
-public class BaseWeapon
-{
-    public StateMachine<WeaponState> state = new StateMachine<WeaponState>();
-
-    protected long interval;                                //撃つ間隔
-    public int power { get; protected set; }                //威力
-    protected int reloadTime;                               //リロード時間
-    protected int magazine;                                 //弾数
-    public int remainingBullet { get; protected set; }      //残弾数
-    public float range { get; protected set; }              //射程
-
-    protected Action atackMethod;                           //攻撃時メソッド
-    protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-
-}
-
-public class SubMasingun : BaseWeapon
-{
-    public SubMasingun(Action _atack)
-    {
-        interval = 100;
-        power = 10;
-        reloadTime = 1000;      //1秒
-        magazine = 60;
-        remainingBullet = magazine;
-        range = 10;
-        atackMethod = _atack;
-
-        state.AddState(WeaponState.WAIT);
-        state.AddState(WeaponState.ATACK,
-            () =>
-            {
-                timer.Restart();
-            },
-            () =>
-            {
-                if (timer.ElapsedMilliseconds > interval)
-                {
-                    if (remainingBullet <= 0) state.ChangeState(WeaponState.RELOAD);
-                    atackMethod();
-                    remainingBullet--;
-                    state.ChangeState(WeaponState.WAIT);
-                }
-            },
-            () =>
-            {
-                timer.Stop();
-            }
-            );
-        state.AddState(WeaponState.RELOAD,
-            () =>
-            {
-            timer.Restart();
-            },
-            () =>
-            {
-                if (timer.ElapsedMilliseconds > reloadTime)
-                {
-                    remainingBullet = magazine;
-                    state.ChangeState(WeaponState.WAIT);
-                }
-            },
-            () =>
-            {
-                timer.Stop();
-            }
-            );
-
-        state.ChangeState(WeaponState.WAIT);
-    }
-}

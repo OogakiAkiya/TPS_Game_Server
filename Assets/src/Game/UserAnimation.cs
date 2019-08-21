@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class UserAnimation : MonoBehaviour
 {
-    public Key nowKey = 0;
-    public StateMachine<AnimationKey> animationState { get; private set; } = new StateMachine<AnimationKey>();
+    public KEY nowKey = 0;
+    public StateMachine<ANIMATION_KEY> animationState { get; private set; } = new StateMachine<ANIMATION_KEY>();
     private UserController userController;
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
@@ -17,18 +17,18 @@ public class UserAnimation : MonoBehaviour
     public string checkLayer = "Ground";
     public float groundCheckRadius = 0.2f;
     public float rebornRange = 2.0f;
-    public bool groundflg=true;
-    private int layerNo=0;
+    public bool groundflg = true;
+    private int layerNo = 0;
     private bool jumpFlg = false;
     void Start()
     {
-        
+
         userController = this.GetComponent<UserController>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
-        
+
         AddStates();
-        animationState.ChangeState(AnimationKey.Idle);
+        animationState.ChangeState(ANIMATION_KEY.Idle);
 
         // レイヤーの管理番号を取得
         layerNo = LayerMask.NameToLayer(checkLayer);
@@ -56,75 +56,42 @@ public class UserAnimation : MonoBehaviour
     private void AddStates()
     {
         //Idle
-        animationState.AddState(AnimationKey.Idle,
+        animationState.AddState(ANIMATION_KEY.Idle,
              () =>
              {
-                animator.CrossFadeInFixedTime("Idle", 0.0f);
+                 animator.CrossFadeInFixedTime("Idle", 0.0f);
              },
 
             _update: () =>
             {
                 Atack();
                 //ジャンプ
-                if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return;
+                if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
                 if (ExtractionKey(nowKey, 12) != 0)
                 {
-                    if (nowKey.HasFlag(Key.W) && nowKey.HasFlag(Key.S) || nowKey.HasFlag(Key.A) && nowKey.HasFlag(Key.D)) return;
-                    animationState.ChangeState(AnimationKey.Walk);
+                    if (nowKey.HasFlag(KEY.W) && nowKey.HasFlag(KEY.S) || nowKey.HasFlag(KEY.A) && nowKey.HasFlag(KEY.D)) return;
+                    animationState.ChangeState(ANIMATION_KEY.Walk);
                 }
             });
 
 
 
-        //JumpUP
-        animationState.AddState(AnimationKey.JumpUP,
+        animationState.AddState(ANIMATION_KEY.Reloading,
             () =>
             {
-                animator.CrossFadeInFixedTime("JumpUP", 0.0f);
-                jumpFlg = false;
+                animator.CrossFadeInFixedTime("Reloading", 0.0f);
             },
             () =>
             {
-                Atack();
-                if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
-                {
-                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
-                    jumpFlg = true;
-                }
-                if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(AnimationKey.JumpStay);
-
-            }
-            );
-
-        //JumpStay
-        animationState.AddState(AnimationKey.JumpStay,
-            () =>
-            {
-                animator.CrossFadeInFixedTime("JumpStay", 0.0f);
-            },
-            () =>
-            {
-                Atack();
-                if (groundflg) animationState.ChangeState(AnimationKey.JumpDown);
-                Move(jumpMoveSpeed);
-            }
-            );
-
-
-        //JumpDown
-        animationState.AddState(AnimationKey.JumpDown,
-            () =>
-            {
-                animator.CrossFadeInFixedTime("JumpDown", 0.0f);
-            },
-            () =>
-            {
-                Atack();
                 if (animatorBehaviour.NormalizedTime >= 0.95f)
                 {
-                    animationState.ChangeState(AnimationKey.Idle);
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
                 }
+            },
+            () =>
+            {
+                userController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
             );
 
@@ -134,7 +101,10 @@ public class UserAnimation : MonoBehaviour
         //Run関係
         AddRunState();
 
-        animationState.AddState(AnimationKey.Dying, () =>
+        //Jump関係
+        AddJump();
+
+        animationState.AddState(ANIMATION_KEY.Dying, () =>
         {
             animator.CrossFadeInFixedTime("Dying", 0.0f);
         },
@@ -142,7 +112,7 @@ public class UserAnimation : MonoBehaviour
         {
             if (animatorBehaviour.NormalizedTime >= 0.95f)
             {
-                animationState.ChangeState(AnimationKey.Idle);
+                animationState.ChangeState(ANIMATION_KEY.Idle);
             }
         },
         () =>
@@ -157,69 +127,69 @@ public class UserAnimation : MonoBehaviour
     private void AddWalkState()
     {
         //Walk
-        animationState.AddState(AnimationKey.Walk,
+        animationState.AddState(ANIMATION_KEY.Walk,
             _update: () =>
             {
                 //ジャンプ
-                if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return;
+                if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
 
                 //WASDのどれか一つでも押されているかチェック
                 if (ExtractionKey(nowKey, 12) == 0)
                 {
-                    animationState.ChangeState(AnimationKey.Idle);
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
                 }
                 //SHIFTが押されているかチェック
-                if (InputTemplate(Key.SHIFT, AnimationKey.Run)) return;
+                if (InputTemplate(KEY.SHIFT, ANIMATION_KEY.Run)) return;
 
-                if (InputTemplate(Key.W, AnimationKey.WalkForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.WalkBack)) return;
-                if (InputTemplate(Key.A, AnimationKey.WalkLeft)) return;
-                if (InputTemplate(Key.D, AnimationKey.WalkRight)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
+                if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
+                if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
                 Move(walkSpeed);
             });
 
-        animationState.AddState(AnimationKey.WalkForward,
+        animationState.AddState(ANIMATION_KEY.WalkForward,
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
-                if (InputTemplate(Key.W, Key.S, AnimationKey.Idle)) return;
-                if (!nowKey.HasFlag(Key.W))
+                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
+                if (!nowKey.HasFlag(KEY.W))
                 {
-                    if (InputTemplate(Key.A, AnimationKey.WalkLeft)) return;
-                    if (InputTemplate(Key.D, AnimationKey.WalkRight)) return;
+                    if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
+                    if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
                 }
                 Move(walkSpeed);
             });
-        animationState.AddState(AnimationKey.WalkBack,
+        animationState.AddState(ANIMATION_KEY.WalkBack,
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
-                if (InputTemplate(Key.W, Key.S, AnimationKey.Idle)) return;
-                if (!nowKey.HasFlag(Key.S))
+                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
+                if (!nowKey.HasFlag(KEY.S))
                 {
-                    if (InputTemplate(Key.A, AnimationKey.WalkLeft)) return;
-                    if (InputTemplate(Key.D, AnimationKey.WalkRight)) return;
+                    if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
+                    if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
                 }
 
                 Move(walkSpeed);
             });
-        animationState.AddState(AnimationKey.WalkLeft,
+        animationState.AddState(ANIMATION_KEY.WalkLeft,
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
-                if (InputTemplate(Key.W, AnimationKey.WalkForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.WalkBack)) return;
-                if (InputTemplate(Key.A, Key.D, AnimationKey.Idle)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
+                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(walkSpeed);
             });
-        animationState.AddState(AnimationKey.WalkRight,
+        animationState.AddState(ANIMATION_KEY.WalkRight,
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
-                if (InputTemplate(Key.W, AnimationKey.WalkForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.WalkBack)) return;
-                if (InputTemplate(Key.A, Key.D, AnimationKey.Idle)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
+                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(walkSpeed);
             });
     }
@@ -227,82 +197,137 @@ public class UserAnimation : MonoBehaviour
     private void AddRunState()
     {
         //Run
-        animationState.AddState(AnimationKey.Run,
+        animationState.AddState(ANIMATION_KEY.Run,
             _update: () =>
             {
                 //ジャンプ
-                if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return;
+                if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //WASDのどれか一つでも押されているかチェック
                 if (ExtractionKey(nowKey, 12) == 0)
                 {
-                    animationState.ChangeState(AnimationKey.Idle);
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
                 }
 
                 //SHIFTが押されているかチェック
-                if (!nowKey.HasFlag(Key.SHIFT))
+                if (!nowKey.HasFlag(KEY.SHIFT))
                 {
-                    animationState.ChangeState(AnimationKey.Walk);
+                    animationState.ChangeState(ANIMATION_KEY.Walk);
                     return;
                 }
 
-                if (InputTemplate(Key.W, AnimationKey.RunForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.RunBack)) return;
-                if (InputTemplate(Key.A, AnimationKey.RunLeft)) return;
-                if (InputTemplate(Key.D, AnimationKey.RunRight)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
+                if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
+                if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
                 Move(runSpeed);
             });
 
-        animationState.AddState(AnimationKey.RunForward,
+        animationState.AddState(ANIMATION_KEY.RunForward,
             _update: () =>
             {
                 if (RunInputTemplate()) return;
-                if (InputTemplate(Key.W, Key.S, AnimationKey.Idle)) return;
-                if (!nowKey.HasFlag(Key.W))
+                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
+                if (!nowKey.HasFlag(KEY.W))
                 {
-                    if (InputTemplate(Key.A, AnimationKey.RunLeft)) return;
-                    if (InputTemplate(Key.D, AnimationKey.RunRight)) return;
+                    if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
+                    if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
                 }
 
                 Move(runSpeed);
             });
-        animationState.AddState(AnimationKey.RunBack,
+        animationState.AddState(ANIMATION_KEY.RunBack,
             _update: () =>
             {
                 if (RunInputTemplate()) return;
 
-                if (InputTemplate(Key.W, Key.S, AnimationKey.Idle)) return;
-                if (!nowKey.HasFlag(Key.S))
+                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
+                if (!nowKey.HasFlag(KEY.S))
                 {
-                    if (InputTemplate(Key.A, AnimationKey.RunLeft)) return;
-                    if (InputTemplate(Key.D, AnimationKey.RunRight)) return;
+                    if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
+                    if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
                 }
                 Move(runSpeed);
             });
-        animationState.AddState(AnimationKey.RunLeft,
+        animationState.AddState(ANIMATION_KEY.RunLeft,
             _update: () =>
             {
                 if (RunInputTemplate()) return;
-                if (InputTemplate(Key.W, AnimationKey.RunForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.RunBack)) return;
-                if (InputTemplate(Key.A, Key.D, AnimationKey.Idle)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
+                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(runSpeed);
             });
-        animationState.AddState(AnimationKey.RunRight,
+        animationState.AddState(ANIMATION_KEY.RunRight,
             _update: () =>
             {
                 if (RunInputTemplate()) return;
-                if (InputTemplate(Key.W, AnimationKey.RunForward)) return;
-                if (InputTemplate(Key.S, AnimationKey.RunBack)) return;
-                if (InputTemplate(Key.A, Key.D, AnimationKey.Idle)) return;
+                if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
+                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
+                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(runSpeed);
             });
 
     }
 
+    private void AddJump()
+    {
+        //JumpUP
+        animationState.AddState(ANIMATION_KEY.JumpUP,
+            () =>
+            {
+                animator.CrossFadeInFixedTime("JumpUP", 0.0f);
+                jumpFlg = false;
+            },
+            () =>
+            {
+                Atack();
+                if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
+                {
+                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    jumpFlg = true;
+                }
+                if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.JumpStay);
+
+            }
+            );
+
+        //JumpStay
+        animationState.AddState(ANIMATION_KEY.JumpStay,
+            () =>
+            {
+                animator.CrossFadeInFixedTime("JumpStay", 0.0f);
+            },
+            () =>
+            {
+                Atack();
+                if (groundflg) animationState.ChangeState(ANIMATION_KEY.JumpDown);
+                Move(jumpMoveSpeed);
+            }
+            );
 
 
-    private bool InputTemplate(Key _checkKey, AnimationKey _animationKey)
+        //JumpDown
+        animationState.AddState(ANIMATION_KEY.JumpDown,
+            () =>
+            {
+                animator.CrossFadeInFixedTime("JumpDown", 0.0f);
+            },
+            () =>
+            {
+                Atack();
+                if (animatorBehaviour.NormalizedTime >= 0.95f)
+                {
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
+                }
+            }
+            );
+
+    }
+
+
+
+    private bool InputTemplate(KEY _checkKey, ANIMATION_KEY _animationKey)
     {
         if (nowKey.HasFlag(_checkKey))
         {
@@ -312,7 +337,7 @@ public class UserAnimation : MonoBehaviour
         return false;
     }
 
-    private bool InputTemplate(Key _checkKey, Key _checkKey2, AnimationKey _animationKey)
+    private bool InputTemplate(KEY _checkKey, KEY _checkKey2, ANIMATION_KEY _animationKey)
     {
         if (nowKey.HasFlag(_checkKey) && nowKey.HasFlag(_checkKey2))
         {
@@ -326,18 +351,18 @@ public class UserAnimation : MonoBehaviour
     {
         Atack();
         //ジャンプ
-        if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
+        if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
         if (ExtractionKey(nowKey, 12) == 0)
         {
-            animationState.ChangeState(AnimationKey.Idle);
+            animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;
         }
 
         //SHIFTが押されているかチェック
-        if (nowKey.HasFlag(Key.SHIFT))
+        if (nowKey.HasFlag(KEY.SHIFT))
         {
-            animationState.ChangeState(AnimationKey.Run);
+            animationState.ChangeState(ANIMATION_KEY.Run);
             return true;
         }
 
@@ -348,25 +373,25 @@ public class UserAnimation : MonoBehaviour
     {
         Atack();
         //ジャンプ
-        if (InputTemplate(Key.SPACE, AnimationKey.JumpUP)) return true;
+        if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
         if (ExtractionKey(nowKey, 12) == 0)
         {
-            animationState.ChangeState(AnimationKey.Idle);
+            animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;
         }
 
         //SHIFTが押されているかチェック
-        if (!nowKey.HasFlag(Key.SHIFT))
+        if (!nowKey.HasFlag(KEY.SHIFT))
         {
-            animationState.ChangeState(AnimationKey.Walk);
+            animationState.ChangeState(ANIMATION_KEY.Walk);
             return true;
         }
 
         return false;
     }
 
-    private short ExtractionKey(Key _key, int _shift)
+    private short ExtractionKey(KEY _key, int _shift)
     {
         return (short)((short)_key << _shift);
     }
@@ -376,10 +401,10 @@ public class UserAnimation : MonoBehaviour
     {
         //移動量算出
         Vector3 velocity = Vector3.zero;
-        if (nowKey.HasFlag(Key.W)) velocity += this.transform.forward;
-        if (nowKey.HasFlag(Key.S)) velocity += -this.transform.forward;
-        if (nowKey.HasFlag(Key.A)) velocity += -this.transform.right;
-        if (nowKey.HasFlag(Key.D)) velocity += this.transform.right;
+        if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
+        if (nowKey.HasFlag(KEY.S)) velocity += -this.transform.forward;
+        if (nowKey.HasFlag(KEY.A)) velocity += -this.transform.right;
+        if (nowKey.HasFlag(KEY.D)) velocity += this.transform.right;
 
         //移動
         this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
@@ -389,12 +414,24 @@ public class UserAnimation : MonoBehaviour
 
     private void Atack()
     {
-        if (userController.weapon.state.currentKey != WeaponState.WAIT) return;
-        //if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
-        if (nowKey.HasFlag(Key.LEFT_BUTTON))
+        if (userController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
         {
-            userController.weapon.state.ChangeState(WeaponState.ATACK);
+            animationState.ChangeState(ANIMATION_KEY.Reloading);
+            return;
         }
+
+        if (userController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        //if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
+        if (nowKey.HasFlag(KEY.LEFT_BUTTON))
+        {
+            userController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+        }
+        /*
+        if (userController.weapon.state.currentKey == WEAPONSTATE.RELOAD)
+        {
+            animationState.ChangeState(ANIMATION_KEY.Reloading);
+        }
+        */
 
     }
 }
