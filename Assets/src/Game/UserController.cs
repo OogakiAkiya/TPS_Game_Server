@@ -16,35 +16,37 @@ public class UserController : MonoBehaviour
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
-
+    
     //Ray判定用
     private Camera cam;
     private RectTransform imageRect;
     private Canvas canvas;
     public Vector3 rotat=Vector3.zero;
 
-    public BaseWeapon weapon;
-
+    public BaseWeapon weapon { get; private set; }
+    private List<BaseWeapon> weaponList=new List<BaseWeapon>();
+    private int weaponListIndex=0;
     void Start()
     {
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
-
+        
         //Ray判定用
         cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         imageRect = GameObject.Find("Canvas").transform.FindChild("Pointer").GetComponent<RectTransform>();
 
-        weapon = new MachineGun(Shoot);
+        //武器関係
+        weaponList.Add(new MachineGun(Shoot));
+        weaponList.Add(new HandGun(Shoot));
+        weapon = weaponList[weaponListIndex];
     }
 
     // Update is called once per frame
     void Update()
     {
         weapon.state.Update();
-
-
 
         if (inputKeyList.Count > 0)
         {
@@ -168,6 +170,24 @@ public class UserController : MonoBehaviour
             userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
         }
 
+    }
+
+    public void ChangeWeapon(bool _up=true)
+    {
+        if (_up)
+        {
+            weaponListIndex++;
+            if (weaponListIndex == weaponList.Count) weaponListIndex = 0;
+            nowKey = nowKey ^ KEY.LEFT_BUTTON;
+        }
+        else
+        {
+            weaponListIndex--;
+            if (weaponListIndex < 0) weaponListIndex = weaponList.Count-1;
+            nowKey = nowKey ^ KEY.RIGHT_BUTTON;
+        }
+        //武器変更
+        weapon = weaponList[weaponListIndex];
     }
 }
 

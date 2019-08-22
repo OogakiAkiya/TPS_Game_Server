@@ -20,6 +20,7 @@ public class UserAnimation : MonoBehaviour
     public bool groundflg = true;
     private int layerNo = 0;
     private bool jumpFlg = false;
+
     void Start()
     {
 
@@ -33,10 +34,12 @@ public class UserAnimation : MonoBehaviour
         // レイヤーの管理番号を取得
         layerNo = LayerMask.NameToLayer(checkLayer);
 
+
     }
 
     public void Update()
     {
+
         groundflg = true;
         if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
 
@@ -64,6 +67,7 @@ public class UserAnimation : MonoBehaviour
 
             _update: () =>
             {
+                WeaponChange();
                 Atack();
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
@@ -410,7 +414,11 @@ public class UserAnimation : MonoBehaviour
         this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
     }
 
-
+    private void WeaponChange()
+    {
+        if (nowKey.HasFlag(KEY.LEFT_BUTTON)) userController.ChangeWeapon(false);
+        if (nowKey.HasFlag(KEY.RIGHT_BUTTON)) userController.ChangeWeapon(true);
+    }
 
     private void Atack()
     {
@@ -422,7 +430,7 @@ public class UserAnimation : MonoBehaviour
 
         if (userController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
         //if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
-        if (nowKey.HasFlag(KEY.LEFT_BUTTON))
+        if (nowKey.HasFlag(KEY.LEFT_CLICK))
         {
             userController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
         }

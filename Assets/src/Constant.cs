@@ -26,9 +26,12 @@ public enum KEY : short
     SHIFT = 0x010,
     G = 0x020,
     R = 0x040,
-    LEFT_BUTTON = 0x080,
-    RIGHT_BUTTON = 0x100,
-    SPACE=0x200
+    LEFT_CLICK = 0x080,
+    RIGHT_CLICK = 0x100,
+    SPACE=0x200,
+    LEFT_BUTTON = 0x400,
+    RIGHT_BUTTON = 0x800 
+
 }
 
 public enum ANIMATION_KEY : int
@@ -60,7 +63,9 @@ public enum UDPSTATE : int
 
 public enum WEAPONTYPE:int
 {
-    MACHINEGUN
+    MACHINEGUN,
+    HANDGUN
+
 }
 
 public enum WEAPONSTATE : int
