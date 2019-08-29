@@ -42,7 +42,7 @@ public class MachineGun : BaseWeapon
         reloadTime = 1000;      //1秒
         magazine = 60;
         remainingBullet = magazine;
-        range = 10;
+        range = 15;
         atackMethod = _atack;
         type = WEAPONTYPE.MACHINEGUN;
 
@@ -51,6 +51,8 @@ public class MachineGun : BaseWeapon
             () =>
             {
                 timer.Restart();
+                atackMethod();
+                remainingBullet--;
             },
             () =>
             {
@@ -61,8 +63,6 @@ public class MachineGun : BaseWeapon
                         state.ChangeState(WEAPONSTATE.RELOAD);
                         return;
                     }
-                    atackMethod();
-                    remainingBullet--;
                     state.ChangeState(WEAPONSTATE.WAIT);
                 }
             },
@@ -98,12 +98,12 @@ public class HandGun : BaseWeapon
 {
     public HandGun(Action _atack)
     {
-        interval = 200;
+        interval = 1000;
         power = 10;
         reloadTime = 1000;      //1秒
         magazine = 12;
         remainingBullet = magazine;
-        range = 5;
+        range = 10;
         atackMethod = _atack;
         type = WEAPONTYPE.HANDGUN;
 
@@ -112,6 +112,8 @@ public class HandGun : BaseWeapon
             () =>
             {
                 timer.Restart();
+                atackMethod();
+                remainingBullet--;
             },
             () =>
             {
@@ -122,8 +124,6 @@ public class HandGun : BaseWeapon
                         state.ChangeState(WEAPONSTATE.RELOAD);
                         return;
                     }
-                    atackMethod();
-                    remainingBullet--;
                     state.ChangeState(WEAPONSTATE.WAIT);
                 }
             },

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Linq;
 using UnityEngine;
 
 
@@ -39,19 +40,47 @@ public class GameController : MonoBehaviour
     void Update()
     {
         //FPS表示
-        ++frameCount;
         float time = Time.realtimeSinceStartup - prevTime;
 
-        //60fpsのタイミング
+        //60fps
         if (time >= 0.016f)
         {
             //Debug.LogFormat("{0}fps", frameCount / time);
-            //データ送信
+            //データ送信(全ユーザーの情報送信)
             udp_Controller.SendAllClientData();
 
-            frameCount = 0;
             prevTime = Time.realtimeSinceStartup;
+            frameCount++;
+
+            //一秒に一回
+            if (frameCount >= 60)
+            {
+                udp_Controller.SendAllClientScoreData();
+                frameCount = 0;
+            }
         }
+        /*
+        Dictionary<string, int> dic = new Dictionary<string, int>();
+        foreach (var user in users)
+        {
+            dic.Add(user.name, user.killAmount);
+        }
+        var sorted = dic.OrderByDescending((x) => x.Value);     //降順ソート
+        */
+
+        /*
+        KeyValuePair<String, int>[] ranking = new KeyValuePair<string, int>[5];
+        for (int i = 0; i < ranking.Length; i++) ranking[i] = new KeyValuePair<string, int>("", 0);
+        foreach (var user in users)
+        {
+            for (int i = 0; i < ranking.Length; i++)
+            {
+                if (ranking[i].Value < user.killAmount) {
+
+                }
+            }
+        }
+        */
     }
 
     public void AddNewUser(string _userID)

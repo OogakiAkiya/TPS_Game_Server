@@ -26,6 +26,11 @@ public class UserController : MonoBehaviour
     public BaseWeapon weapon { get; private set; }
     private List<BaseWeapon> weaponList=new List<BaseWeapon>();
     private int weaponListIndex=0;
+
+    //Score
+    public int deathAmount=0;          //死んだ回数
+    public int killAmount=0;           //殺した回数
+
     void Start()
     {
         animator = this.GetComponent<Animator>();
@@ -119,10 +124,24 @@ public class UserController : MonoBehaviour
         returnData.AddRange(rotationData);
         returnData.AddRange(BitConverter.GetBytes(currentKey));
         returnData.AddRange(BitConverter.GetBytes(hp));
-        returnData.AddRange(weapon.GetStatus());
+        if(weapon!=null)returnData.AddRange(weapon.GetStatus());
         return returnData.ToArray();
     }
 
+    public byte[] GetScore()
+    {
+        List<byte> returnData = new List<byte>();
+        System.Text.Encoding enc = System.Text.Encoding.UTF8;
+        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", this.name));              //12byteに設定する
+        returnData.Add((byte)Header.ID.GAME);
+        returnData.AddRange(userName);
+        returnData.Add((byte)Header.GameCode.SCOREDATA);
+
+        returnData.AddRange(BitConverter.GetBytes(deathAmount));
+        returnData.AddRange(BitConverter.GetBytes(killAmount));
+
+        return returnData.ToArray();
+    }
 
     public void Shoot()
     {
@@ -139,9 +158,13 @@ public class UserController : MonoBehaviour
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
 
         RaycastHit hit = new RaycastHit();
+
         if (Physics.Raycast(ray, out hit,weapon.range,1<<10))
         {
-            if (hit.collider.tag == "users") hit.collider.GetComponent<UserController>().ShootDamage(weapon.power);
+            if (hit.collider.tag == "users")
+            {
+                if (hit.collider.GetComponent<UserController>().ShootDamage(weapon.power)) killAmount++;
+            }
         }
 
         //playerの移動,回転を戻す
@@ -159,17 +182,20 @@ public class UserController : MonoBehaviour
 
     }
 
-    public void ShootDamage(int _damage=1)
+    public　bool ShootDamage(int _damage=1)
     {
-        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return;
+        //敵を倒した時trueを返す
+        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
 
         hp-=_damage;
         if (hp < 0)
         {
             hp = 0;
             userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
+            deathAmount++;
+            return true;
         }
-
+        return false;
     }
 
     public void ChangeWeapon(bool _up=true)

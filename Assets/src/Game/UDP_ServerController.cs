@@ -60,6 +60,21 @@ public class UDP_ServerController : MonoBehaviour
 
     }
 
+    public void SendAllClientScoreData()
+    {
+        //sendData作成
+        List<byte[]> sendData = new List<byte[]>();
+        foreach (var user in gameController.users)
+        {
+            sendData.Add(user.GetScore());
+        }
+
+        //送信処理
+        socket.AllClietnSend(clientIPMap, sendData);
+
+    }
+
+
     public void InitUpdate()
     {
         //UDPでログイン処理は無駄

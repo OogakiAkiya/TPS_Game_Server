@@ -12,7 +12,8 @@ public static class Header
     }
     public enum GameCode : byte
     {
-        BASICDATA = 0x0001
+        BASICDATA = 0x0001,
+        SCOREDATA=0x0002
     }
 
 }
@@ -63,6 +64,7 @@ public enum UDPSTATE : int
 
 public enum WEAPONTYPE:int
 {
+    BASE,
     MACHINEGUN,
     HANDGUN
 
