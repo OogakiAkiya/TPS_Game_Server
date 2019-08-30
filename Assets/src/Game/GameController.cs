@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using System.Linq;
 using UnityEngine;
 
 
@@ -59,28 +58,6 @@ public class GameController : MonoBehaviour
                 frameCount = 0;
             }
         }
-        /*
-        Dictionary<string, int> dic = new Dictionary<string, int>();
-        foreach (var user in users)
-        {
-            dic.Add(user.name, user.killAmount);
-        }
-        var sorted = dic.OrderByDescending((x) => x.Value);     //降順ソート
-        */
-
-        /*
-        KeyValuePair<String, int>[] ranking = new KeyValuePair<string, int>[5];
-        for (int i = 0; i < ranking.Length; i++) ranking[i] = new KeyValuePair<string, int>("", 0);
-        foreach (var user in users)
-        {
-            for (int i = 0; i < ranking.Length; i++)
-            {
-                if (ranking[i].Value < user.killAmount) {
-
-                }
-            }
-        }
-        */
     }
 
     public void AddNewUser(string _userID)

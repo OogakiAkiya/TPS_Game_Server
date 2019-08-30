@@ -41,7 +41,7 @@ public class UserAnimation : MonoBehaviour
     {
 
         groundflg = true;
-        if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
+        if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius/3, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
 
 
         nowKey = userController.nowKey;
@@ -69,6 +69,8 @@ public class UserAnimation : MonoBehaviour
             {
                 WeaponChange();
                 Atack();
+                //落下
+                if(!groundflg) animationState.ChangeState(ANIMATION_KEY.JumpStay);
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
@@ -85,6 +87,7 @@ public class UserAnimation : MonoBehaviour
             () =>
             {
                 animator.CrossFadeInFixedTime("Reloading", 0.0f);
+                userController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
             },
             () =>
             {
@@ -422,6 +425,11 @@ public class UserAnimation : MonoBehaviour
 
     private void Atack()
     {
+        if (nowKey.HasFlag(KEY.R))
+        {
+            animationState.ChangeState(ANIMATION_KEY.Reloading);
+            return;
+        }
         if (userController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
         {
             animationState.ChangeState(ANIMATION_KEY.Reloading);
