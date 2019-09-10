@@ -128,13 +128,6 @@ public class TCP_ServerController : MonoBehaviour
         sendData.AddRange(Convert.Conversion(gameController.users.Count - 1));
         var task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
 
-        /*
-        byte[] sendData = new byte[sizeof(byte) * 2 + userName.Length];
-        sendData[0] = _id;
-        userName.CopyTo(sendData, sizeof(byte));
-        sendData[sizeof(byte) + userName.Length] = _code;
-        var task = sendSocket.Send(sendData, sendData.Length);
-        */
     }
 
 }

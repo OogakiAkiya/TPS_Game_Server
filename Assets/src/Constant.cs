@@ -15,7 +15,6 @@ public static class Header
         BASICDATA = 0x0001,
         SCOREDATA=0x0002
     }
-
 }
 
 public enum KEY : short
