@@ -14,6 +14,7 @@ public class TCP_ServerController : MonoBehaviour
 
     private StateMachine<Header.ID> state = new StateMachine<Header.ID>();
     private byte[] recvData;
+    private HeaderClass header = new HeaderClass();
     private Tcp_Server_Socket sendSocket;
 
     // Start is called before the first frame update
@@ -58,6 +59,7 @@ public class TCP_ServerController : MonoBehaviour
                 sendSocket = client;
 
                 //受信データごとの処理
+                header.SetHeader(recvData);
                 state.ChangeState((Header.ID)recvData[0]);
                 state.Update();
 
@@ -109,22 +111,18 @@ public class TCP_ServerController : MonoBehaviour
 
     void TestSend(byte _id, byte _code = 0x0001)
     {
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", "Debug"));              //12byteに設定する
-        byte[] sendData = new byte[sizeof(byte) * 2 + userName.Length];
-        sendData[0] = _id;
-        userName.CopyTo(sendData, sizeof(byte));
-        sendData[sizeof(byte) + userName.Length] = _code;
-        var task = sendSocket.Send(sendData, sendData.Length);
+        List<byte> sendData = new List<byte>();
+        var header = new HeaderClass();
+        header.CreateNewData((Header.ID)_id, "Debug", (Header.GameCode)_code);
+        sendData.AddRange(header.GetHeader());
+        var task = sendSocket.Send(sendData.ToArray(), sendData.Count);
     }
     void DebugSend(byte _id, byte _code = 0x0001)
     {
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", "Debug"));              //12byteに設定する
         List<byte> sendData = new List<byte>();
-        sendData.Add(_id);
-        sendData.AddRange(userName);
-        sendData.Add(_code);
+        var header = new HeaderClass();
+        header.CreateNewData((Header.ID)_id, "Debug", (Header.GameCode)_code);
+        sendData.AddRange(header.GetHeader());
         sendData.AddRange(Convert.Conversion(gameController.users.Count - 1));
         var task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
 

@@ -5,10 +5,10 @@ using UnityEngine;
 public class HeaderClass
 {
     public string userName { get; private set; }
-    public Header.ID id { get; private set; }
-    public Header.GameCode gameCode { get; private set; }
+    public Header.ID id { get; private set; } = Header.ID.INIT;
+    public Header.GameCode gameCode { get; private set; } = Header.GameCode.BASICDATA;
 
-    public void CreateNewData(string _name = "", Header.ID _id=Header.ID.INIT, Header.GameCode _gameCode=Header.GameCode.BASICDATA)
+    public void CreateNewData(Header.ID _id = Header.ID.INIT, string _name = "", Header.GameCode _gameCode=Header.GameCode.BASICDATA)
     {
         if (_name != "") userName = _name;
         if (id != _id) id = _id;
@@ -17,13 +17,11 @@ public class HeaderClass
 
     public void SetHeader(byte[] _data,int _index=0)
     {
-        id=(Header.ID)_data[_index];
-
+        id = (Header.ID)_data[_index];
         byte[] b_userId = new byte[Header.USERID_LENGTH];
-        System.Array.Copy(_data, _index + sizeof(byte), b_userId, 0, b_userId.Length);
+        System.Array.Copy(_data, _index+sizeof(byte), b_userId, 0, b_userId.Length);
         userName = System.Text.Encoding.UTF8.GetString(b_userId);
-
-        gameCode=(Header.GameCode)_data[sizeof(uint) + sizeof(byte) + Header.USERID_LENGTH];
+        gameCode = (Header.GameCode)_data[_index + sizeof(byte) + Header.USERID_LENGTH];
     }
 
     public byte[] GetHeader()
@@ -38,5 +36,9 @@ public class HeaderClass
         returnData.Add((byte)gameCode);
 
         return returnData.ToArray();
+    }
+    public int GetHeaderLength()
+    {
+        return sizeof(Header.ID) + sizeof(Header.GameCode) + Header.USERID_LENGTH;
     }
 }

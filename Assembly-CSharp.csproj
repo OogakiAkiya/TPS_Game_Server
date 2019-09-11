@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\src\Constant.cs" />
     <Compile Include="Assets\src\Game\GameController.cs" />
+    <Compile Include="Assets\src\Game\HeaderClass.cs" />
     <Compile Include="Assets\src\Game\TCP_ServerController.cs" />
     <Compile Include="Assets\src\Game\UDP_ServerController.cs" />
     <Compile Include="Assets\src\Game\UserAnimation.cs" />

@@ -38,9 +38,9 @@ public class UserController : MonoBehaviour
         userAnimation = this.GetComponent<UserAnimation>();
         
         //Ray判定用
-        cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+        cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        imageRect = GameObject.Find("Canvas").transform.FindChild("Pointer").GetComponent<RectTransform>();
+        imageRect = GameObject.Find("Canvas").transform.Find("Pointer").GetComponent<RectTransform>();
 
         //武器関係
         weaponList.Add(new MachineGun(Shoot));
@@ -109,6 +109,7 @@ public class UserController : MonoBehaviour
 
     public byte[] GetStatus()
     {
+        /*
         List<byte> returnData = new List<byte>();
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
         byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}",this.name));              //12byteに設定する
@@ -126,17 +127,38 @@ public class UserController : MonoBehaviour
         returnData.AddRange(BitConverter.GetBytes(hp));
         if(weapon!=null)returnData.AddRange(weapon.GetStatus());
         return returnData.ToArray();
+        */
+        List<byte> returnData = new List<byte>();
+        var header = new HeaderClass();
+        header.CreateNewData(Header.ID.GAME, this.name, Header.GameCode.BASICDATA);
+        byte[] positionData = Convert.GetByteVector3(this.transform.position);
+        byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
+        int currentKey = 0;
+        if (userAnimation) currentKey = (int)userAnimation.animationState.currentKey;
+
+        returnData.AddRange(header.GetHeader());
+        returnData.AddRange(positionData);
+        returnData.AddRange(rotationData);
+        returnData.AddRange(BitConverter.GetBytes(currentKey));
+        returnData.AddRange(BitConverter.GetBytes(hp));
+        if (weapon!=null) returnData.AddRange(weapon.GetStatus());
+        return returnData.ToArray();
+
     }
 
     public byte[] GetScore()
     {
         List<byte> returnData = new List<byte>();
+        /*
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
         byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", this.name));              //12byteに設定する
         returnData.Add((byte)Header.ID.GAME);
         returnData.AddRange(userName);
         returnData.Add((byte)Header.GameCode.SCOREDATA);
-
+        */
+        var header = new HeaderClass();
+        header.CreateNewData(Header.ID.GAME, this.name, Header.GameCode.SCOREDATA);
+        returnData.AddRange(header.GetHeader());
         returnData.AddRange(BitConverter.GetBytes(deathAmount));
         returnData.AddRange(BitConverter.GetBytes(killAmount));
 
