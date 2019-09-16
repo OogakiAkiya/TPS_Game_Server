@@ -15,9 +15,9 @@ public class UDP_ServerController : MonoBehaviour
 
     IDictionary<string, int> clientIPMap = new Dictionary<string, int>();
 
-    private StateMachine<Header.ID> state = new StateMachine<Header.ID>();
+    private StateMachine<GameHeader.ID> state = new StateMachine<GameHeader.ID>();
     private KeyValuePair<IPEndPoint,byte[]> recvData;
-    private HeaderClass header = new HeaderClass();
+    private GameHeader header = new GameHeader();
     IDictionary<string, uint> sequenceList = new Dictionary<string, uint>();
 
     // Start is called before the first frame update
@@ -26,8 +26,8 @@ public class UDP_ServerController : MonoBehaviour
         gameController = this.GetComponent<GameController>();
         socket.Init(port, sendPort);
 
-        state.AddState(Header.ID.INIT, () => { }, InitUpdate);
-        state.AddState(Header.ID.GAME, () => { }, GameUpdate);
+        state.AddState(GameHeader.ID.INIT, () => { }, InitUpdate);
+        state.AddState(GameHeader.ID.GAME, () => { }, GameUpdate);
 
     }
 

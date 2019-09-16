@@ -16,27 +16,27 @@ public class UserController : MonoBehaviour
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
-    
+
     //Ray判定用
     private Camera cam;
     private RectTransform imageRect;
     private Canvas canvas;
-    public Vector3 rotat=Vector3.zero;
+    public Vector3 rotat = Vector3.zero;
 
     public BaseWeapon weapon { get; private set; }
-    private List<BaseWeapon> weaponList=new List<BaseWeapon>();
-    private int weaponListIndex=0;
+    private List<BaseWeapon> weaponList = new List<BaseWeapon>();
+    private int weaponListIndex = 0;
 
     //Score
-    public int deathAmount=0;          //死んだ回数
-    public int killAmount=0;           //殺した回数
+    public int deathAmount = 0;          //死んだ回数
+    public int killAmount = 0;           //殺した回数
 
     void Start()
     {
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
-        
+
         //Ray判定用
         cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
@@ -109,28 +109,9 @@ public class UserController : MonoBehaviour
 
     public byte[] GetStatus()
     {
-        /*
         List<byte> returnData = new List<byte>();
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}",this.name));              //12byteに設定する
-        byte[] positionData = Convert.GetByteVector3(this.transform.position);
-        byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
-        int currentKey = 0;
-        if (userAnimation) currentKey = (int)userAnimation.animationState.currentKey;
-
-        returnData.Add((byte)Header.ID.GAME);
-        returnData.AddRange(userName);
-        returnData.Add((byte)Header.GameCode.BASICDATA);
-        returnData.AddRange(positionData);
-        returnData.AddRange(rotationData);
-        returnData.AddRange(BitConverter.GetBytes(currentKey));
-        returnData.AddRange(BitConverter.GetBytes(hp));
-        if(weapon!=null)returnData.AddRange(weapon.GetStatus());
-        return returnData.ToArray();
-        */
-        List<byte> returnData = new List<byte>();
-        var header = new HeaderClass();
-        header.CreateNewData(Header.ID.GAME, this.name, Header.GameCode.BASICDATA);
+        var header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
         byte[] positionData = Convert.GetByteVector3(this.transform.position);
         byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
         int currentKey = 0;
@@ -141,7 +122,7 @@ public class UserController : MonoBehaviour
         returnData.AddRange(rotationData);
         returnData.AddRange(BitConverter.GetBytes(currentKey));
         returnData.AddRange(BitConverter.GetBytes(hp));
-        if (weapon!=null) returnData.AddRange(weapon.GetStatus());
+        if (weapon != null) returnData.AddRange(weapon.GetStatus());
         return returnData.ToArray();
 
     }
@@ -149,15 +130,8 @@ public class UserController : MonoBehaviour
     public byte[] GetScore()
     {
         List<byte> returnData = new List<byte>();
-        /*
-        System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", this.name));              //12byteに設定する
-        returnData.Add((byte)Header.ID.GAME);
-        returnData.AddRange(userName);
-        returnData.Add((byte)Header.GameCode.SCOREDATA);
-        */
-        var header = new HeaderClass();
-        header.CreateNewData(Header.ID.GAME, this.name, Header.GameCode.SCOREDATA);
+        var header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.SCOREDATA);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(BitConverter.GetBytes(deathAmount));
         returnData.AddRange(BitConverter.GetBytes(killAmount));
@@ -181,7 +155,7 @@ public class UserController : MonoBehaviour
 
         RaycastHit hit = new RaycastHit();
 
-        if (Physics.Raycast(ray, out hit,weapon.range,1<<10))
+        if (Physics.Raycast(ray, out hit, weapon.range, 1 << 10))
         {
             if (hit.collider.tag == "users")
             {
@@ -204,12 +178,12 @@ public class UserController : MonoBehaviour
 
     }
 
-    public　bool ShootDamage(int _damage=1)
+    public bool ShootDamage(int _damage = 1)
     {
         //敵を倒した時trueを返す
         if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
 
-        hp-=_damage;
+        hp -= _damage;
         if (hp < 0)
         {
             hp = 0;
@@ -220,7 +194,7 @@ public class UserController : MonoBehaviour
         return false;
     }
 
-    public void ChangeWeapon(bool _up=true)
+    public void ChangeWeapon(bool _up = true)
     {
         if (_up)
         {
@@ -231,7 +205,7 @@ public class UserController : MonoBehaviour
         else
         {
             weaponListIndex--;
-            if (weaponListIndex < 0) weaponListIndex = weaponList.Count-1;
+            if (weaponListIndex < 0) weaponListIndex = weaponList.Count - 1;
             nowKey = nowKey ^ KEY.RIGHT_BUTTON;
         }
         //武器変更

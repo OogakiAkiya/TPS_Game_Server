@@ -2,13 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeaderClass
-{
-    public string userName { get; private set; }
-    public Header.ID id { get; private set; } = Header.ID.INIT;
-    public Header.GameCode gameCode { get; private set; } = Header.GameCode.BASICDATA;
 
-    public void CreateNewData(Header.ID _id = Header.ID.INIT, string _name = "", Header.GameCode _gameCode=Header.GameCode.BASICDATA)
+
+
+public class GameHeader
+{
+    public static readonly int USERID_LENGTH = 12;
+    public enum ID : byte
+    {
+        DEBUG = 0x001,
+        INIT = 0x002,
+        TITLE=0x003,
+        GAME = 0x004
+    }
+
+    public enum LoginCode : byte
+    {
+        LOGINCHECK=0x0001,
+        LOGINSUCCES=0x0002,
+        LOGINFAILURE=0x0003
+    }
+
+
+    public enum GameCode : byte
+    {
+        BASICDATA = 0x0001,
+        SCOREDATA = 0x0002
+    }
+
+    public string userName { get; private set; }
+    public ID id { get; private set; } = ID.INIT;
+    public byte gameCode { get; private set; } = 0x00ff;
+
+    public void CreateNewData(ID _id = ID.INIT, string _name = "", byte _gameCode=0x00ff)
     {
         if (_name != "") userName = _name;
         if (id != _id) id = _id;
@@ -17,11 +43,11 @@ public class HeaderClass
 
     public void SetHeader(byte[] _data,int _index=0)
     {
-        id = (Header.ID)_data[_index];
-        byte[] b_userId = new byte[Header.USERID_LENGTH];
+        id = (ID)_data[_index];
+        byte[] b_userId = new byte[USERID_LENGTH];
         System.Array.Copy(_data, _index+sizeof(byte), b_userId, 0, b_userId.Length);
         userName = System.Text.Encoding.UTF8.GetString(b_userId);
-        gameCode = (Header.GameCode)_data[_index + sizeof(byte) + Header.USERID_LENGTH];
+        gameCode = _data[_index + sizeof(byte) + USERID_LENGTH];
     }
 
     public byte[] GetHeader()
@@ -29,7 +55,7 @@ public class HeaderClass
         List<byte> returnData=new List<byte>();
 
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] b_userName = enc.GetBytes(System.String.Format("{0, -" + Header.USERID_LENGTH + "}", userName));              //12byteに設定する
+        byte[] b_userName = enc.GetBytes(System.String.Format("{0, -" + USERID_LENGTH + "}", userName));              //12byteに設定する
         byte[] sendData = new byte[sizeof(byte) * 2 + userName.Length];
         returnData.Add((byte)id);
         returnData.AddRange(b_userName);
@@ -39,6 +65,6 @@ public class HeaderClass
     }
     public int GetHeaderLength()
     {
-        return sizeof(Header.ID) + sizeof(Header.GameCode) + Header.USERID_LENGTH;
+        return sizeof(ID) + sizeof(GameCode) + USERID_LENGTH;
     }
 }

@@ -12,9 +12,9 @@ public class TCP_ServerController : MonoBehaviour
     private GameController gameController;
 
 
-    private StateMachine<Header.ID> state = new StateMachine<Header.ID>();
+    private StateMachine<GameHeader.ID> state = new StateMachine<GameHeader.ID>();
     private byte[] recvData;
-    private HeaderClass header = new HeaderClass();
+    private GameHeader header = new GameHeader();
     private Tcp_Server_Socket sendSocket;
 
     // Start is called before the first frame update
@@ -27,16 +27,16 @@ public class TCP_ServerController : MonoBehaviour
 
         //待ち受け開始
         var task = socket.StartAccept();
-
-        state.AddState(Header.ID.DEBUG, () =>
+        state.AddState(GameHeader.ID.DEBUG, () =>
         {
             //TestSend((byte)Header.ID.DEBUG);
-            DebugSend((byte)Header.ID.DEBUG);
+            DebugSend((byte)GameHeader.ID.DEBUG);
 
-            state.ChangeState(Header.ID.INIT);
+            state.ChangeState(GameHeader.ID.INIT);
         });
-        state.AddState(Header.ID.INIT, () => { }, InitUpdate);
-        state.AddState(Header.ID.GAME, () => { }, GameUpdate);
+        state.AddState(GameHeader.ID.INIT, () => { }, InitUpdate);
+        state.AddState(GameHeader.ID.TITLE, () => { }, TitleUpdate);
+        state.AddState(GameHeader.ID.GAME, () => { }, GameUpdate);
 
     }
 
@@ -59,8 +59,9 @@ public class TCP_ServerController : MonoBehaviour
                 sendSocket = client;
 
                 //受信データごとの処理
+
                 header.SetHeader(recvData);
-                state.ChangeState((Header.ID)recvData[0]);
+                state.ChangeState((GameHeader.ID)recvData[0]);
                 state.Update();
 
                 /*test send
@@ -76,7 +77,7 @@ public class TCP_ServerController : MonoBehaviour
 
     private void InitUpdate()
     {
-        byte[] b_userId = new byte[Header.USERID_LENGTH];
+        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
         Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
         string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
@@ -88,9 +89,29 @@ public class TCP_ServerController : MonoBehaviour
         }
     }
 
+    private void TitleUpdate()
+    {
+        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
+        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
+        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
+
+        foreach(var user in gameController.users)
+        {
+            //if(user.name==)
+        }
+        //ユーザーが存在するかチェック
+        if (!GameObject.Find(userId.Trim()))
+        {
+            TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINSUCCES);
+            return;
+        }
+        TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINFAILURE);
+
+    }
+
     private void GameUpdate()
     {
-        byte[] b_userId = new byte[Header.USERID_LENGTH];
+        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
         Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
         string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
@@ -98,9 +119,9 @@ public class TCP_ServerController : MonoBehaviour
         {
             if (user.userId.Equals(userId.Trim()))
             {
-                if (recvData[sizeof(byte) + Header.USERID_LENGTH] == (byte)Header.GameCode.BASICDATA)
+                if (recvData[sizeof(byte) + GameHeader.USERID_LENGTH] == (byte)GameHeader.GameCode.BASICDATA)
                 {
-                    KEY addData = (KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + Header.USERID_LENGTH);
+                    KEY addData = (KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + GameHeader.USERID_LENGTH);
 
                     user.AddInputKeyList(addData);
                 }
@@ -112,16 +133,14 @@ public class TCP_ServerController : MonoBehaviour
     void TestSend(byte _id, byte _code = 0x0001)
     {
         List<byte> sendData = new List<byte>();
-        var header = new HeaderClass();
-        header.CreateNewData((Header.ID)_id, "Debug", (Header.GameCode)_code);
+        header.CreateNewData((GameHeader.ID)_id, "Debug", _code);
         sendData.AddRange(header.GetHeader());
         var task = sendSocket.Send(sendData.ToArray(), sendData.Count);
     }
     void DebugSend(byte _id, byte _code = 0x0001)
     {
         List<byte> sendData = new List<byte>();
-        var header = new HeaderClass();
-        header.CreateNewData((Header.ID)_id, "Debug", (Header.GameCode)_code);
+        header.CreateNewData((GameHeader.ID)_id, "Debug", _code);
         sendData.AddRange(header.GetHeader());
         sendData.AddRange(Convert.Conversion(gameController.users.Count - 1));
         var task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);

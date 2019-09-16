@@ -1,21 +1,7 @@
 ﻿using System;
 
 
-public static class Header
-{
-    public static readonly int USERID_LENGTH = 12;
-    public enum ID : byte
-    {
-        DEBUG = 0x001,
-        INIT = 0x002,
-        GAME = 0x003
-    }
-    public enum GameCode : byte
-    {
-        BASICDATA = 0x0001,
-        SCOREDATA=0x0002
-    }
-}
+
 
 public enum KEY : short
 {
@@ -54,12 +40,6 @@ public enum ANIMATION_KEY : int
     Dying
 }
 
-public enum UDPSTATE : int
-{
-    INIT,
-    GAME,
-    RESULT
-}
 
 public enum WEAPONTYPE:int
 {
