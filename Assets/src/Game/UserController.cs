@@ -23,9 +23,16 @@ public class UserController : MonoBehaviour
     private Canvas canvas;
     public Vector3 rotat = Vector3.zero;
 
+    //武器
     public BaseWeapon weapon { get; private set; }
     private List<BaseWeapon> weaponList = new List<BaseWeapon>();
     private int weaponListIndex = 0;
+
+    //グレネード
+    private int remainingGrenade = 2;
+    private GameObject grenadePref;
+    bool throwFlg = false;
+    Grenade throwBom=null;
 
     //Score
     public int deathAmount = 0;          //死んだ回数
@@ -46,12 +53,19 @@ public class UserController : MonoBehaviour
         weaponList.Add(new MachineGun(Shoot));
         weaponList.Add(new HandGun(Shoot));
         weapon = weaponList[weaponListIndex];
+
+        //グレネード
+        grenadePref = Resources.Load("Bom") as GameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
         weapon.state.Update();
+
+        //ダウンだけ検出するキーの初期化
+        if (nowKey.HasFlag(KEY.G)) nowKey = nowKey ^ KEY.G;
+        if (nowKey.HasFlag(KEY.R)) nowKey = nowKey ^ KEY.R;
 
         if (inputKeyList.Count > 0)
         {
@@ -66,11 +80,19 @@ public class UserController : MonoBehaviour
 
         }
 
+
         if (recvDataList.Count > 0)
         {
             byte[] recvData = GetRecvData();
         }
 
+        //ボム制御を手放す
+        if (throwBom==null) return;
+        if (throwBom.destroyFlg)
+        {
+            throwBom.Delete();
+            throwBom = null;
+        }
     }
 
     public void SetUserID(string _userId)
@@ -210,6 +232,23 @@ public class UserController : MonoBehaviour
         }
         //武器変更
         weapon = weaponList[weaponListIndex];
+    }
+
+    public void ThrowGrenade()
+    {
+        if (throwBom) return;
+        if (remainingGrenade <= 0) return;
+        if (!grenadePref) return;
+        var obj= Instantiate(grenadePref) as GameObject;
+        throwBom = obj.GetComponent<Grenade>();
+        throwBom.transform.position = this.transform.position+this.transform.forward + new Vector3(0, 1, 0);
+        throwBom.transform.rotation = this.transform.rotation;
+        throwBom.name = System.String.Format("{0, -" + (GameHeader.USERID_LENGTH-2) + "}", this.name) + remainingGrenade;
+        remainingGrenade--;
+    }
+    public bool GetThrowFlg()
+    {
+        return throwBom;
     }
 }
 

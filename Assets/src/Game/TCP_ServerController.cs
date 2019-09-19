@@ -59,16 +59,9 @@ public class TCP_ServerController : MonoBehaviour
                 sendSocket = client;
 
                 //受信データごとの処理
-
                 header.SetHeader(recvData);
                 state.ChangeState((GameHeader.ID)recvData[0]);
                 state.Update();
-
-                /*test send
-                List<byte> dlist = new List<byte>();
-                dlist.Add(0x001);
-                var te=client.Send(dlist.ToArray(),dlist.Count) ;
-                */
             }
         }
 
@@ -95,18 +88,21 @@ public class TCP_ServerController : MonoBehaviour
         Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
         string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
-        foreach(var user in gameController.users)
-        {
-            //if(user.name==)
-        }
-        //ユーザーが存在するかチェック
-        if (!GameObject.Find(userId.Trim()))
-        {
-            TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINSUCCES);
-            return;
-        }
-        TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINFAILURE);
 
+        if ((GameHeader.LoginCode)header.gameCode == GameHeader.LoginCode.LOGINCHECK)
+        {
+            //ユーザーチェック
+            foreach (var user in gameController.users)
+            {
+                if (user.name == userId.Trim())
+                {
+                    TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINFAILURE);
+                    return;
+                }
+            }
+            //ログイン成功
+            TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINSUCCES);
+        }
     }
 
     private void GameUpdate()

@@ -1173,7 +1173,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &4162355852348529139
 MonoBehaviour:
@@ -1190,6 +1190,8 @@ MonoBehaviour:
   userId: 
   hp: 100
   rotat: {x: 0, y: 0, z: 0}
+  deathAmount: 0
+  killAmount: 0
 --- !u!114 &4162355852348529138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1209,6 +1211,7 @@ MonoBehaviour:
   runSpeed: 2
   checkLayer: Ground
   groundCheckRadius: 0.5
+  rebornRange: 2
   groundflg: 1
 --- !u!1 &4162355852356363423
 GameObject:

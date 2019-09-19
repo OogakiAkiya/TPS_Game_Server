@@ -425,6 +425,13 @@ public class UserAnimation : MonoBehaviour
 
     private void Atack()
     {
+        //グレネード投擲
+        if (nowKey.HasFlag(KEY.G))
+        {
+            userController.ThrowGrenade();
+        }
+
+        //リロード
         if (nowKey.HasFlag(KEY.R))
         {
             animationState.ChangeState(ANIMATION_KEY.Reloading);
@@ -436,18 +443,11 @@ public class UserAnimation : MonoBehaviour
             return;
         }
 
+        //既に攻撃していた場合の処理
         if (userController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
-        //if (nowKey.HasFlag(Key.LEFT_BUTTON)) userController.Shoot();
-        if (nowKey.HasFlag(KEY.LEFT_CLICK))
-        {
-            userController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
-        }
-        /*
-        if (userController.weapon.state.currentKey == WEAPONSTATE.RELOAD)
-        {
-            animationState.ChangeState(ANIMATION_KEY.Reloading);
-        }
-        */
+
+        //攻撃
+        if (nowKey.HasFlag(KEY.LEFT_CLICK))userController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
 
     }
 }

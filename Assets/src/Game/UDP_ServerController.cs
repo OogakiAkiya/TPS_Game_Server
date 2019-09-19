@@ -59,6 +59,13 @@ public class UDP_ServerController : MonoBehaviour
             sendData.Add(user.GetStatus());
         }
 
+        //グレネードの送信データ作成
+        var boms=GameObject.FindGameObjectsWithTag("Bom");
+        foreach(var bom in boms)
+        {
+            sendData.Add(bom.GetComponent<Grenade>().GetStatus());
+        }
+
         //送信処理
         socket.AllClietnSend(clientIPMap, sendData);
 

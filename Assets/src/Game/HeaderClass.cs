@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class GameHeader
 {
-    public static readonly int USERID_LENGTH = 12;
+    public static readonly int USERID_LENGTH = 14;
     public enum ID : byte
     {
         DEBUG = 0x001,
@@ -27,7 +27,8 @@ public class GameHeader
     public enum GameCode : byte
     {
         BASICDATA = 0x0001,
-        SCOREDATA = 0x0002
+        SCOREDATA = 0x0002,
+        GRENEDEDATA=0x0003
     }
 
     public string userName { get; private set; }
@@ -55,7 +56,7 @@ public class GameHeader
         List<byte> returnData=new List<byte>();
 
         System.Text.Encoding enc = System.Text.Encoding.UTF8;
-        byte[] b_userName = enc.GetBytes(System.String.Format("{0, -" + USERID_LENGTH + "}", userName));              //12byteに設定する
+        byte[] b_userName = enc.GetBytes(System.String.Format("{0, -" + USERID_LENGTH + "}", userName));
         byte[] sendData = new byte[sizeof(byte) * 2 + userName.Length];
         returnData.Add((byte)id);
         returnData.AddRange(b_userName);
