@@ -10,7 +10,6 @@ public class GameController : MonoBehaviour
 {
     private GameObject userPrefab;
     private int count = 0;
-    //public GameObject[] users { get; private set; } = new GameObject[0];
     public List<UserController> users { get; private set; } = new List<UserController>();
     private UDP_ServerController udp_Controller;
     //FPS回数
@@ -29,9 +28,7 @@ public class GameController : MonoBehaviour
         prevTime = 0.0f;
 
         //Update回数制御
-        
         QualitySettings.vSyncCount = 0; // VSyncをOFFにする
-        //Application.targetFrameRate = 160; // ターゲットフレームレートを160に設定
         
     }
 
@@ -44,7 +41,6 @@ public class GameController : MonoBehaviour
         //60fps
         if (time >= 0.016f)
         {
-            //Debug.LogFormat("{0}fps", frameCount / time);
             //データ送信(全ユーザーの情報送信)
             udp_Controller.SendAllClientData();
 

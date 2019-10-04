@@ -45,9 +45,6 @@ public class UDP_ServerController : MonoBehaviour
             state.ChangeState(header.id);
             state.Update();
         }
-
-        //SendAllClientData();
-
     }
 
     public void SendAllClientData()
@@ -104,15 +101,11 @@ public class UDP_ServerController : MonoBehaviour
         string userName = header.userName.Trim();
 
         //シーケンス処理
+        if (!sequenceList.ContainsKey(userName)) return;
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
-        uint nowSequence = sequenceList[userName];
-        if (nowSequence > sequence)
-        {
-            if (Math.Abs(nowSequence - sequence) < 2000000000) return;
-            if (nowSequence < 1000000000 && sequence > 3000000000) return;
-        }
+        if (!SequenceCheck(sequenceList[userName], sequence)) return;
         sequenceList[userName] = sequence;
-
+        
 
         Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
         foreach (var obj in gameController.users)
@@ -127,6 +120,16 @@ public class UDP_ServerController : MonoBehaviour
             }
         }
 
+    }
+
+    private bool SequenceCheck(uint _nowSequence, uint _sequence)
+    {
+        if (_nowSequence > _sequence)
+        {
+            if (Math.Abs(_nowSequence - _sequence) < 2000000000) return false;
+            if (_nowSequence < 1000000000 && _sequence > 3000000000) return false;
+        }
+        return true;
     }
 }
 

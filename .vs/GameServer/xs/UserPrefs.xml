@@ -3,13 +3,14 @@
     <Files>
       <File FileName="Assets/src/Constant.cs" Line="14" Column="6" />
       <File FileName="Assets/src/Game/GameController.cs" />
-      <File FileName="Assets/src/Game/TCP_ServerController.cs" />
+      <File FileName="Assets/src/Game/TCP_ServerController.cs" Line="36" Column="40" />
       <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="1" Column="1" />
       <File FileName="Assets/src/Game/UserAnimation.cs" />
       <File FileName="Assets/src/Game/UserController.cs" />
       <File FileName="Assets/src/Game/HeaderClass.cs" />
       <File FileName="Assets/src/Game/Bom/Grenade.cs" />
-      <File FileName="Assets/src/Game/Bom/Explosion.cs" Line="27" Column="59" />
+      <File FileName="Assets/src/Game/Bom/Explosion.cs" />
+      <File FileName="Assets/src/Library/StateMachine/StateMachine.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -35,9 +36,11 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="e71766be-9315-4170-b5d5-ab99fc3cf851" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="2d417eb0-aa34-4b97-aa5a-17d31bbfe458" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/oogakiakiya/Desktop/GameServer/Assets/src/Game/TCP_ServerController.cs" relfile="Assets/src/Game/TCP_ServerController.cs" line="72" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
 </Properties>

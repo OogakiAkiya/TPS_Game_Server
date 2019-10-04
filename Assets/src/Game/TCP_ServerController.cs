@@ -29,7 +29,6 @@ public class TCP_ServerController : MonoBehaviour
         var task = socket.StartAccept();
         state.AddState(GameHeader.ID.DEBUG, () =>
         {
-            //TestSend((byte)Header.ID.DEBUG);
             DebugSend((byte)GameHeader.ID.DEBUG);
 
             state.ChangeState(GameHeader.ID.INIT);
