@@ -78,6 +78,7 @@
     <Compile Include="Assets\src\Library\OpenSocket\UDP_Client.cs" />
     <Compile Include="Assets\src\Library\OpenSocket\UDP_Server.cs" />
     <Compile Include="Assets\src\Library\StateMachine\StateMachine.cs" />
+    <Compile Include="Assets\src\Library\TimeMeasurment.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>/Users/oogakiakiya/Desktop/GameServer/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

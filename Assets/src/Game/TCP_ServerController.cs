@@ -137,7 +137,7 @@ public class TCP_ServerController : MonoBehaviour
         List<byte> sendData = new List<byte>();
         header.CreateNewData((GameHeader.ID)_id, "Debug", _code);
         sendData.AddRange(header.GetHeader());
-        sendData.AddRange(Convert.Conversion(gameController.users.Count - 1));
+        sendData.AddRange(Convert.Conversion(gameController.users.Length - 1));
         var task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
 
     }

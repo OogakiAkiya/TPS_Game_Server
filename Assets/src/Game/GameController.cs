@@ -8,9 +8,11 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject userList;
     private GameObject userPrefab;
     private int count = 0;
-    public List<UserController> users { get; private set; } = new List<UserController>();
+    //public List<UserController> users { get; private set; } = new List<UserController>();
+    public UserController[] users;
     private UDP_ServerController udp_Controller;
     //FPS回数
     int frameCount;
@@ -20,7 +22,8 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        udp_Controller=this.GetComponent<UDP_ServerController>();
+        users = userList.GetComponentsInChildren<UserController>();
+        udp_Controller = this.GetComponent<UDP_ServerController>();
         userPrefab = (GameObject)Resources.Load("user");
 
         //FPS回数
@@ -59,20 +62,16 @@ public class GameController : MonoBehaviour
     public void AddNewUser(string _userID)
     {
         //ユーザーの追加
-        var add = Instantiate(userPrefab, new Vector3(count, 0.0f, 0.0f), Quaternion.identity) as GameObject;
+        var add = Instantiate(userPrefab, userList.transform) as GameObject;
         add.name = _userID;
+        add.transform.position = new Vector3(count, 0.0f, 0.0f);
         add.GetComponent<UserController>().SetUserID(_userID);
         count++;
-
     }
 
     public void UsersUpdate()
     {
-        users.Clear();
-        foreach(var user in GameObject.FindGameObjectsWithTag("users"))
-        {
-            users.Add(user.GetComponent<UserController>());
-        }
+        users = userList.GetComponentsInChildren<UserController>();
     }
 }
 

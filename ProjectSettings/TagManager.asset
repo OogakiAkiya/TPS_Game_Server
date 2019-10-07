@@ -6,6 +6,7 @@ TagManager:
   tags:
   - users
   - Bom
+  - test
   layers:
   - Default
   - TransparentFX
