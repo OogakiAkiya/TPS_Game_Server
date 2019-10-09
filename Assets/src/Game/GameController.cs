@@ -59,13 +59,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void AddNewUser(string _userID)
+    public void AddNewUser(string _userID,Tcp_Server_Socket _socket)
     {
         //ユーザーの追加
         var add = Instantiate(userPrefab, userList.transform) as GameObject;
         add.name = _userID;
         add.transform.position = new Vector3(count, 0.0f, 0.0f);
-        add.GetComponent<UserController>().SetUserID(_userID);
+        add.GetComponent<UserController>().SetUserData(_userID,_socket);
         count++;
     }
 

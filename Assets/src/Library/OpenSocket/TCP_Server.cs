@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 
 
-class Tcp_Server_Socket
+public class Tcp_Server_Socket
 {
     public const int BUFSIZE = 2048;
     object lockObj = new object();

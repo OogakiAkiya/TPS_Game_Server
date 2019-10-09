@@ -8,17 +8,13 @@ using UnityEngine;
 
 public class UDP_ServerController : MonoBehaviour
 {
+    [SerializeField] int port = 12344;
+    [SerializeField] int sendPort = 12343;
     private UDP_Server socket = new UDP_Server();
-    public int port = 12344;
-    public int sendPort = 12343;
     private GameController gameController;
-
-    IDictionary<string, int> clientIPMap = new Dictionary<string, int>();
-
     private StateMachine<GameHeader.ID> state = new StateMachine<GameHeader.ID>();
     private KeyValuePair<IPEndPoint,byte[]> recvData;
     private GameHeader header = new GameHeader();
-    IDictionary<string, uint> sequenceList = new Dictionary<string, uint>();
 
     // Start is called before the first frame update
     void Start()
@@ -51,9 +47,11 @@ public class UDP_ServerController : MonoBehaviour
     {
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
+        List<string> ipLi = new List<string>();
         foreach (var user in gameController.users)
         {
             sendData.Add(user.GetStatus());
+            if (user.socket != null) ipLi.Add(user.GetIPAddress());
         }
 
         //グレネードの送信データ作成
@@ -64,54 +62,44 @@ public class UDP_ServerController : MonoBehaviour
         }
 
         //送信処理
-        socket.AllClietnSend(clientIPMap, sendData);
+        socket.AllClietnSend(ipLi, sendData);
 
     }
 
     public void SendAllClientScoreData()
     {
+        List<string> ipLi = new List<string>();
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
         foreach (var user in gameController.users)
         {
             sendData.Add(user.GetScore());
+            if (user.socket != null) ipLi.Add(user.GetIPAddress());
         }
 
         //送信処理
-        socket.AllClietnSend(clientIPMap, sendData);
+        socket.AllClietnSend(ipLi, sendData);
 
     }
 
 
     public void InitUpdate()
     {
-        //UDPでログイン処理は無駄
-        if (!clientIPMap.ContainsKey(recvData.Key.Address.ToString()))
-        {
-
-            clientIPMap.Add(recvData.Key.Address.ToString(), 12343);
-            sequenceList.Add(header.userName.Trim(), 0);
-            FileController.GetInstance().Write("UDPLogin", recvData.Key.Address.ToString());
-        }
-
     }
 
     public void GameUpdate()
     {
         string userName = header.userName.Trim();
 
-        //シーケンス処理
-        if (!sequenceList.ContainsKey(userName)) return;
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
-        if (!SequenceCheck(sequenceList[userName], sequence)) return;
-        sequenceList[userName] = sequence;
-        
 
         Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
         foreach (var obj in gameController.users)
         {
             if (obj.userId == userName)
             {
+                if (!SequenceCheck(obj.sequence, sequence)) return;
+                obj.sequence = sequence;
                 obj.rotat = vect;
                 vect.x = 0;
                 vect.z = 0;

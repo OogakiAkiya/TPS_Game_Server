@@ -10,14 +10,14 @@ public class UserAnimation : MonoBehaviour
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
 
-    public float jumpPower = 1.0f;
-    public float jumpMoveSpeed = 1.0f;
-    public float walkSpeed = 1.0f;
-    public float runSpeed = 2.0f;
-    public string checkLayer = "Ground";
-    public float groundCheckRadius = 0.2f;
-    public float rebornRange = 2.0f;
-    public bool groundflg = true;
+    [SerializeField] float jumpPower = 1.0f;
+    [SerializeField] float jumpMoveSpeed = 1.0f;
+    [SerializeField] float walkSpeed = 1.0f;
+    [SerializeField] float runSpeed = 2.0f;
+    [SerializeField] string checkLayer = "Ground";
+    [SerializeField] float groundCheckRadius = 0.2f;
+    [SerializeField] float rebornRange = 2.0f;
+    [SerializeField] bool groundflg = true;
     private int layerNo = 0;
     private bool jumpFlg = false;
 

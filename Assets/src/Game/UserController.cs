@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Net;
 
 
 public class UserController : MonoBehaviour
 {
     public string userId;
-    public string IPaddr { get; set; }
+    public string IPaddr;
+    public uint sequence=0;
+    public Tcp_Server_Socket socket;
     public KEY nowKey { get; private set; } = 0;
     public int hp = 100;
 
@@ -32,11 +35,11 @@ public class UserController : MonoBehaviour
     private int remainingGrenade = 2;
     private GameObject grenadePref;
     bool throwFlg = false;
-    Grenade throwBom=null;
+    Grenade throwBom = null;
 
     //Score
-    public int deathAmount = 0;          //死んだ回数
-    public int killAmount = 0;           //殺した回数
+    public int deathAmount { get; private set; } = 0;          //死んだ回数
+    public int killAmount { get; private set; } = 0;           //殺した回数
 
     void Start()
     {
@@ -94,12 +97,15 @@ public class UserController : MonoBehaviour
             throwBom = null;
         }
     }
-
-    public void SetUserID(string _userId)
+    public string GetIPAddress()
+    {
+        return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
+    }
+    public void SetUserData(string _userId,Tcp_Server_Socket _socket)
     {
         userId = _userId;
         this.name = userId;
-
+        socket = _socket;
     }
 
     public void AddRecvData(byte[] _addData)

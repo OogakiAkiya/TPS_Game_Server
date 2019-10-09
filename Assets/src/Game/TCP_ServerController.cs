@@ -6,8 +6,8 @@ using System.Net.Sockets;
 using UnityEngine;
 public class TCP_ServerController : MonoBehaviour
 {
-    public string IPAddr = "127.0.0.1";
-    public int port = 12345;
+    [SerializeField] string IPAddr = "127.0.0.1";
+    [SerializeField] int port = 12345;
     private TCP_Server socket = new TCP_Server();
     private GameController gameController;
 
@@ -76,7 +76,7 @@ public class TCP_ServerController : MonoBehaviour
         //同じユーザーで複数ログインを防ぐ
         if (!GameObject.Find(userId.Trim()))
         {
-            gameController.AddNewUser(userId.Trim());
+            gameController.AddNewUser(userId.Trim(),sendSocket);
             gameController.UsersUpdate();
         }
     }
