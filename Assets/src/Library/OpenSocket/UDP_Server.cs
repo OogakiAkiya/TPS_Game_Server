@@ -141,7 +141,7 @@ class UDP_Server
             for (int j = 0; j < _data.Count; j++)
             {
                 sender.socket.SendAsync(sendDataArray[j], sendDataArray[j].Length, _ipList[ip], sendPort);
-                FileController.GetInstance().Write("UDPSend", "IP=" + _ipList[ip] + ",port=" + sendPort);
+                //FileController.GetInstance().Write("UDPSend", "IP=" + _ipList[ip] + ",port=" + sendPort);
             }
 
         }

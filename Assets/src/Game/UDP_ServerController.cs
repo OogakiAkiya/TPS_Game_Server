@@ -18,6 +18,9 @@ public class UDP_ServerController : MonoBehaviour
 
     private Transform bomList;
 
+    Task clientDataSendTask;
+    Task ScoreDataSendTask;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +60,7 @@ public class UDP_ServerController : MonoBehaviour
     }
 
 
-    public async Task SendAllClientData()
+    public void SendAllClientData()
     {
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
@@ -75,12 +78,16 @@ public class UDP_ServerController : MonoBehaviour
             sendData.Add(boms[i].GetStatus());
         }
 
-
+        if (clientDataSendTask != null) Task.WaitAll(clientDataSendTask);
+        clientDataSendTask = Task.Run(() =>
+        {
             //送信処理
             socket.AllClietnSend(ipList, sendData);
+            return 0;
+        });
     }
 
-    public async Task SendAllClientScoreData()
+    public void SendAllClientScoreData()
     {
         List<string> ipList = new List<string>();
         //sendData作成
@@ -93,7 +100,14 @@ public class UDP_ServerController : MonoBehaviour
         }
 
         //送信処理
-        socket.AllClietnSend(ipList, sendData);
+        if (ScoreDataSendTask != null) Task.WaitAll(ScoreDataSendTask);
+
+        ScoreDataSendTask = Task.Run(() =>
+        {
+            //送信処理
+            socket.AllClietnSend(ipList, sendData);
+            return 0;
+        });
 
 
     }

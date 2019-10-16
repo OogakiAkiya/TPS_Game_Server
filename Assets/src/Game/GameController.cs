@@ -8,6 +8,11 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    struct AddUserState
+    {
+       public string userID;
+       public Tcp_Server_Socket socket;
+    }
     public GameObject userListObj;
     private GameObject userPrefab;
     private int count = 0;
@@ -16,7 +21,7 @@ public class GameController : MonoBehaviour
     private UDP_ServerController udp_Controller;
     private TCP_ServerController tcp_Controller;
     TimeMeasurment timeMeasurment = new TimeMeasurment();
-    private List<UserController> addUserList=new List<UserController>();
+    private List<AddUserState> addUserList=new List<AddUserState>();
 
 
 
@@ -45,9 +50,9 @@ public class GameController : MonoBehaviour
             for (int i = 0; i < addUserList.Count; i++)
             {
                 var add = Instantiate(userPrefab, userListObj.transform) as GameObject;
-                add.name = addUserList[i].userId;
+                add.name = addUserList[i].userID;
                 add.transform.position = new Vector3(count, 0.0f, 0.0f);
-                add.GetComponent<UserController>().SetUserData(addUserList[i].userId, addUserList[i].socket);
+                add.GetComponent<UserController>().SetUserData(addUserList[i].userID, addUserList[i].socket);
                 count++;
             }
             addUserList.Clear();
@@ -74,9 +79,9 @@ public class GameController : MonoBehaviour
     //addリストへの追加
     public void AddNewUser(string _userID,Tcp_Server_Socket _socket)
     {
-        UserController add = new UserController();
+        AddUserState add = new AddUserState();
         //add.SetUserData(_userID, _socket);
-        add.userId = _userID;
+        add.userID = _userID;
         add.socket = _socket;
         addUserList.Add(add);
         //ユーザーの追加
