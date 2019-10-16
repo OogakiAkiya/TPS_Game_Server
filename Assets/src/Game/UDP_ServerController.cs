@@ -16,9 +16,12 @@ public class UDP_ServerController : MonoBehaviour
     private KeyValuePair<IPEndPoint,byte[]> recvData;
     private GameHeader header = new GameHeader();
 
+    private Transform bomList;
+
     // Start is called before the first frame update
     void Start()
     {
+        bomList = GameObject.FindGameObjectWithTag("BomList").transform;
         gameController = this.GetComponent<GameController>();
         socket.Init(port, sendPort);
 
@@ -30,57 +33,71 @@ public class UDP_ServerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        socket.Update();
-        if (socket.server.GetRecvDataSize() > 0)
-        {
-            //受信データの取得
-            recvData = socket.server.GetRecvData();
-            header.SetHeader(recvData.Value, sizeof(uint));
-
-            //受信データごとの処理
-            state.ChangeState(header.id);
-            state.Update();
-        }
     }
 
-    public void SendAllClientData()
+    public Task<int> UPdata()
+    {
+        return Task.Run(() =>
+        {
+
+            socket.Update();
+            if (socket.server.GetRecvDataSize() > 0)
+            {
+                //受信データの取得
+                recvData = socket.server.GetRecvData();
+                header.SetHeader(recvData.Value, sizeof(uint));
+
+                //受信データごとの処理
+                state.ChangeState(header.id);
+                state.Update();
+            }
+            return 0;
+        });
+        
+    }
+
+
+    public async Task SendAllClientData()
     {
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
-        List<string> ipLi = new List<string>();
-        foreach (var user in gameController.users)
+        List<string> ipList = new List<string>();
+        for(int i = 0; i < gameController.users.Length;i++)
         {
+            UserController user = gameController.users[i];
             sendData.Add(user.GetStatus());
-            if (user.socket != null) ipLi.Add(user.GetIPAddress());
+            if (user.socket != null) ipList.Add(user.GetIPAddress());
         }
-
         //グレネードの送信データ作成
-        var boms=GameObject.FindGameObjectsWithTag("Bom");
-        foreach(var bom in boms)
+        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
+        for(int i = 0; i < boms.Length; i++)
         {
-            sendData.Add(bom.GetComponent<Grenade>().GetStatus());
+            sendData.Add(boms[i].GetStatus());
         }
 
-        //送信処理
-        socket.AllClietnSend(ipLi, sendData);
 
+            //送信処理
+            socket.AllClietnSend(ipList, sendData);
     }
 
-    public void SendAllClientScoreData()
+    public async Task SendAllClientScoreData()
     {
-        List<string> ipLi = new List<string>();
+        List<string> ipList = new List<string>();
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
-        foreach (var user in gameController.users)
+        for (int i = 0; i < gameController.users.Length; i++)
         {
+            UserController user = gameController.users[i];
             sendData.Add(user.GetScore());
-            if (user.socket != null) ipLi.Add(user.GetIPAddress());
+            if (user.socket != null) ipList.Add(user.GetIPAddress());
         }
 
         //送信処理
-        socket.AllClietnSend(ipLi, sendData);
+        socket.AllClietnSend(ipList, sendData);
+
 
     }
+
 
 
     public void InitUpdate()
@@ -94,20 +111,18 @@ public class UDP_ServerController : MonoBehaviour
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
 
         Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
-        foreach (var obj in gameController.users)
+
+        for(int i=0;i< gameController.users.Length; i++)
         {
-            if (obj.userId == userName)
+            UserController user = gameController.users[i];
+            if (user.userId == userName)
             {
-                if (!SequenceCheck(obj.sequence, sequence)) return;
-                obj.sequence = sequence;
-                obj.rotat = vect;
-                vect.x = 0;
-                vect.z = 0;
-                obj.transform.rotation = Quaternion.Euler(vect);
+                if (!SequenceCheck(user.sequence, sequence)) return;
+                user.sequence = sequence;
+                user.rotat = vect;
                 break;
             }
         }
-
     }
 
     private bool SequenceCheck(uint _nowSequence, uint _sequence)

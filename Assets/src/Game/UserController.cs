@@ -32,6 +32,7 @@ public class UserController : MonoBehaviour
     private int weaponListIndex = 0;
 
     //グレネード
+    private Transform bomPar;
     private int remainingGrenade = 2;
     private GameObject grenadePref;
     bool throwFlg = false;
@@ -59,11 +60,18 @@ public class UserController : MonoBehaviour
 
         //グレネード
         grenadePref = Resources.Load("Bom") as GameObject;
+        bomPar = GameObject.FindGameObjectWithTag("BomList").transform;
     }
 
     // Update is called once per frame
     void Update()
     {
+        {
+            Vector3 nowRotation = rotat;
+            nowRotation.x = 0;
+            nowRotation.z = 0;
+            this.transform.rotation = Quaternion.Euler(nowRotation);
+        }
         weapon.state.Update();
 
         //ダウンだけ検出するキーの初期化
@@ -138,7 +146,7 @@ public class UserController : MonoBehaviour
     public byte[] GetStatus()
     {
         List<byte> returnData = new List<byte>();
-        var header = new GameHeader();
+        GameHeader header = new GameHeader();
         header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
         byte[] positionData = Convert.GetByteVector3(this.transform.position);
         byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
@@ -158,7 +166,7 @@ public class UserController : MonoBehaviour
     public byte[] GetScore()
     {
         List<byte> returnData = new List<byte>();
-        var header = new GameHeader();
+        GameHeader header = new GameHeader();
         header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.SCOREDATA);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(BitConverter.GetBytes(deathAmount));
@@ -173,7 +181,7 @@ public class UserController : MonoBehaviour
         this.gameObject.layer = LayerMask.NameToLayer("Default");
 
         //playerの移動,回転
-        var nowRotation = this.transform.localEulerAngles;
+        Vector3 nowRotation = this.transform.localEulerAngles;
         this.transform.rotation = Quaternion.Euler(rotat);
 
         //レイの作成
@@ -245,7 +253,7 @@ public class UserController : MonoBehaviour
         if (throwBom) return;
         if (remainingGrenade <= 0) return;
         if (!grenadePref) return;
-        var obj= Instantiate(grenadePref) as GameObject;
+        var obj= Instantiate(grenadePref,bomPar) as GameObject;
         throwBom = obj.GetComponent<Grenade>();
         throwBom.transform.position = this.transform.position+this.transform.forward + new Vector3(0, 1, 0);
         throwBom.transform.rotation = this.transform.rotation;

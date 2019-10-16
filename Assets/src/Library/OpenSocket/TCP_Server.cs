@@ -192,20 +192,25 @@ public class Tcp_Server_Socket
     //deleteFlgがtrueになっているユーザーの削除
     public void EndUpdate()
     {
-        if (clientList.Count <= 0) return;
-
-        List<Tcp_Server_Socket> deleteList = new List<Tcp_Server_Socket>();
-        foreach (Tcp_Server_Socket client in clientList)
+        lock (lockObj)
         {
-            if (client.deleteFlg == true)
+
+            if (clientList.Count <= 0) return;
+
+            List<Tcp_Server_Socket> deleteList = new List<Tcp_Server_Socket>();
+            foreach (Tcp_Server_Socket client in clientList)
             {
-                deleteList.Add(client);
+                if (client.deleteFlg == true)
+                {
+                    deleteList.Add(client);
+                }
+            }
+            foreach (Tcp_Server_Socket client in deleteList)
+            {
+                clientList.Remove(client);
             }
         }
-        foreach (Tcp_Server_Socket client in deleteList)
-        {
-            clientList.Remove(client);
-        }
+
     }
     public void Init(string _ip, int _port)
     {

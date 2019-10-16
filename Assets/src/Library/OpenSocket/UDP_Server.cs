@@ -49,6 +49,11 @@ class ServerState
         }
         return count;
     }
+    public void CallBack(IAsyncResult ar)
+    {
+        byte[] buf = socket.EndReceive(ar, ref endPoint);
+        AddRecvData(endPoint, buf);
+    }
 }
 
 
@@ -121,36 +126,46 @@ class UDP_Server
     //本来ならsendPortはportに変わる
     public void AllClietnSend(List<string> _ipList, List<byte[]> _data)
     {
-        foreach (string IP in _ipList)
+        
+        byte[][] sendDataArray = new byte[_data.Count][];
+        byte[] head = BitConverter.GetBytes(sequence);
+        for (int i = 0; i< _data.Count; i++)
         {
-            foreach (byte[] data in _data)
+            byte[] addData = new byte[head.Length+_data[i].Length];
+            Array.Copy(head, addData,head.Length);
+            Array.Copy(_data[i],0, addData,head.Length, _data[i].Length);
+            sendDataArray[i] = addData;
+        }
+        for (int ip = 0; ip < _ipList.Count; ip++)
+        {
+            for (int j = 0; j < _data.Count; j++)
             {
-                List<byte> sendData = new List<byte>();
-                sendData.AddRange(BitConverter.GetBytes(sequence));
-                sendData.AddRange(data);
-                sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, IP, sendPort);
-
-                FileController.GetInstance().Write("UDPSend", "IP=" + IP + ",port=" + sendPort);
+                sender.socket.SendAsync(sendDataArray[j], sendDataArray[j].Length, _ipList[ip], sendPort);
+                FileController.GetInstance().Write("UDPSend", "IP=" + _ipList[ip] + ",port=" + sendPort);
             }
+
         }
         CountUPSequence();
     }
 
     public void AllClietnSend(IDictionary<string,int> _iplist, List<byte[]> _data)
     {
-
-        foreach(KeyValuePair<string,int> pair in _iplist)
+        byte[][] sendDataArray = new byte[_data.Count][];
+        byte[] head = BitConverter.GetBytes(sequence);
+        for (int i = 0; i < _data.Count; i++)
         {
-            foreach (byte[] data in _data)
+            byte[] addData = new byte[head.Length + _data[i].Length];
+            Array.Copy(head, addData, head.Length);
+            Array.Copy(_data[i], 0, addData, head.Length, _data[i].Length);
+            sendDataArray[i] = addData;
+        }
+        foreach (KeyValuePair<string, int> pair in _iplist)
+        {
+            for (int i = 0; i < _data.Count; i++)
             {
-                List<byte> sendData = new List<byte>();
-                sendData.AddRange(BitConverter.GetBytes(sequence));
-                sendData.AddRange(data);
-                sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, pair.Key, pair.Value);
-
+                sender.socket.SendAsync(sendDataArray[i], sendDataArray[i].Length, pair.Key, pair.Value);
                 FileController.GetInstance().Write("UDPSend", "IP=" + pair.Key + ",port=" + pair.Value);
             }
-
         }
         CountUPSequence();
     }
@@ -169,9 +184,14 @@ class UDP_Server
     private void ReceiveCallback(IAsyncResult ar)
     {
         ServerState client = (ServerState)ar.AsyncState;
+        //client.CallBack(ar);
+        //client.socket.BeginReceive(ReceiveCallback, client);
+
+        
         byte[] buf = client.socket.EndReceive(ar, ref client.endPoint);
         client.AddRecvData(client.endPoint, buf);
         client.socket.BeginReceive(ReceiveCallback, client);
+        
     }
 
 }
