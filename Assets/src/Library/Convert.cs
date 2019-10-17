@@ -13,6 +13,7 @@ public static class Convert
         if (_y) vect.y = System.BitConverter.ToSingle(_data, _beginPoint + 1 * sizeof(float));
         if (_z) vect.z = System.BitConverter.ToSingle(_data, _beginPoint + 2 * sizeof(float));
         return vect;
+        
     }
     public static byte[] GetByteVector3(Vector3 _vector, bool _x = true, bool _y = true, bool _z = true)
     {

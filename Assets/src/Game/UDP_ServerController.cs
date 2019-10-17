@@ -43,7 +43,7 @@ public class UDP_ServerController : MonoBehaviour
         return Task.Run(() =>
         {
 
-            socket.Update();
+            //socket.Update();
             if (socket.server.GetRecvDataSize() > 0)
             {
                 //受信データの取得
