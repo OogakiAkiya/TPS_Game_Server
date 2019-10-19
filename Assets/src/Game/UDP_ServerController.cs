@@ -33,11 +33,6 @@ public class UDP_ServerController : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public Task<int> UPdata()
     {
         return Task.Run(() =>
@@ -124,6 +119,27 @@ public class UDP_ServerController : MonoBehaviour
 
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
 
+        Vector2 vect = Convert.GetVector2(recvData.Value, sizeof(uint) + header.GetHeaderLength());
+
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+            UserController user = gameController.users[i];
+            if (user.userId == userName)
+            {
+                if (!SequenceCheck(user.sequence, sequence)) return;
+                user.sequence = sequence;
+                user.rotat.x = vect.x;
+                user.rotat.y = vect.y;
+
+                break;
+            }
+        }
+
+        /*
+        string userName = header.userName.Trim();
+
+        uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
+
         Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
 
         for(int i=0;i< gameController.users.Length; i++)
@@ -137,6 +153,7 @@ public class UDP_ServerController : MonoBehaviour
                 break;
             }
         }
+        */
     }
 
     private bool SequenceCheck(uint _nowSequence, uint _sequence)

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
+using System.Threading.Tasks;
 
 
 public class UserController : MonoBehaviour
@@ -64,14 +65,27 @@ public class UserController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        //回転
+        Vector3 nowRotation = rotat;
+        nowRotation.x = 0;
+        nowRotation.z = 0;
+        this.transform.rotation = Quaternion.Euler(nowRotation);
+
+        //ボム制御を手放す
+        if (throwBom == null) return;
+        if (throwBom.destroyFlg)
         {
-            Vector3 nowRotation = rotat;
-            nowRotation.x = 0;
-            nowRotation.z = 0;
-            this.transform.rotation = Quaternion.Euler(nowRotation);
+            throwBom.Delete();
+            throwBom = null;
         }
+    }
+    public Task<int> UPdate()
+    {
+        return Task.Run(() =>
+        {
+
         weapon.state.Update();
 
         //ダウンだけ検出するキーの初期化
@@ -97,14 +111,12 @@ public class UserController : MonoBehaviour
             byte[] recvData = GetRecvData();
         }
 
-        //ボム制御を手放す
-        if (throwBom==null) return;
-        if (throwBom.destroyFlg)
-        {
-            throwBom.Delete();
-            throwBom = null;
-        }
+
+            return 0;
+        });
     }
+
+
     public string GetIPAddress()
     {
         return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();

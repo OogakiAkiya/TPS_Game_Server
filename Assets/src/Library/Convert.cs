@@ -5,6 +5,33 @@ using UnityEngine;
 
 public static class Convert
 {
+    public static Vector2 GetVector2(byte[] _data, int _beginPoint = 0, bool _x = true, bool _y = true)
+    {
+        Vector2 vect = Vector2.zero;
+        if (_data.Length < sizeof(float) * 2) return vect;
+        if (_x) vect.x = System.BitConverter.ToSingle(_data, _beginPoint + 0 * sizeof(float));
+        if (_y) vect.y = System.BitConverter.ToSingle(_data, _beginPoint + 1 * sizeof(float));
+        return vect;
+        
+    }
+    public static byte[] GetByteVector2(Vector2 _vector, bool _x = true, bool _y = true)
+    {
+        byte[] vect = new byte[sizeof(float) * 2];
+        if (_x) System.Buffer.BlockCopy(System.BitConverter.GetBytes(_vector.x), 0, vect, 0 * sizeof(float), sizeof(float));
+        if (_y) System.Buffer.BlockCopy(System.BitConverter.GetBytes(_vector.y), 0, vect, 1 * sizeof(float), sizeof(float));
+
+        return vect;
+    }
+    public static byte[] GetByteVector2(Vector3 _vector, bool _x = true, bool _y = true)
+    {
+        byte[] vect = new byte[sizeof(float) * 2];
+        if (_x) System.Buffer.BlockCopy(System.BitConverter.GetBytes(_vector.x), 0, vect, 0 * sizeof(float), sizeof(float));
+        if (_y) System.Buffer.BlockCopy(System.BitConverter.GetBytes(_vector.y), 0, vect, 1 * sizeof(float), sizeof(float));
+
+        return vect;
+    }
+
+
     public static Vector3 GetVector3(byte[] _data, int _beginPoint = 0, bool _x = true, bool _y = true, bool _z = true)
     {
         Vector3 vect = Vector3.zero;
@@ -13,7 +40,7 @@ public static class Convert
         if (_y) vect.y = System.BitConverter.ToSingle(_data, _beginPoint + 1 * sizeof(float));
         if (_z) vect.z = System.BitConverter.ToSingle(_data, _beginPoint + 2 * sizeof(float));
         return vect;
-        
+
     }
     public static byte[] GetByteVector3(Vector3 _vector, bool _x = true, bool _y = true, bool _z = true)
     {

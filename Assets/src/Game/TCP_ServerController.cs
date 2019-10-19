@@ -39,11 +39,6 @@ public class TCP_ServerController : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public Task<int> UPdata()
     {        
         return Task.Run(() =>

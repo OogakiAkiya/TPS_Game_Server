@@ -40,11 +40,23 @@ public class GameController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {        
-        var task1=tcp_Controller.UPdata();
-        var task2 = udp_Controller.UPdata();
-        Task.WaitAll(task1, task2);
+    {
+        Task[] tasks = new Task[2];
+        tasks[0]=tcp_Controller.UPdata();
+        tasks[1] = udp_Controller.UPdata();
 
+        //デバッグ処理
+        timeMeasurment.Fps(users.Length + "人:");
+
+        //TCPとUDPのUpdate処理を終わるのをまつ
+        Task.WaitAll(tasks);
+
+        tasks = new Task[users.Length];
+        for(int i = 0; i < users.Length; i++)
+        {
+            tasks[i] = users[i].UPdate();
+        }
+        //ユーザーの追加処理
         if (addUserList.Count > 0)
         {
             for (int i = 0; i < addUserList.Count; i++)
@@ -57,15 +69,10 @@ public class GameController : MonoBehaviour
             }
             addUserList.Clear();
             UsersUpdate();
-
         }
 
-        //Task.WaitAll(task2);
-
-        timeMeasurment.Fps(users.Length+"人:");
-        //Task.WaitAll(task1,task2);
-        
-        //Task.WaitAll(task2);
+        //TCPとUDPのUpdate処理を終わるのをまつ
+        Task.WaitAll(tasks);
 
     }
 
@@ -80,18 +87,9 @@ public class GameController : MonoBehaviour
     public void AddNewUser(string _userID,Tcp_Server_Socket _socket)
     {
         AddUserState add = new AddUserState();
-        //add.SetUserData(_userID, _socket);
         add.userID = _userID;
         add.socket = _socket;
         addUserList.Add(add);
-        //ユーザーの追加
-        /*
-        var add = Instantiate(userPrefab, userListObj.transform) as GameObject;
-        add.name = _userID;
-        add.transform.position = new Vector3(count, 0.0f, 0.0f);
-        add.GetComponent<UserController>().SetUserData(_userID,_socket);
-        count++;
-        */
     }
 
     private void UsersUpdate()
