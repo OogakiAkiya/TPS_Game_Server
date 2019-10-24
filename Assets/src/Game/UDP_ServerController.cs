@@ -54,9 +54,10 @@ public class UDP_ServerController : MonoBehaviour
         
     }
 
-
+    private int sendCount = 0;
     public void SendAllClientData()
     {
+        //20人づつデータ送信
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
         List<string> ipList = new List<string>();
@@ -64,8 +65,14 @@ public class UDP_ServerController : MonoBehaviour
         {
             UserController user = gameController.users[i];
             sendData.Add(user.GetStatus());
-            if (user.socket != null) ipList.Add(user.GetIPAddress());
+            if (user.socket != null)
+            {
+                if(i<sendCount+20&&i>=sendCount)ipList.Add(user.GetIPAddress());
+            }
         }
+        sendCount += 20;
+        if (sendCount > gameController.users.Length) sendCount = 0;
+
         //グレネードの送信データ作成
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
         for(int i = 0; i < boms.Length; i++)
@@ -135,25 +142,6 @@ public class UDP_ServerController : MonoBehaviour
             }
         }
 
-        /*
-        string userName = header.userName.Trim();
-
-        uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
-
-        Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
-
-        for(int i=0;i< gameController.users.Length; i++)
-        {
-            UserController user = gameController.users[i];
-            if (user.userId == userName)
-            {
-                if (!SequenceCheck(user.sequence, sequence)) return;
-                user.sequence = sequence;
-                user.rotat = vect;
-                break;
-            }
-        }
-        */
     }
 
     private bool SequenceCheck(uint _nowSequence, uint _sequence)

@@ -78,7 +78,7 @@ public class GameController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30);
+        if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
         if (!IsInvoking("SecondInvoke")) Invoke("SecondInvoke", 1f);
 
     }
