@@ -8,34 +8,47 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+
     struct AddUserState
     {
        public string userID;
        public Tcp_Server_Socket socket;
     }
-    public GameObject userListObj;
-    private GameObject userPrefab;
-    private int count = 0;
-    //public List<UserController> users { get; private set; } = new List<UserController>();
-    public UserController[] users;
+    public GameObject userListObj;                                                          //userを追加する親の参照
+    public UserController[] users;                                                          //ログインしているユーザー
+    private UserController[] notActiveUsers=new UserController[userAmount];                 //ログイン待ちインスタンス
+    private int notActiveIndex= userAmount;
     private UDP_ServerController udp_Controller;
     private TCP_ServerController tcp_Controller;
-    TimeMeasurment timeMeasurment = new TimeMeasurment();
     private List<AddUserState> addUserList=new List<AddUserState>();
+    private const int userAmount = 100;                                                 //ログイン最大数
 
-
+    //デバッグ用
+    TimeMeasurment timeMeasurment = new TimeMeasurment();
 
     // Start is called before the first frame update
     void Start()
     {
-        users = userListObj.GetComponentsInChildren<UserController>();
-        udp_Controller = this.GetComponent<UDP_ServerController>();
-        tcp_Controller = this.GetComponent<TCP_ServerController>();
-        userPrefab = (GameObject)Resources.Load("user");
-
         //Update回数制御
         QualitySettings.vSyncCount = 0; // VSyncをOFFにする
-        
+
+        //参照の作成
+        udp_Controller = this.GetComponent<UDP_ServerController>();
+        tcp_Controller = this.GetComponent<TCP_ServerController>();
+
+        //userのインスタンスを作成
+        GameObject userPrefab = (GameObject)Resources.Load("user");
+        for (int i = 0; i < userAmount; i++)
+        {
+            var add = Instantiate(userPrefab, userListObj.transform) as GameObject;
+            add.name = "___" + i;
+            add.transform.position = new Vector3(i, 0.0f, 0.0f);
+            add.SetActive(false);
+            notActiveUsers[i] = add.GetComponent<UserController>();
+
+        }
+        users = userListObj.GetComponentsInChildren<UserController>();
+
     }
 
     // Update is called once per frame
@@ -51,25 +64,16 @@ public class GameController : MonoBehaviour
         //TCPとUDPのUpdate処理を終わるのをまつ
         Task.WaitAll(tasks);
 
+        //ユーザーの非同期のアップデート処理
         tasks = new Task[users.Length];
         for(int i = 0; i < users.Length; i++)
         {
             tasks[i] = users[i].UPdate();
         }
+
+
         //ユーザーの追加処理
-        if (addUserList.Count > 0)
-        {
-            for (int i = 0; i < addUserList.Count; i++)
-            {
-                var add = Instantiate(userPrefab, userListObj.transform) as GameObject;
-                add.name = addUserList[i].userID;
-                add.transform.position = new Vector3(count, 0.0f, 0.0f);
-                add.GetComponent<UserController>().SetUserData(addUserList[i].userID, addUserList[i].socket);
-                count++;
-            }
-            addUserList.Clear();
-            UsersUpdate();
-        }
+        AddUser();
 
         //TCPとUDPのUpdate処理を終わるのをまつ
         Task.WaitAll(tasks);
@@ -85,12 +89,28 @@ public class GameController : MonoBehaviour
     }
 
     //addリストへの追加
-    public void AddNewUser(string _userID,Tcp_Server_Socket _socket)
+    public void AddUserList(string _userID,Tcp_Server_Socket _socket)
     {
         AddUserState add = new AddUserState();
         add.userID = _userID;
         add.socket = _socket;
         addUserList.Add(add);
+    }
+    private void AddUser()
+    {
+        if (addUserList.Count > 0)
+        {
+            for (int i = 0; i < addUserList.Count; i++)
+            {
+                if (notActiveIndex < 0) return;
+                int index = userAmount - notActiveIndex--;
+                notActiveUsers[index].name = addUserList[i].userID;
+                notActiveUsers[index].SetUserData(addUserList[i].userID, addUserList[i].socket);
+                notActiveUsers[index].gameObject.SetActive(true);
+            }
+            addUserList.Clear();
+            UsersUpdate();
+        }
     }
 
     private void UsersUpdate()

@@ -40,7 +40,7 @@ public class TCP_ServerController : MonoBehaviour
     }
 
     public Task<int> UPdata()
-    {        
+    {
         return Task.Run(() =>
         {
             socket.BeginUpdate();
@@ -70,7 +70,7 @@ public class TCP_ServerController : MonoBehaviour
             socket.EndUpdate();
             return 0;
         });
-        
+
 
     }
 
@@ -83,16 +83,16 @@ public class TCP_ServerController : MonoBehaviour
 
         //同じユーザーで複数ログインを防ぐ
         bool addFlg = true;
-        for(int i = 0; i < gameController.users.Length; i++)
+        for (int i = 0; i < gameController.users.Length; i++)
         {
             if (gameController.users[i].userId == userId.Trim())
             {
-                addFlg=false;
+                addFlg = false;
             }
         }
         if (addFlg)
         {
-            gameController.AddNewUser(userId.Trim(), sendSocket);
+            gameController.AddUserList(userId.Trim(), sendSocket);
             //gameController.UsersUpdate();
 
         }
@@ -108,7 +108,7 @@ public class TCP_ServerController : MonoBehaviour
 
         if ((GameHeader.LoginCode)header.gameCode == GameHeader.LoginCode.LOGINCHECK)
         {
-            for(int i = 0; i < gameController.users.Length; i++)
+            for (int i = 0; i < gameController.users.Length; i++)
             {
                 if (gameController.users[i].userId == userId.Trim())
                 {
@@ -126,7 +126,7 @@ public class TCP_ServerController : MonoBehaviour
         byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
         Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
         string userId = System.Text.Encoding.UTF8.GetString(b_userId);
-        for(int i = 0; i < gameController.users.Length; i++)
+        for (int i = 0; i < gameController.users.Length; i++)
         {
             UserController user = gameController.users[i];
             if (user.userId.Equals(userId.Trim()))
