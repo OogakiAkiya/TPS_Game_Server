@@ -8,27 +8,30 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject userList;
+    struct AddUserState
+    {
+       public string userID;
+       public Tcp_Server_Socket socket;
+    }
+    public GameObject userListObj;
     private GameObject userPrefab;
     private int count = 0;
     //public List<UserController> users { get; private set; } = new List<UserController>();
     public UserController[] users;
     private UDP_ServerController udp_Controller;
-    //FPS回数
-    int frameCount;
-    float prevTime;
+    private TCP_ServerController tcp_Controller;
+    TimeMeasurment timeMeasurment = new TimeMeasurment();
+    private List<AddUserState> addUserList=new List<AddUserState>();
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-        users = userList.GetComponentsInChildren<UserController>();
+        users = userListObj.GetComponentsInChildren<UserController>();
         udp_Controller = this.GetComponent<UDP_ServerController>();
+        tcp_Controller = this.GetComponent<TCP_ServerController>();
         userPrefab = (GameObject)Resources.Load("user");
-
-        //FPS回数
-        frameCount = 0;
-        prevTime = 0.0f;
 
         //Update回数制御
         QualitySettings.vSyncCount = 0; // VSyncをOFFにする
@@ -38,40 +41,74 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //FPS表示
-        float time = Time.realtimeSinceStartup - prevTime;
+        Task[] tasks = new Task[2];
+        tasks[0]=tcp_Controller.UPdata();
+        tasks[1] = udp_Controller.UPdata();
 
-        //60fps
-        if (time >= 0.016f)
+        //デバッグ処理
+        timeMeasurment.Fps(users.Length + "人:");
+
+        //TCPとUDPのUpdate処理を終わるのをまつ
+        Task.WaitAll(tasks);
+
+        tasks = new Task[users.Length];
+        for(int i = 0; i < users.Length; i++)
         {
-            //データ送信(全ユーザーの情報送信)
-            udp_Controller.SendAllClientData();
-
-            prevTime = Time.realtimeSinceStartup;
-            frameCount++;
-
-            //一秒に一回
-            if (frameCount >= 60)
-            {
-                udp_Controller.SendAllClientScoreData();
-                frameCount = 0;
-            }
+            tasks[i] = users[i].UPdate();
         }
+        //ユーザーの追加処理
+        if (addUserList.Count > 0)
+        {
+            for (int i = 0; i < addUserList.Count; i++)
+            {
+                var add = Instantiate(userPrefab, userListObj.transform) as GameObject;
+                add.name = addUserList[i].userID;
+                add.transform.position = new Vector3(count, 0.0f, 0.0f);
+                add.GetComponent<UserController>().SetUserData(addUserList[i].userID, addUserList[i].socket);
+                count++;
+            }
+            addUserList.Clear();
+            UsersUpdate();
+        }
+
+        //TCPとUDPのUpdate処理を終わるのをまつ
+        Task.WaitAll(tasks);
+
     }
 
+    private void LateUpdate()
+    {
+        if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
+        if (!IsInvoking("SecondInvoke")) Invoke("SecondInvoke", 1f);
+        if (!IsInvoking("SecondTempInvoke")) Invoke("SecondTempInvoke", 4f);
+
+    }
+
+    //addリストへの追加
     public void AddNewUser(string _userID,Tcp_Server_Socket _socket)
     {
-        //ユーザーの追加
-        var add = Instantiate(userPrefab, userList.transform) as GameObject;
-        add.name = _userID;
-        add.transform.position = new Vector3(count, 0.0f, 0.0f);
-        add.GetComponent<UserController>().SetUserData(_userID,_socket);
-        count++;
+        AddUserState add = new AddUserState();
+        add.userID = _userID;
+        add.socket = _socket;
+        addUserList.Add(add);
     }
 
-    public void UsersUpdate()
+    private void UsersUpdate()
     {
-        users = userList.GetComponentsInChildren<UserController>();
+        users = userListObj.GetComponentsInChildren<UserController>();
+    }
+
+    public void Second30Invoke()
+    {
+        udp_Controller.SendAllClientData();
+    }
+    public void SecondInvoke()
+    {
+        udp_Controller.SendAllClientScoreData();
+    }
+    public void SecondTempInvoke()
+    {
+        udp_Controller.SendClientCompData();
     }
 }
 

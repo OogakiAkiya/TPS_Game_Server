@@ -3,10 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
+using System.Threading.Tasks;
 
 
 public class UserController : MonoBehaviour
 {
+    UserBodyData userData = new UserBodyData();
+
+
     public string userId;
     public string IPaddr;
     public uint sequence=0;
@@ -32,6 +36,7 @@ public class UserController : MonoBehaviour
     private int weaponListIndex = 0;
 
     //グレネード
+    private Transform bomPar;
     private int remainingGrenade = 2;
     private GameObject grenadePref;
     bool throwFlg = false;
@@ -59,11 +64,31 @@ public class UserController : MonoBehaviour
 
         //グレネード
         grenadePref = Resources.Load("Bom") as GameObject;
+        bomPar = GameObject.FindGameObjectWithTag("BomList").transform;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        //回転
+        Vector3 nowRotation = rotat;
+        nowRotation.x = 0;
+        nowRotation.z = 0;
+        this.transform.rotation = Quaternion.Euler(nowRotation);
+
+        //ボム制御を手放す
+        if (throwBom == null) return;
+        if (throwBom.destroyFlg)
+        {
+            throwBom.Delete();
+            throwBom = null;
+        }
+    }
+    public Task<int> UPdate()
+    {
+        return Task.Run(() =>
+        {
+
         weapon.state.Update();
 
         //ダウンだけ検出するキーの初期化
@@ -89,14 +114,12 @@ public class UserController : MonoBehaviour
             byte[] recvData = GetRecvData();
         }
 
-        //ボム制御を手放す
-        if (throwBom==null) return;
-        if (throwBom.destroyFlg)
-        {
-            throwBom.Delete();
-            throwBom = null;
-        }
+
+            return 0;
+        });
     }
+
+
     public string GetIPAddress()
     {
         return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
@@ -138,18 +161,23 @@ public class UserController : MonoBehaviour
     public byte[] GetStatus()
     {
         List<byte> returnData = new List<byte>();
-        var header = new GameHeader();
+        GameHeader header = new GameHeader();
         header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
-        byte[] positionData = Convert.GetByteVector3(this.transform.position);
-        byte[] rotationData = Convert.GetByteVector3(this.transform.localEulerAngles);
-        int currentKey = 0;
-        if (userAnimation) currentKey = (int)userAnimation.animationState.currentKey;
-
+        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
-        returnData.AddRange(positionData);
-        returnData.AddRange(rotationData);
-        returnData.AddRange(BitConverter.GetBytes(currentKey));
-        returnData.AddRange(BitConverter.GetBytes(hp));
+        returnData.AddRange(userData.GetData());
+        if (weapon != null) returnData.AddRange(weapon.GetStatus());
+        return returnData.ToArray();
+    }
+
+    public byte[] GetStatusComplete()
+    {
+        List<byte> returnData = new List<byte>();
+        GameHeader header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
+        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
+        returnData.AddRange(header.GetHeader());
+        returnData.AddRange(userData.GetCompleteData());
         if (weapon != null) returnData.AddRange(weapon.GetStatus());
         return returnData.ToArray();
 
@@ -158,7 +186,7 @@ public class UserController : MonoBehaviour
     public byte[] GetScore()
     {
         List<byte> returnData = new List<byte>();
-        var header = new GameHeader();
+        GameHeader header = new GameHeader();
         header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.SCOREDATA);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(BitConverter.GetBytes(deathAmount));
@@ -173,7 +201,7 @@ public class UserController : MonoBehaviour
         this.gameObject.layer = LayerMask.NameToLayer("Default");
 
         //playerの移動,回転
-        var nowRotation = this.transform.localEulerAngles;
+        Vector3 nowRotation = this.transform.localEulerAngles;
         this.transform.rotation = Quaternion.Euler(rotat);
 
         //レイの作成
@@ -245,7 +273,7 @@ public class UserController : MonoBehaviour
         if (throwBom) return;
         if (remainingGrenade <= 0) return;
         if (!grenadePref) return;
-        var obj= Instantiate(grenadePref) as GameObject;
+        var obj= Instantiate(grenadePref,bomPar) as GameObject;
         throwBom = obj.GetComponent<Grenade>();
         throwBom.transform.position = this.transform.position+this.transform.forward + new Vector3(0, 1, 0);
         throwBom.transform.rotation = this.transform.rotation;

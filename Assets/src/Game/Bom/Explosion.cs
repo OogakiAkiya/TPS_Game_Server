@@ -24,6 +24,7 @@ public class Explosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.tag != "users") return;
         other.GetComponent<UserController>().hp -= damage;
         explosionFlg = true;
     }

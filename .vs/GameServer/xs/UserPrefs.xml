@@ -1,18 +1,15 @@
 ﻿<Properties StartupConfiguration="{F9F77F06-66D7-EF2A-06E6-48CD1F3E7407}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/src/Library/OpenSocket/UDP_Server.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/src/Game/UserController.cs">
     <Files>
-      <File FileName="Assets/src/Constant.cs" Line="14" Column="6" />
-      <File FileName="Assets/src/Game/GameController.cs" Line="60" Column="6" />
-      <File FileName="Assets/src/Game/TCP_ServerController.cs" Line="82" Column="6" />
-      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="67" Column="25" />
-      <File FileName="Assets/src/Game/UserAnimation.cs" Line="127" Column="1" />
-      <File FileName="Assets/src/Game/UserController.cs" Line="99" Column="28" />
+      <File FileName="Assets/src/Constant.cs" Line="22" Column="1" />
+      <File FileName="Assets/src/Game/GameController.cs" Line="111" Column="1" />
+      <File FileName="Assets/src/Game/TCP_ServerController.cs" />
+      <File FileName="Assets/src/Game/UDP_ServerController.cs" Line="71" Column="1" />
+      <File FileName="Assets/src/Game/UserAnimation.cs" Line="8" Column="1" />
+      <File FileName="Assets/src/Game/UserController.cs" Line="400" Column="28" />
       <File FileName="Assets/src/Game/HeaderClass.cs" />
       <File FileName="Assets/src/Game/Bom/Grenade.cs" />
-      <File FileName="Assets/src/Game/Bom/Explosion.cs" Line="27" Column="1" />
-      <File FileName="Assets/src/Library/OpenSocket/TCP_Client.cs" Line="1" Column="1" />
-      <File FileName="Assets/src/Library/OpenSocket/TCP_Server.cs" Line="8" Column="8" />
-      <File FileName="Assets/src/Library/OpenSocket/UDP_Server.cs" Line="142" Column="45" />
+      <File FileName="Assets/src/Game/Communication/UserBodyData.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -22,12 +19,12 @@
               <Node name="src" expanded="True">
                 <Node name="Game" expanded="True">
                   <Node name="Bom" expanded="True" />
+                  <Node name="Communication" expanded="True" />
+                  <Node name="UserController.cs" selected="True" />
                 </Node>
                 <Node name="Library" expanded="True">
                   <Node name="Animator" expanded="True" />
-                  <Node name="OpenSocket" expanded="True">
-                    <Node name="UDP_Server.cs" selected="True" />
-                  </Node>
+                  <Node name="OpenSocket" expanded="True" />
                   <Node name="StateMachine" expanded="True" />
                 </Node>
               </Node>
@@ -39,7 +36,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="8778f624-1a05-462e-95b3-fdf4d23b00a7" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="252c341b-3264-4d13-a498-84e4464da2ed" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
