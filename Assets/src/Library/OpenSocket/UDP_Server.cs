@@ -85,20 +85,6 @@ class UDP_Server
     }
 
 
-    public void Update()
-    {
-        //sendTest
-        /*
-        List<byte> sendData = new List<byte>();
-        sendData.Add(0x0001);
-        sendData.Add(0x0002);
-        sendData.Add(0x0003);
-
-        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, "106.181.152.244", 12344);
-        */
-    }
-
-
     //本来ならsendPortはportに変わる
     public void Send(KeyValuePair<IPEndPoint, byte[]> _data)
     {
@@ -126,28 +112,24 @@ class UDP_Server
     //本来ならsendPortはportに変わる
     public void AllClietnSend(List<string> _ipList, List<byte[]> _data)
     {
-        
-        byte[][] sendDataArray = new byte[_data.Count][];
-        byte[] head = BitConverter.GetBytes(sequence);
-        for (int i = 0; i< _data.Count; i++)
+        List<byte> sendDataList = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+        for (int i = 0; i < _data.Count; i++)
         {
-            byte[] addData = new byte[head.Length+_data[i].Length];
-            Array.Copy(head, addData,head.Length);
-            Array.Copy(_data[i],0, addData,head.Length, _data[i].Length);
-            sendDataArray[i] = addData;
+            sendDataList.AddRange(BitConverter.GetBytes((_data[i].Length + sequenceByte.Length+sizeof(int))));
+            sendDataList.AddRange(sequenceByte);
+            sendDataList.AddRange(_data[i]);
         }
+        byte[] sendData = sendDataList.ToArray();
         for (int ip = 0; ip < _ipList.Count; ip++)
         {
-            for (int j = 0; j < _data.Count; j++)
-            {
-                sender.socket.SendAsync(sendDataArray[j], sendDataArray[j].Length, _ipList[ip], sendPort);
-                //FileController.GetInstance().Write("UDPSend", "IP=" + _ipList[ip] + ",port=" + sendPort);
-            }
-
+            sender.socket.SendAsync(sendData, sendData.Length, _ipList[ip], sendPort);
         }
         CountUPSequence();
+
     }
 
+    //使ってない
     public void AllClietnSend(IDictionary<string,int> _iplist, List<byte[]> _data)
     {
         byte[][] sendDataArray = new byte[_data.Count][];

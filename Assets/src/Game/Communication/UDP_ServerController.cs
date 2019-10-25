@@ -19,6 +19,8 @@ public class UDP_ServerController : MonoBehaviour
     private Transform bomList;
 
     Task clientDataSendTask;
+    Task clientCompDataSendTask;
+
     Task ScoreDataSendTask;
 
     // Start is called before the first frame update
@@ -33,17 +35,12 @@ public class UDP_ServerController : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public Task<int> UPdata()
     {
         return Task.Run(() =>
         {
 
-            socket.Update();
+            //socket.Update();
             if (socket.server.GetRecvDataSize() > 0)
             {
                 //受信データの取得
@@ -59,21 +56,56 @@ public class UDP_ServerController : MonoBehaviour
         
     }
 
+    public void SendClientCompData()
+    {
+        List<byte[]> sendData = new List<byte[]>();
+        List<string> ipList = new List<string>();
 
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+            UserController user = gameController.users[i];
+            sendData.Add(user.GetStatusComplete());
+            if (user.socket != null)ipList.Add(user.GetIPAddress());
+
+        }
+
+        //グレネードの送信データ作成
+        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
+        for (int i = 0; i < boms.Length; i++)
+        {
+            sendData.Add(boms[i].GetStatus());
+        }
+
+        if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
+        clientCompDataSendTask = Task.Run(() =>
+        {
+            //送信処理
+            socket.AllClietnSend(ipList, sendData);
+            return 0;
+        });
+    }
+    private int sendCount = 0;
     public void SendAllClientData()
     {
+        //20人づつデータ送信
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
         List<string> ipList = new List<string>();
-        for(int i = 0; i < gameController.users.Length;i++)
+        for (int i = 0; i < gameController.users.Length; i++)
         {
             UserController user = gameController.users[i];
             sendData.Add(user.GetStatus());
-            if (user.socket != null) ipList.Add(user.GetIPAddress());
+            if (user.socket != null)
+            {
+                if (i < sendCount + 20 && i >= sendCount) ipList.Add(user.GetIPAddress());
+            }
         }
+        sendCount += 20;
+        if (sendCount > gameController.users.Length) sendCount = 0;
+
         //グレネードの送信データ作成
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
-        for(int i = 0; i < boms.Length; i++)
+        for (int i = 0; i < boms.Length; i++)
         {
             sendData.Add(boms[i].GetStatus());
         }
@@ -124,19 +156,22 @@ public class UDP_ServerController : MonoBehaviour
 
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
 
-        Vector3 vect = Convert.GetVector3(recvData.Value, sizeof(uint)+header.GetHeaderLength());
+        Vector2 vect = Convert.GetVector2(recvData.Value, sizeof(uint) + header.GetHeaderLength());
 
-        for(int i=0;i< gameController.users.Length; i++)
+        for (int i = 0; i < gameController.users.Length; i++)
         {
             UserController user = gameController.users[i];
             if (user.userId == userName)
             {
                 if (!SequenceCheck(user.sequence, sequence)) return;
                 user.sequence = sequence;
-                user.rotat = vect;
+                user.rotat.x = vect.x;
+                user.rotat.y = vect.y;
+
                 break;
             }
         }
+
     }
 
     private bool SequenceCheck(uint _nowSequence, uint _sequence)
