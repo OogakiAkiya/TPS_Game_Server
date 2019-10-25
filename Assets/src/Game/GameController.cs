@@ -80,6 +80,7 @@ public class GameController : MonoBehaviour
     {
         if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
         if (!IsInvoking("SecondInvoke")) Invoke("SecondInvoke", 1f);
+        if (!IsInvoking("SecondTempInvoke")) Invoke("SecondTempInvoke", 4f);
 
     }
 
@@ -105,6 +106,9 @@ public class GameController : MonoBehaviour
     {
         udp_Controller.SendAllClientScoreData();
     }
-
+    public void SecondTempInvoke()
+    {
+        udp_Controller.SendClientCompData();
+    }
 }
 

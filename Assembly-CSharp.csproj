@@ -63,10 +63,11 @@
     <Compile Include="Assets\src\Constant.cs" />
     <Compile Include="Assets\src\Game\Bom\Explosion.cs" />
     <Compile Include="Assets\src\Game\Bom\Grenade.cs" />
+    <Compile Include="Assets\src\Game\Communication\HeaderClass.cs" />
+    <Compile Include="Assets\src\Game\Communication\TCP_ServerController.cs" />
+    <Compile Include="Assets\src\Game\Communication\UDP_ServerController.cs" />
+    <Compile Include="Assets\src\Game\Communication\UserBodyData.cs" />
     <Compile Include="Assets\src\Game\GameController.cs" />
-    <Compile Include="Assets\src\Game\HeaderClass.cs" />
-    <Compile Include="Assets\src\Game\TCP_ServerController.cs" />
-    <Compile Include="Assets\src\Game\UDP_ServerController.cs" />
     <Compile Include="Assets\src\Game\UserAnimation.cs" />
     <Compile Include="Assets\src\Game\UserController.cs" />
     <Compile Include="Assets\src\Library\Animator\AnimatorBehaviour.cs" />
