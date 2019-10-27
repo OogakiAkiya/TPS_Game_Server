@@ -87,6 +87,32 @@ public class UDP_ServerController : MonoBehaviour
     private int sendCount = 0;
     public void SendAllClientData()
     {
+        if (gameController.users.Length < 2) return;
+        //グレネードの送信データ作成
+        List<byte> bomData = new List<byte>();
+        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
+        for (int i = 0; i < boms.Length; i++)
+        {
+            bomData.AddRange(socket.EncodeData(boms[i].GetStatus()));
+        }
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+
+            UserController user = gameController.users[i];
+            List<byte> sendData = new List<byte>();
+            sendData.AddRange(user.GetSendData(socket));
+            sendData.AddRange(bomData.ToArray());
+            string ip = user.GetIPAddress();
+            Debug.Log(user.name + sendData.Count);
+            if(ip!="")socket.Send(sendData.ToArray(),ip);
+        }
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+            UserController user = gameController.users[i];
+            user.userData.FlgReflesh();
+        }
+        socket.CountUPSequence();
+        /*
         //20人づつデータ送信
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
@@ -117,6 +143,7 @@ public class UDP_ServerController : MonoBehaviour
             socket.AllClietnSend(ipList, sendData);
             return 0;
         });
+        */
     }
 
     public void SendAllClientScoreData()

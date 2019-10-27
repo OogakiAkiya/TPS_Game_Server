@@ -82,7 +82,8 @@ public class GameController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
+        //if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
+        if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30);
         if (!IsInvoking("SecondInvoke")) Invoke("SecondInvoke", 1f);
         if (!IsInvoking("SecondTempInvoke")) Invoke("SecondTempInvoke", 4f);
 
@@ -104,9 +105,9 @@ public class GameController : MonoBehaviour
             {
                 if (notActiveIndex < 0) return;
                 int index = userAmount - notActiveIndex--;
+                notActiveUsers[index].gameObject.SetActive(true);
                 notActiveUsers[index].name = addUserList[i].userID;
                 notActiveUsers[index].SetUserData(addUserList[i].userID, addUserList[i].socket);
-                notActiveUsers[index].gameObject.SetActive(true);
             }
             addUserList.Clear();
             UsersUpdate();
@@ -128,7 +129,7 @@ public class GameController : MonoBehaviour
     }
     public void SecondTempInvoke()
     {
-        udp_Controller.SendClientCompData();
+       udp_Controller.SendClientCompData();
     }
 }
 

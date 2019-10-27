@@ -90,9 +90,11 @@ public class UserBodyData
         if (sendDataFlg.HasFlag(USERDATAFLG.ROTATION_Z)) returnData.AddRange(BitConverter.GetBytes(rotetion.z));
         if (sendDataFlg.HasFlag(USERDATAFLG.HP)) returnData.AddRange(BitConverter.GetBytes(hp));
         returnData.AddRange(BitConverter.GetBytes(animationKey));
-        sendDataFlg = 0;
-
         return returnData.ToArray();
+    }
+    public void FlgReflesh()
+    {
+        sendDataFlg = 0;
     }
 
     public byte[] GetCompleteData(UserBodyData _oldData = null)
@@ -114,7 +116,7 @@ public class UserBodyData
         returnData.AddRange(Convert.GetByteVector3(rotetion));
         returnData.AddRange(BitConverter.GetBytes(hp));
         returnData.AddRange(BitConverter.GetBytes(animationKey));
-        sendDataFlg = 0;
+        //sendDataFlg = 0;
 
 
         return returnData.ToArray();

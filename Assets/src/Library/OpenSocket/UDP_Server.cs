@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
 
-class ServerState
+public class ServerState
 {
     public UdpClient socket = null;
     public IPEndPoint endPoint;
@@ -57,11 +57,11 @@ class ServerState
 }
 
 
-class UDP_Server
+public class UDP_Server
 {
     public ServerState server { get; private set; } = new ServerState();
     private ClientState sender = new ClientState();
-    uint sequence = 0;
+    public uint sequence { get; private set; } = 0;
     int port = 0;
     int sendPort = 12343;
 
@@ -109,6 +109,23 @@ class UDP_Server
 
     }
 
+    public void Send(byte[] _data, string _IP) {
+        sender.socket.SendAsync(_data, _data.Length, _IP, sendPort);
+        CountUPSequence();
+
+    }
+    public byte[] EncodeData(byte[] _data)
+    {
+        List<byte> data = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+
+        data.AddRange(BitConverter.GetBytes((_data.Length + sequenceByte.Length + sizeof(int))));
+        data.AddRange(sequenceByte);
+        data.AddRange(_data);
+        return data.ToArray();
+    }
+
+
     //本来ならsendPortはportに変わる
     public void AllClietnSend(List<string> _ipList, List<byte[]> _data)
     {
@@ -154,7 +171,7 @@ class UDP_Server
 
 
 
-    private void CountUPSequence()
+    public void CountUPSequence()
     {
         sequence++;
         if (sequence > 4200000000)

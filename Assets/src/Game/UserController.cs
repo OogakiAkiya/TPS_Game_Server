@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public class UserController : MonoBehaviour
 {
-    UserBodyData userData = new UserBodyData();
+    public UserBodyData userData = new UserBodyData();
 
 
     public string userId;
@@ -46,6 +46,9 @@ public class UserController : MonoBehaviour
     public int deathAmount { get; private set; } = 0;          //死んだ回数
     public int killAmount { get; private set; } = 0;           //殺した回数
 
+    //範囲内のuserの取得
+    public Dictionary<string, UserController> userMap=new Dictionary<string, UserController>();
+    public int mapCount = 0;
     void Start()
     {
         animator = this.GetComponent<Animator>();
@@ -84,6 +87,40 @@ public class UserController : MonoBehaviour
             throwBom = null;
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "users")
+        {
+            UserController userController = other.GetComponent<UserController>();
+            if (userMap.ContainsKey(userController.userId)) return;
+            userMap.Add(userController.userId, userController);
+        }   
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "users")
+        {
+            UserController userController = other.GetComponent<UserController>();
+            userMap.Remove(userController.userId);
+        }
+
+    }
+
+    public byte[] GetSendData(UDP_Server _socket)
+    {
+        List<byte> data = new List<byte>();
+        //範囲内のuser情報
+        foreach (KeyValuePair<string, UserController> user in userMap)
+        {
+            data.AddRange(_socket.EncodeData(user.Value.GetStatus()));
+        }
+
+        //自分の情報
+        data.AddRange(_socket.EncodeData(GetStatus()));
+        return data.ToArray();
+    }
+
     public Task<int> UPdate()
     {
         return Task.Run(() =>
@@ -122,6 +159,7 @@ public class UserController : MonoBehaviour
 
     public string GetIPAddress()
     {
+        if (socket == null) return "";
         return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
     }
     public void SetUserData(string _userId,Tcp_Server_Socket _socket)
@@ -174,7 +212,7 @@ public class UserController : MonoBehaviour
     {
         List<byte> returnData = new List<byte>();
         GameHeader header = new GameHeader();
-        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.CHECKDATA);
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(userData.GetCompleteData());

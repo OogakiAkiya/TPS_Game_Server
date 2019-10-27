@@ -28,7 +28,8 @@ public class GameHeader
     {
         BASICDATA = 0x0001,
         SCOREDATA = 0x0002,
-        GRENEDEDATA=0x0003
+        GRENEDEDATA=0x0003,
+        CHECKDATA=0x0004
     }
 
     public string userName { get; private set; }
