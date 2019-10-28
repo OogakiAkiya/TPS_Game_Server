@@ -11,8 +11,8 @@ public class UserController : MonoBehaviour
     public UserBodyData userData = new UserBodyData();
 
 
-    public string userId;
-    public string IPaddr;
+    public string userId="";
+    public string IPaddr="";
     public uint sequence=0;
     public Tcp_Server_Socket socket;
     public KEY nowKey { get; private set; } = 0;
@@ -44,13 +44,13 @@ public class UserController : MonoBehaviour
 
     //Score
     public int deathAmount { get; private set; } = 0;          //死んだ回数
-    public int killAmount { get; private set; } = 0;           //殺した回数
+    public int killAmount { get; set; } = 0;           //殺した回数
 
-    //範囲内のuserの取得
-    public Dictionary<string, UserController> userMap=new Dictionary<string, UserController>();
-    public int mapCount = 0;
+    ViewCollider viewCollider;
+
     void Start()
     {
+        viewCollider= transform.Find("View").gameObject.GetComponent<ViewCollider>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
@@ -80,38 +80,22 @@ public class UserController : MonoBehaviour
         this.transform.rotation = Quaternion.Euler(nowRotation);
 
         //ボム制御を手放す
+        
         if (throwBom == null) return;
         if (throwBom.destroyFlg)
         {
-            throwBom.Delete();
+            throwBom.Delete(this);
             throwBom = null;
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "users")
-        {
-            UserController userController = other.GetComponent<UserController>();
-            if (userMap.ContainsKey(userController.userId)) return;
-            userMap.Add(userController.userId, userController);
-        }   
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "users")
-        {
-            UserController userController = other.GetComponent<UserController>();
-            userMap.Remove(userController.userId);
-        }
 
     }
+
 
     public byte[] GetSendData(UDP_Server _socket)
     {
         List<byte> data = new List<byte>();
         //範囲内のuser情報
-        foreach (KeyValuePair<string, UserController> user in userMap)
+        foreach (KeyValuePair<string, UserController> user in viewCollider.userMap)
         {
             data.AddRange(_socket.EncodeData(user.Value.GetStatus()));
         }
@@ -145,17 +129,13 @@ public class UserController : MonoBehaviour
 
         }
 
-
         if (recvDataList.Count > 0)
         {
             byte[] recvData = GetRecvData();
         }
-
-
             return 0;
         });
     }
-
 
     public string GetIPAddress()
     {
@@ -167,6 +147,7 @@ public class UserController : MonoBehaviour
         userId = _userId;
         this.name = userId;
         socket = _socket;
+        IPaddr= ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
     }
 
     public void AddRecvData(byte[] _addData)
@@ -253,7 +234,7 @@ public class UserController : MonoBehaviour
         {
             if (hit.collider.tag == "users")
             {
-                if (hit.collider.GetComponent<UserController>().ShootDamage(weapon.power)) killAmount++;
+                if (hit.collider.GetComponent<UserController>().Damage(weapon.power)) killAmount++;
             }
         }
 
@@ -272,19 +253,20 @@ public class UserController : MonoBehaviour
 
     }
 
-    public bool ShootDamage(int _damage = 1)
+    public bool Damage(int _damage = 1)
     {
         //敵を倒した時trueを返す
         if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
 
         hp -= _damage;
-        if (hp < 0)
+        if (hp <= 0)
         {
             hp = 0;
             userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
             deathAmount++;
             return true;
         }
+
         return false;
     }
 

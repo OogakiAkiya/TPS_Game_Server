@@ -65,22 +65,24 @@ public class UDP_ServerController : MonoBehaviour
         {
             UserController user = gameController.users[i];
             sendData.Add(user.GetStatusComplete());
-            if (user.socket != null)ipList.Add(user.GetIPAddress());
+            if (user.socket != null)ipList.Add(user.IPaddr);
 
         }
 
         //グレネードの送信データ作成
+        
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
         for (int i = 0; i < boms.Length; i++)
         {
             sendData.Add(boms[i].GetStatus());
         }
 
+        if (ipList.Count <= 0) return;
         if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
         clientCompDataSendTask = Task.Run(() =>
         {
             //送信処理
-            socket.AllClietnSend(ipList, sendData);
+            socket.AllClientSend(ipList, sendData);
             return 0;
         });
     }
@@ -90,11 +92,13 @@ public class UDP_ServerController : MonoBehaviour
         if (gameController.users.Length < 2) return;
         //グレネードの送信データ作成
         List<byte> bomData = new List<byte>();
+        
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
         for (int i = 0; i < boms.Length; i++)
         {
             bomData.AddRange(socket.EncodeData(boms[i].GetStatus()));
         }
+        
         for (int i = 0; i < gameController.users.Length; i++)
         {
 
@@ -102,9 +106,7 @@ public class UDP_ServerController : MonoBehaviour
             List<byte> sendData = new List<byte>();
             sendData.AddRange(user.GetSendData(socket));
             sendData.AddRange(bomData.ToArray());
-            string ip = user.GetIPAddress();
-            Debug.Log(user.name + sendData.Count);
-            if(ip!="")socket.Send(sendData.ToArray(),ip);
+            if(user.socket!=null)socket.Send(sendData.ToArray(),user.IPaddr);
         }
         for (int i = 0; i < gameController.users.Length; i++)
         {
@@ -155,16 +157,16 @@ public class UDP_ServerController : MonoBehaviour
         {
             UserController user = gameController.users[i];
             sendData.Add(user.GetScore());
-            if (user.socket != null) ipList.Add(user.GetIPAddress());
+            if (user.socket != null) ipList.Add(user.IPaddr);
         }
-
+        if (ipList.Count <= 0) return;
         //送信処理
         if (ScoreDataSendTask != null) Task.WaitAll(ScoreDataSendTask);
 
         ScoreDataSendTask = Task.Run(() =>
         {
             //送信処理
-            socket.AllClietnSend(ipList, sendData);
+            socket.AllClientSend(ipList, sendData);
             return 0;
         });
 

@@ -127,7 +127,7 @@ public class UDP_Server
 
 
     //本来ならsendPortはportに変わる
-    public void AllClietnSend(List<string> _ipList, List<byte[]> _data)
+    public void AllClientSend(List<string> _ipList, List<byte[]> _data)
     {
         List<byte> sendDataList = new List<byte>();
         byte[] sequenceByte = BitConverter.GetBytes(sequence);
@@ -147,7 +147,7 @@ public class UDP_Server
     }
 
     //使ってない
-    public void AllClietnSend(IDictionary<string,int> _iplist, List<byte[]> _data)
+    public void AllClientSend(IDictionary<string,int> _iplist, List<byte[]> _data)
     {
         byte[][] sendDataArray = new byte[_data.Count][];
         byte[] head = BitConverter.GetBytes(sequence);

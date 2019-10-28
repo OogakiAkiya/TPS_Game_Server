@@ -9,7 +9,8 @@ public class Grenade : MonoBehaviour
     private Vector3 pos;
     private Vector3 direction;
     public bool destroyFlg { get; private set; } = false;
-
+    public string player;
+    GameObject explosion;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,9 +24,11 @@ public class Grenade : MonoBehaviour
     {
         if (timer.ElapsedMilliseconds > 5000)
         {
-            GameObject explosion = Instantiate(Resources.Load("Explosion") as GameObject) as GameObject;
+            
+            explosion = Instantiate(Resources.Load("Explosion") as GameObject) as GameObject;
             explosion.SetActive(true);
             explosion.transform.position = this.transform.position;
+           
             destroyFlg = true;
             timer.Reset();
         }
@@ -50,8 +53,9 @@ public class Grenade : MonoBehaviour
         return data.ToArray();
     }
 
-    public void Delete()
+    public void Delete(UserController userController)
     {
+        explosion.GetComponent<Explosion>().userController = userController;
         Destroy(this.gameObject);
     }
 }

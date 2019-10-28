@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
-    [SerializeField] int damage=10;
-    bool explosionFlg = false;
+    [SerializeField] int damage=100;
     protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+    private float range=4.5f;
+    public UserController userController;
+    public List<UserController> targets=new List<UserController>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -18,14 +21,19 @@ public class Explosion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.localScale = this.transform.localScale + new Vector3(0.2f, 0.2f, 0.2f);
-        if (this.transform.localScale.x > 4.0) Destroy(this.gameObject);
+        if (this.transform.localScale.x < range) this.transform.localScale = this.transform.localScale + new Vector3(0.2f, 0.2f, 0.2f);
+        if (this.transform.localScale.x >= range) Destroy(this.gameObject);
+
+        for(int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i].Damage(damage)) userController.killAmount++;
+        }
+        targets.Clear();
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag != "users") return;
-        other.GetComponent<UserController>().hp -= damage;
-        explosionFlg = true;
+        targets.Add(other.GetComponent<UserController>());
     }
 }
