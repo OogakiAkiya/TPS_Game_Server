@@ -92,13 +92,14 @@ public class UDP_ServerController : MonoBehaviour
         if (gameController.users.Length < 2) return;
         //グレネードの送信データ作成
         List<byte> bomData = new List<byte>();
-        
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
         for (int i = 0; i < boms.Length; i++)
         {
             bomData.AddRange(socket.EncodeData(boms[i].GetStatus()));
         }
-        
+
+        //ユーザーデータの作成
+        List<KeyValuePair<string, byte[]>> sendList = new List<KeyValuePair<string, byte[]>>();
         for (int i = 0; i < gameController.users.Length; i++)
         {
 
@@ -106,14 +107,28 @@ public class UDP_ServerController : MonoBehaviour
             List<byte> sendData = new List<byte>();
             sendData.AddRange(user.GetSendData(socket));
             sendData.AddRange(bomData.ToArray());
-            if(user.socket!=null)socket.Send(sendData.ToArray(),user.IPaddr);
+            if(user.socket!=null)sendList.Add(new KeyValuePair<string, byte[]>(user.IPaddr, sendData.ToArray()));
         }
+        //送信処理
+        if (clientDataSendTask != null) Task.WaitAll(clientDataSendTask);
+        clientDataSendTask = Task.Run(() =>
+        {
+            for(int i = 0; i < sendList.Count; i++)
+            {
+                socket.Send(sendList[i].Value, sendList[i].Key);
+            }
+        });
+
+        //送信データフラグの初期化
         for (int i = 0; i < gameController.users.Length; i++)
         {
             UserController user = gameController.users[i];
             user.userData.FlgReflesh();
         }
+        //UDPのシーケンス番号のカウントアップ
         socket.CountUPSequence();
+
+
         /*
         //20人づつデータ送信
         //sendData作成
