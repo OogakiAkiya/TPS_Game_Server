@@ -6,21 +6,32 @@ public class ViewCollider : MonoBehaviour
 {
     //範囲内のuserの取得
     public Dictionary<string, UserController> userMap = new Dictionary<string, UserController>();
+    public GameController gameController;
+
+    private void Update()
+    {
+        gameController=GameObject.Find("Server").GetComponent<GameController>();
+        Debug.Log(this.name + userMap.Count);
+    }
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "users")
         {
-            UserController userController = other.GetComponent<UserController>();
-            if (userMap.ContainsKey(userController.userId)) return;
-            userMap.Add(userController.userId, userController);
+            if (userMap.ContainsKey(other.name)) return;
+
+            for (int i = 0; i < gameController.users.Length; i++)
+            {
+                if(other.name==gameController.users[i].name)userMap.Add(gameController.users[i].name, gameController.users[i]);
+            }
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "users")
         {
-            UserController userController = other.GetComponent<UserController>();
-            userMap.Remove(userController.userId);
+            userMap.Remove(other.name);
         }
 
     }

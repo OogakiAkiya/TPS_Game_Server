@@ -102,6 +102,7 @@ public class UserController : MonoBehaviour
 
         //自分の情報
         data.AddRange(_socket.EncodeData(GetStatus()));
+
         return data.ToArray();
     }
 

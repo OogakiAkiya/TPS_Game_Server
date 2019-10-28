@@ -86,7 +86,7 @@ public class UDP_ServerController : MonoBehaviour
             return 0;
         });
     }
-    private int sendCount = 0;
+
     public void SendAllClientData()
     {
         if (gameController.users.Length < 2) return;
@@ -108,7 +108,9 @@ public class UDP_ServerController : MonoBehaviour
             sendData.AddRange(user.GetSendData(socket));
             sendData.AddRange(bomData.ToArray());
             if(user.socket!=null)sendList.Add(new KeyValuePair<string, byte[]>(user.IPaddr, sendData.ToArray()));
+
         }
+
         //送信処理
         if (clientDataSendTask != null) Task.WaitAll(clientDataSendTask);
         clientDataSendTask = Task.Run(() =>

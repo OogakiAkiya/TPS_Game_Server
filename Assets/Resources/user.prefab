@@ -2607,7 +2607,7 @@ GameObject:
   - component: {fileID: 6694436693524959824}
   m_Layer: 0
   m_Name: View
-  m_TagString: Untagged
+  m_TagString: View
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2620,8 +2620,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4517699447904158803}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1, y: 0, z: 49.8}
-  m_LocalScale: {x: 22.594418, y: 12.54, z: 100}
+  m_LocalPosition: {x: -0.1, y: 0, z: 13.08}
+  m_LocalScale: {x: 20.1, y: 12.6, z: 59.1}
   m_Children: []
   m_Father: {fileID: 1625057686719274731}
   m_RootOrder: 3
@@ -2696,3 +2696,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b70c0d6e7734d48029654895ceaafe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameController: {fileID: 0}
