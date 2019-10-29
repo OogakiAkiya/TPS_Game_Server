@@ -88,49 +88,6 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendAllClientData()
     {
-        
-        if (gameController.users.Length < 2) return;
-        //グレネードの送信データ作成
-        List<byte> bomData = new List<byte>();
-        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
-        for (int i = 0; i < boms.Length; i++)
-        {
-            bomData.AddRange(socket.EncodeData(boms[i].GetStatus()));
-        }
-
-        //ユーザーデータの作成
-        List<KeyValuePair<string, byte[]>> sendList = new List<KeyValuePair<string, byte[]>>();
-        for (int i = 0; i < gameController.users.Length; i++)
-        {
-
-            UserController user = gameController.users[i];
-            List<byte> sendData = new List<byte>();
-            sendData.AddRange(user.GetSendData(socket));
-            sendData.AddRange(bomData.ToArray());
-            if(user.socket!=null)sendList.Add(new KeyValuePair<string, byte[]>(user.IPaddr, sendData.ToArray()));
-
-        }
-
-        //送信処理
-        if (clientDataSendTask != null) Task.WaitAll(clientDataSendTask);
-        clientDataSendTask = Task.Run(() =>
-        {
-            for(int i = 0; i < sendList.Count; i++)
-            {
-                socket.Send(sendList[i].Value, sendList[i].Key);
-            }
-        });
-
-        //送信データフラグの初期化
-        for (int i = 0; i < gameController.users.Length; i++)
-        {
-            UserController user = gameController.users[i];
-            user.userData.FlgReflesh();
-        }
-        //UDPのシーケンス番号のカウントアップ
-        socket.CountUPSequence();
-
-
         /*
         //20人づつデータ送信
         //sendData作成
@@ -163,6 +120,34 @@ public class UDP_ServerController : MonoBehaviour
             return 0;
         });
         */
+        List<byte[]> sendData = new List<byte[]>();
+        List<string> ipList = new List<string>();
+
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+            UserController user = gameController.users[i];
+            sendData.Add(user.GetStatus());
+            if (user.socket != null) ipList.Add(user.IPaddr);
+
+        }
+
+        //グレネードの送信データ作成
+        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
+        for (int i = 0; i < boms.Length; i++)
+        {
+            sendData.Add(boms[i].GetStatus());
+        }
+        if (ipList.Count <= 0) return;
+        if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
+
+        clientCompDataSendTask = Task.Run(() =>
+        {
+            //送信処理
+            socket.AllClientSend(ipList, sendData);
+            return 0;
+        });
+
+
     }
 
     public void SendAllClientScoreData()
@@ -213,7 +198,6 @@ public class UDP_ServerController : MonoBehaviour
                 user.sequence = sequence;
                 user.rotat.x = vect.x;
                 user.rotat.y = vect.y;
-
                 break;
             }
         }
