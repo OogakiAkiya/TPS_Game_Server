@@ -46,11 +46,10 @@ public class UserController : MonoBehaviour
     public int deathAmount { get; private set; } = 0;          //死んだ回数
     public int killAmount { get; set; } = 0;           //殺した回数
 
-    ViewCollider viewCollider;
+
 
     void Start()
     {
-        viewCollider= transform.Find("View").gameObject.GetComponent<ViewCollider>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
@@ -90,7 +89,7 @@ public class UserController : MonoBehaviour
 
     }
 
-
+    /*
     public byte[] GetSendData(UDP_Server _socket)
     {
         List<byte> data = new List<byte>();
@@ -105,7 +104,7 @@ public class UserController : MonoBehaviour
 
         return data.ToArray();
     }
-
+    */
     public Task<int> UPdate()
     {
         return Task.Run(() =>
