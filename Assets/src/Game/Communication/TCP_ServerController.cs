@@ -137,6 +137,13 @@ public class TCP_ServerController : MonoBehaviour
 
                     user.AddInputKeyList(addData);
                 }
+
+                if (recvData[sizeof(byte) + GameHeader.USERID_LENGTH] == (byte)GameHeader.GameCode.CHECKDATA)
+                {
+                    user.SetCheckKey((KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + GameHeader.USERID_LENGTH));
+                }
+
+
             }
 
         }

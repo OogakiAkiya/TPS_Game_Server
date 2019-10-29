@@ -20,6 +20,8 @@ public class UserController : MonoBehaviour
 
     private List<byte[]> recvDataList = new List<byte[]>();
     private List<KEY> inputKeyList = new List<KEY>();
+    private KEY checkKey;
+    private bool checkKeyFlg = false;
     private Animator animator;
     private AnimatorBehaviour animatorBehaviour;
     private UserAnimation userAnimation;
@@ -105,38 +107,50 @@ public class UserController : MonoBehaviour
         return data.ToArray();
     }
     */
+
     public Task<int> UPdate()
     {
         return Task.Run(() =>
         {
 
-        weapon.state.Update();
+            weapon.state.Update();
 
-        //ダウンだけ検出するキーの初期化
-        if (nowKey.HasFlag(KEY.G)) nowKey = nowKey ^ KEY.G;
-        if (nowKey.HasFlag(KEY.R)) nowKey = nowKey ^ KEY.R;
+            //ダウンだけ検出するキーの初期化
+            if (nowKey.HasFlag(KEY.G)) nowKey = nowKey ^ KEY.G;
+            if (nowKey.HasFlag(KEY.R)) nowKey = nowKey ^ KEY.R;
 
-        if (inputKeyList.Count > 0)
-        {
-            //入力値取得
-            KEY inputKey = GetInputKey();
-            //現在のキーを保存
-            KEY oldKey = nowKey;
-            //新しいキー入力を加算
-            nowKey |= inputKey;
-            //二度目のキー入力でフラグOFF
-            nowKey = oldKey ^ inputKey;
+            if (inputKeyList.Count > 0)
+            {
+                //入力値取得
+                KEY inputKey = GetInputKey();
+                //現在のキーを保存
+                KEY oldKey = nowKey;
+                //新しいキー入力を加算
+                nowKey |= inputKey;
+                //二度目のキー入力でフラグOFF
+                nowKey = oldKey ^ inputKey;
 
-        }
+            }
 
-        if (recvDataList.Count > 0)
-        {
-            byte[] recvData = GetRecvData();
-        }
+            if (recvDataList.Count > 0)
+            {
+                byte[] recvData = GetRecvData();
+            }
+
+            if (checkKeyFlg)
+            {
+                nowKey = checkKey;
+                checkKeyFlg = false;
+            }
+
             return 0;
         });
     }
-
+    public void SetCheckKey(KEY _key)
+    {
+        checkKey = _key;
+        checkKeyFlg = true;
+    }
     public string GetIPAddress()
     {
         if (socket == null) return "";

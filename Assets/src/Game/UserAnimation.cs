@@ -37,22 +37,27 @@ public class UserAnimation : MonoBehaviour
 
     }
 
-    public void Update()
+    void Update()
     {
-
-        groundflg = true;
-        if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius/3, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
-
-
+        if (!IsInvoking("GrandCheck")) Invoke("GrandCheck", 1f / 2);
         nowKey = userController.nowKey;
         animationState.Update();
 
     }
 
+    private void GrandCheck()
+    {
+        groundflg = true;
+        if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius / 3, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
+
+    }
+
+    /*
     void OnDrawGizmos()
     {
         Gizmos.DrawSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius);
     }
+    */
     //=================================================================
     //statesの情報設定
     //=================================================================

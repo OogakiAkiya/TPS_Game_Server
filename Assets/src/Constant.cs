@@ -16,8 +16,7 @@ public enum KEY : short
     RIGHT_CLICK = 0x100,
     SPACE=0x200,
     LEFT_BUTTON = 0x400,
-    RIGHT_BUTTON = 0x800 
-
+    RIGHT_BUTTON = 0x800,
 }
 
 public enum ANIMATION_KEY : int
