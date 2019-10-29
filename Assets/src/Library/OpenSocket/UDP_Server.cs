@@ -85,47 +85,13 @@ public class UDP_Server
     }
 
 
-    //本来ならsendPortはportに変わる
-    public void Send(KeyValuePair<IPEndPoint, byte[]> _data)
-    {
-        List<byte> sendData=new List<byte>();
-        sendData.AddRange(BitConverter.GetBytes(sequence));
-        sendData.AddRange(_data.Value);
-        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
-
-        CountUPSequence();
-
-    }
-
-    public void Send(byte[] _data, string _IP, int _port)
-    {
-
-        List<byte> sendData = new List<byte>();
-        sendData.AddRange(BitConverter.GetBytes(sequence));
-        sendData.AddRange(_data);
-        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
-
-        CountUPSequence();
-
-    }
 
     public void Send(byte[] _data, string _IP) {
-        sender.socket.SendAsync(_data, _data.Length, _IP, sendPort);
+        byte[] encodeData = CompressionWrapper.Encode(_data);
+        sender.socket.SendAsync(encodeData,encodeData.Length, _IP, sendPort);
         CountUPSequence();
 
     }
-    public byte[] EncodeData(byte[] _data)
-    {
-        List<byte> data = new List<byte>();
-        byte[] sequenceByte = BitConverter.GetBytes(sequence);
-
-        data.AddRange(BitConverter.GetBytes((_data.Length + sequenceByte.Length + sizeof(int))));
-        data.AddRange(sequenceByte);
-        data.AddRange(_data);
-        return data.ToArray();
-    }
-
-
     //本来ならsendPortはportに変わる
     public void AllClientSend(List<string> _ipList, List<byte[]> _data)
     {
@@ -137,16 +103,26 @@ public class UDP_Server
             sendDataList.AddRange(sequenceByte);
             sendDataList.AddRange(_data[i]);
         }
-        byte[] sendData = sendDataList.ToArray();
+        byte[] encodeData=CompressionWrapper.Encode(sendDataList.ToArray());
         for (int ip = 0; ip < _ipList.Count; ip++)
         {
-            sender.socket.SendAsync(sendData, sendData.Length, _ipList[ip], sendPort);
+            sender.socket.SendAsync(encodeData,encodeData.Length, _ipList[ip], sendPort);
         }
         CountUPSequence();
 
     }
+    public byte[] EncodeData(byte[] _data)
+    {
+        List<byte> data = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+        data.AddRange(BitConverter.GetBytes((_data.Length + sequenceByte.Length + sizeof(int))));
+        data.AddRange(sequenceByte);
+        data.AddRange(_data);
+        return data.ToArray();
+    }
 
     //使ってない
+    /*
     public void AllClientSend(IDictionary<string,int> _iplist, List<byte[]> _data)
     {
         byte[][] sendDataArray = new byte[_data.Count][];
@@ -168,7 +144,30 @@ public class UDP_Server
         }
         CountUPSequence();
     }
+    //本来ならsendPortはportに変わる
+    public void Send(KeyValuePair<IPEndPoint, byte[]> _data)
+    {
+        List<byte> sendData = new List<byte>();
+        sendData.AddRange(BitConverter.GetBytes(sequence));
+        sendData.AddRange(_data.Value);
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
 
+        CountUPSequence();
+
+    }
+
+    public void Send(byte[] _data, string _IP, int _port)
+    {
+
+        List<byte> sendData = new List<byte>();
+        sendData.AddRange(BitConverter.GetBytes(sequence));
+        sendData.AddRange(_data);
+        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
+
+        CountUPSequence();
+
+    }
+    */
 
 
     public void CountUPSequence()

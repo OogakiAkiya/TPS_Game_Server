@@ -11,7 +11,6 @@ public class ViewCollider : MonoBehaviour
     private void Update()
     {
         gameController=GameObject.Find("Server").GetComponent<GameController>();
-        Debug.Log(this.name + userMap.Count);
     }
 
 
@@ -20,7 +19,7 @@ public class ViewCollider : MonoBehaviour
         if (other.tag == "users")
         {
             if (userMap.ContainsKey(other.name)) return;
-
+            if (gameController == null) return;
             for (int i = 0; i < gameController.users.Length; i++)
             {
                 if(other.name==gameController.users[i].name)userMap.Add(gameController.users[i].name, gameController.users[i]);

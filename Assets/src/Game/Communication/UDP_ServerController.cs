@@ -70,15 +70,14 @@ public class UDP_ServerController : MonoBehaviour
         }
 
         //グレネードの送信データ作成
-        
         Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
         for (int i = 0; i < boms.Length; i++)
         {
             sendData.Add(boms[i].GetStatus());
         }
-
         if (ipList.Count <= 0) return;
         if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
+
         clientCompDataSendTask = Task.Run(() =>
         {
             //送信処理
@@ -89,6 +88,7 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendAllClientData()
     {
+        
         if (gameController.users.Length < 2) return;
         //グレネードの送信データ作成
         List<byte> bomData = new List<byte>();
