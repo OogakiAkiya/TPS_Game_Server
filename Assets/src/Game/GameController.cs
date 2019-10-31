@@ -92,6 +92,10 @@ public class GameController : MonoBehaviour
     //addリストへの追加
     public void AddUserList(string _userID,Tcp_Server_Socket _socket)
     {
+        for(int i = 0; i < addUserList.Count; i++)
+        {
+            if (addUserList[i].userID == _userID) return;
+        }
         AddUserState add = new AddUserState();
         add.userID = _userID;
         add.socket = _socket;

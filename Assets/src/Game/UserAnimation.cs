@@ -21,9 +21,14 @@ public class UserAnimation : MonoBehaviour
     private int layerNo = 0;
     private bool jumpFlg = false;
 
+    //コライダー
+    private CapsuleCollider collider = null;
+    private Vector3 center;
+
+
     void Start()
     {
-
+        collider = this.GetComponent<CapsuleCollider>();
         userController = this.GetComponent<UserController>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
@@ -39,7 +44,7 @@ public class UserAnimation : MonoBehaviour
 
     void Update()
     {
-        if (!IsInvoking("GrandCheck")) Invoke("GrandCheck", 1f / 2);
+        if (!IsInvoking("GrandCheck")) Invoke("GrandCheck", 1f / 10);
         nowKey = userController.nowKey;
         animationState.Update();
 
@@ -119,16 +124,31 @@ public class UserAnimation : MonoBehaviour
         animationState.AddState(ANIMATION_KEY.Dying, () =>
         {
             animator.CrossFadeInFixedTime("Dying", 0.0f);
+            if(collider)center = collider.center;
         },
         () =>
         {
+            if (!collider) return;
+            if (animatorBehaviour.NormalizedTime <= 0.1f&& animatorBehaviour.NormalizedTime >= 0.0f)
+            {
+                if(collider.center.y<0.89) collider.center += new Vector3(0, 0.001f, 0);
+            }
+
+            if (animatorBehaviour.NormalizedTime >= 0.4f)
+            {
+                if (collider.center.y < 1.7) collider.center += new Vector3(0, 0.003f, 0);
+            }
+        
             if (animatorBehaviour.NormalizedTime >= 0.95f)
             {
+                collider.center = new Vector3(0,0.85f,0.1f);
                 animationState.ChangeState(ANIMATION_KEY.Idle);
             }
         },
         () =>
         {
+
+            if (collider)collider.center = center;
             userController.hp = 100;
             userController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
