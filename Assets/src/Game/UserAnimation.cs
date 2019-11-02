@@ -96,7 +96,8 @@ public class UserAnimation : MonoBehaviour
         animationState.AddState(ANIMATION_KEY.Reloading,
             () =>
             {
-                animator.CrossFadeInFixedTime("Reloading", 0.0f);
+                if(userController.weapon.type==WEAPONTYPE.MACHINEGUN)animator.CrossFadeInFixedTime("Reloading", 0.0f);
+                if(userController.weapon.type==WEAPONTYPE.HANDGUN) animator.CrossFadeInFixedTime("Pistol Reloadad", 0.0f);
                 userController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
             },
             () =>
