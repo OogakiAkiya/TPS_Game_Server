@@ -551,6 +551,16 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1625057686719274726, guid: 4fdf065e972f64db3b31554c3283bf5d,
+        type: 3}
+      propertyPath: walkSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1625057686719274726, guid: 4fdf065e972f64db3b31554c3283bf5d,
+        type: 3}
+      propertyPath: runSpeed
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fdf065e972f64db3b31554c3283bf5d, type: 3}
 --- !u!1 &1203676615
@@ -932,6 +942,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Terrain
+      objectReference: {fileID: 0}
+    - target: {fileID: 1470316316906124675, guid: 688aa13201f95430eaaa2206a02b457c,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1470316316906124684, guid: 688aa13201f95430eaaa2206a02b457c,
         type: 3}
