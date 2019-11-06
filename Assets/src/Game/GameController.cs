@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
     private UDP_ServerController udp_Controller;
     private TCP_ServerController tcp_Controller;
     private List<AddUserState> addUserList=new List<AddUserState>();
-    private const int userAmount = 100;                                                 //ログイン最大数
+    private const int userAmount = 40;                                                 //ログイン最大数
 
     //デバッグ用
     TimeMeasurment timeMeasurment = new TimeMeasurment();
