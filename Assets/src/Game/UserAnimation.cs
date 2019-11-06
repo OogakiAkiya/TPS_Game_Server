@@ -25,7 +25,6 @@ public class UserAnimation : MonoBehaviour
     private CapsuleCollider collider = null;
     private Vector3 center;
 
-
     void Start()
     {
         collider = this.GetComponent<CapsuleCollider>();
@@ -80,7 +79,10 @@ public class UserAnimation : MonoBehaviour
                 WeaponChange();
                 Atack();
                 //落下
-                if(!groundflg) animationState.ChangeState(ANIMATION_KEY.JumpStay);
+                if (!groundflg) {
+                    animationState.ChangeState(ANIMATION_KEY.JumpStay);
+                    return;
+                }
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
@@ -302,7 +304,6 @@ public class UserAnimation : MonoBehaviour
             });
 
     }
-
     private void AddJump()
     {
         //JumpUP
@@ -310,18 +311,24 @@ public class UserAnimation : MonoBehaviour
             () =>
             {
                 animator.CrossFadeInFixedTime("JumpUP", 0.0f);
+
                 jumpFlg = false;
             },
             () =>
             {
+                //移動
+                if (animatorBehaviour.NormalizedTime >= 0.3f) Move(jumpMoveSpeed);
+
+                //攻撃
                 Atack();
+
+                //
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
                     this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
                     jumpFlg = true;
                 }
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.JumpStay);
-
             }
             );
 
@@ -334,8 +341,8 @@ public class UserAnimation : MonoBehaviour
             () =>
             {
                 Atack();
-                if (groundflg) animationState.ChangeState(ANIMATION_KEY.JumpDown);
                 Move(jumpMoveSpeed);
+                if (groundflg) animationState.ChangeState(ANIMATION_KEY.JumpDown);
             }
             );
 
@@ -348,11 +355,9 @@ public class UserAnimation : MonoBehaviour
             },
             () =>
             {
+                if (animatorBehaviour.NormalizedTime <0.3f) Move(jumpMoveSpeed);
                 Atack();
-                if (animatorBehaviour.NormalizedTime >= 0.95f)
-                {
-                    animationState.ChangeState(ANIMATION_KEY.Idle);
-                }
+                if (animatorBehaviour.NormalizedTime >= 0.95f)animationState.ChangeState(ANIMATION_KEY.Idle);
             }
             );
 

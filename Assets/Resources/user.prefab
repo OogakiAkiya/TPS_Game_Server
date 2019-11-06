@@ -1175,10 +1175,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nowKey: 0
-  jumpPower: 2.5
-  jumpMoveSpeed: 1
-  walkSpeed: 1
-  runSpeed: 2
+  jumpPower: 3
+  jumpMoveSpeed: 2
+  walkSpeed: 2
+  runSpeed: 4
   checkLayer: Ground
   groundCheckRadius: 0.5
   rebornRange: 2
