@@ -18,61 +18,33 @@ public class UserController : MonoBehaviour
     public KEY nowKey { get; private set; } = 0;
     public int hp = 100;
 
-    private List<byte[]> recvDataList = new List<byte[]>();
-    private List<KEY> inputKeyList = new List<KEY>();
-    private KEY checkKey;
-    private bool checkKeyFlg = false;
-    private Animator animator;
-    private AnimatorBehaviour animatorBehaviour;
-    private UserAnimation userAnimation;
+    protected List<byte[]> recvDataList = new List<byte[]>();
+    protected List<KEY> inputKeyList = new List<KEY>();
+    protected KEY checkKey;
+    protected bool checkKeyFlg = false;
+    protected Animator animator;
+    protected UserAnimation userAnimation;
 
-    //Ray判定用
-    private Camera cam;
-    private RectTransform imageRect;
-    private Canvas canvas;
+    //現在の回転度
     public Vector3 rotat = Vector3.zero;
 
     //武器
-    public BaseWeapon weapon { get; private set; }
-    private List<BaseWeapon> weaponList = new List<BaseWeapon>();
-    private int weaponListIndex = 0;
+    public BaseWeapon weapon { get; protected set; }
+    protected List<BaseWeapon> weaponList = new List<BaseWeapon>();
+    protected int weaponListIndex = 0;
 
-    //グレネード
-    private Transform bomPar;
-    private int remainingGrenade = 2;
-    private GameObject grenadePref;
-    bool throwFlg = false;
-    Grenade throwBom = null;
 
     //Score
-    public int deathAmount { get; private set; } = 0;          //死んだ回数
+    public int deathAmount { get; protected set; } = 0;          //死んだ回数
     public int killAmount { get; set; } = 0;           //殺した回数
 
-
-
-    void Start()
+    protected void Init()
     {
         animator = this.GetComponent<Animator>();
-        animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
         userAnimation = this.GetComponent<UserAnimation>();
-
-        //Ray判定用
-        cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
-        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        imageRect = GameObject.Find("Canvas").transform.Find("Pointer").GetComponent<RectTransform>();
-
-        //武器関係
-        weaponList.Add(new MachineGun(Shoot));
-        weaponList.Add(new HandGun(Shoot));
-        weapon = weaponList[weaponListIndex];
-
-        //グレネード
-        grenadePref = Resources.Load("Bom") as GameObject;
-        bomPar = GameObject.FindGameObjectWithTag("BomList").transform;
     }
 
-    // Update is called once per frame
-    private void Update()
+    protected void BaseUpdate()
     {
         //回転
         Vector3 nowRotation = rotat;
@@ -80,33 +52,8 @@ public class UserController : MonoBehaviour
         nowRotation.z = 0;
         this.transform.rotation = Quaternion.Euler(nowRotation);
 
-        //ボム制御を手放す
-        
-        if (throwBom == null) return;
-        if (throwBom.destroyFlg)
-        {
-            throwBom.Delete(this);
-            throwBom = null;
-        }
 
     }
-
-    /*
-    public byte[] GetSendData(UDP_Server _socket)
-    {
-        List<byte> data = new List<byte>();
-        //範囲内のuser情報
-        foreach (KeyValuePair<string, UserController> user in viewCollider.userMap)
-        {
-            data.AddRange(_socket.EncodeData(user.Value.GetStatus()));
-        }
-
-        //自分の情報
-        data.AddRange(_socket.EncodeData(GetStatus()));
-
-        return data.ToArray();
-    }
-    */
 
     public Task<int> UPdate()
     {
@@ -132,11 +79,13 @@ public class UserController : MonoBehaviour
 
             }
 
+            //現在は無駄処理
             if (recvDataList.Count > 0)
             {
                 byte[] recvData = GetRecvData();
             }
 
+            //キーチェック
             if (checkKeyFlg)
             {
                 nowKey = checkKey;
@@ -189,33 +138,6 @@ public class UserController : MonoBehaviour
         recvDataList.RemoveAt(0);
         return returnData;
     }
-
-
-    public byte[] GetStatus()
-    {
-        List<byte> returnData = new List<byte>();
-        GameHeader header = new GameHeader();
-        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
-        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
-        returnData.AddRange(header.GetHeader());
-        returnData.AddRange(userData.GetData());
-        if (weapon != null) returnData.AddRange(weapon.GetStatus());
-        return returnData.ToArray();
-    }
-
-    public byte[] GetStatusComplete()
-    {
-        List<byte> returnData = new List<byte>();
-        GameHeader header = new GameHeader();
-        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.CHECKDATA);
-        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
-        returnData.AddRange(header.GetHeader());
-        returnData.AddRange(userData.GetCompleteData());
-        if (weapon != null) returnData.AddRange(weapon.GetStatus());
-        return returnData.ToArray();
-
-    }
-
     public byte[] GetScore()
     {
         List<byte> returnData = new List<byte>();
@@ -226,62 +148,6 @@ public class UserController : MonoBehaviour
         returnData.AddRange(BitConverter.GetBytes(killAmount));
 
         return returnData.ToArray();
-    }
-
-    public void Shoot()
-    {
-        //レイヤー変更
-        this.gameObject.layer = LayerMask.NameToLayer("Default");
-
-        //playerの移動,回転
-        Vector3 nowRotation = this.transform.localEulerAngles;
-        this.transform.rotation = Quaternion.Euler(rotat);
-
-        //レイの作成
-        Ray ray = cam.ScreenPointToRay(GetUIScreenPos(imageRect));
-        //レイの可視化
-        //Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow,10f);
-
-        RaycastHit hit = new RaycastHit();
-
-        if (Physics.Raycast(ray, out hit, weapon.range, 1 << 10))
-        {
-            if (hit.collider.tag == "users")
-            {
-                if (hit.collider.GetComponent<UserController>().Damage(weapon.power)) killAmount++;
-            }
-        }
-
-        //playerの移動,回転を戻す
-        this.transform.rotation = Quaternion.Euler(nowRotation);
-        this.gameObject.layer = LayerMask.NameToLayer("user");
-
-    }
-
-    private Vector2 GetUIScreenPos(RectTransform rt)
-    {
-
-        //UIのCanvasに使用されるカメラは Hierarchy 上には表示されないので、
-        //変換したいUIが所属しているcanvasを映しているカメラを取得し、 WorldToScreenPoint() で座標変換する
-        return RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rt.position);
-
-    }
-
-    public bool Damage(int _damage = 1)
-    {
-        //敵を倒した時trueを返す
-        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
-
-        hp -= _damage;
-        if (hp <= 0)
-        {
-            hp = 0;
-            userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
-            deathAmount++;
-            return true;
-        }
-
-        return false;
     }
 
     public void ChangeWeapon(bool _up = true)
@@ -302,21 +168,44 @@ public class UserController : MonoBehaviour
         weapon = weaponList[weaponListIndex];
     }
 
-    public void ThrowGrenade()
+
+    //virtual
+    public virtual byte[] GetStatus()
     {
-        if (throwBom) return;
-        if (remainingGrenade <= 0) return;
-        if (!grenadePref) return;
-        var obj= Instantiate(grenadePref,bomPar) as GameObject;
-        throwBom = obj.GetComponent<Grenade>();
-        throwBom.transform.position = this.transform.position+this.transform.forward + new Vector3(0, 1, 0);
-        throwBom.transform.rotation = this.transform.rotation;
-        throwBom.name = System.String.Format("{0, -" + (GameHeader.USERID_LENGTH-2) + "}", this.name) + remainingGrenade;
-        remainingGrenade--;
+        List<byte> returnData = new List<byte>();
+        GameHeader header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.BASICDATA);
+        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
+        returnData.AddRange(header.GetHeader());
+        returnData.AddRange(userData.GetData());
+        if (weapon != null) returnData.AddRange(weapon.GetStatus());
+        return returnData.ToArray();
     }
-    public bool GetThrowFlg()
+
+    public virtual byte[] GetStatusComplete()
     {
-        return throwBom;
+        List<byte> returnData = new List<byte>();
+        GameHeader header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.name, (byte)GameHeader.GameCode.CHECKDATA);
+        userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
+        returnData.AddRange(header.GetHeader());
+        returnData.AddRange(userData.GetCompleteData());
+        if (weapon != null) returnData.AddRange(weapon.GetStatus());
+        return returnData.ToArray();
+
     }
+
+
+    public virtual void Atack()
+    {
+    }
+
+
+    public virtual bool Damage(int _damage = 1)
+    {
+        return false;
+    }
+
+
 }
 
