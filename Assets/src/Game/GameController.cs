@@ -15,8 +15,8 @@ public class GameController : MonoBehaviour
        public Tcp_Server_Socket socket;
     }
     public GameObject userListObj;                                                          //userを追加する親の参照
-    public UserController[] users;                                                          //ログインしているユーザー
-    private UserController[] notActiveUsers=new UserController[userAmount];                 //ログイン待ちインスタンス
+    public BaseController[] users;                                                          //ログインしているユーザー
+    private BaseController[] notActiveUsers=new BaseController[userAmount];                 //ログイン待ちインスタンス
     private int notActiveIndex= userAmount;
     private UDP_ServerController udp_Controller;
     private TCP_ServerController tcp_Controller;
@@ -44,10 +44,10 @@ public class GameController : MonoBehaviour
             add.name = "___" + i;
             add.transform.position = new Vector3(i, 0.0f, 0.0f);
             add.SetActive(false);
-            notActiveUsers[i] = add.GetComponent<UserController>();
+            notActiveUsers[i] = add.GetComponent<BaseController>();
 
         }
-        users = userListObj.GetComponentsInChildren<UserController>();
+        users = userListObj.GetComponentsInChildren<BaseController>();
 
     }
 
@@ -120,7 +120,7 @@ public class GameController : MonoBehaviour
 
     private void UsersUpdate()
     {
-        users = userListObj.GetComponentsInChildren<UserController>();
+        users = userListObj.GetComponentsInChildren<BaseController>();
     }
 
     public void Second30Invoke()

@@ -6,14 +6,14 @@ using System.Net;
 using System.Threading.Tasks;
 
 
-public class UserController : MonoBehaviour
+public class BaseController : MonoBehaviour
 {
     public UserBodyData userData = new UserBodyData();
 
 
-    public string userId="";
-    public string IPaddr="";
-    public uint sequence=0;
+    public string userId = "";
+    public string IPaddr = "";
+    public uint sequence = 0;
     public Tcp_Server_Socket socket;
     public KEY nowKey { get; private set; } = 0;
     public int hp = 100;
@@ -23,7 +23,7 @@ public class UserController : MonoBehaviour
     protected KEY checkKey;
     protected bool checkKeyFlg = false;
     protected Animator animator;
-    protected UserAnimation userAnimation;
+    protected BaseAnimation userAnimation;
 
     //現在の回転度
     public Vector3 rotat = Vector3.zero;
@@ -41,7 +41,7 @@ public class UserController : MonoBehaviour
     protected void Init()
     {
         animator = this.GetComponent<Animator>();
-        userAnimation = this.GetComponent<UserAnimation>();
+        userAnimation = this.GetComponent<BaseAnimation>();
     }
 
     protected void BaseUpdate()
@@ -105,12 +105,12 @@ public class UserController : MonoBehaviour
         if (socket == null) return "";
         return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
     }
-    public void SetUserData(string _userId,Tcp_Server_Socket _socket)
+    public void SetUserData(string _userId, Tcp_Server_Socket _socket)
     {
         userId = _userId;
         this.name = userId;
         socket = _socket;
-        IPaddr= ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
+        IPaddr = ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
     }
 
     public void AddRecvData(byte[] _addData)

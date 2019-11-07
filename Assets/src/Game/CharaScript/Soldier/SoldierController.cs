@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierController : UserController
+public class SoldierController : BaseController
 {
     //Ray判定用
     private Camera cam;
@@ -93,7 +93,7 @@ public class SoldierController : UserController
         {
             if (hit.collider.tag == "users")
             {
-                if (hit.collider.GetComponent<UserController>().Damage(weapon.power)) killAmount++;
+                if (hit.collider.GetComponent<BaseController>().Damage(weapon.power)) killAmount++;
             }
         }
 

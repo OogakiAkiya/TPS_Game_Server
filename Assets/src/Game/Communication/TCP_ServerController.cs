@@ -128,7 +128,7 @@ public class TCP_ServerController : MonoBehaviour
         string userId = System.Text.Encoding.UTF8.GetString(b_userId);
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            UserController user = gameController.users[i];
+            BaseController user = gameController.users[i];
             if (user.userId.Equals(userId.Trim()))
             {
                 if (recvData[sizeof(byte) + GameHeader.USERID_LENGTH] == (byte)GameHeader.GameCode.BASICDATA)

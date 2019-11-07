@@ -13,7 +13,7 @@ public class UDP_ServerController : MonoBehaviour
     private UDP_Server socket = new UDP_Server();
     private GameController gameController;
     private StateMachine<GameHeader.ID> state = new StateMachine<GameHeader.ID>();
-    private KeyValuePair<IPEndPoint,byte[]> recvData;
+    private KeyValuePair<IPEndPoint, byte[]> recvData;
     private GameHeader header = new GameHeader();
 
     private Transform bomList;
@@ -53,7 +53,7 @@ public class UDP_ServerController : MonoBehaviour
             }
             return 0;
         });
-        
+
     }
 
     public void SendClientCompData()
@@ -63,9 +63,9 @@ public class UDP_ServerController : MonoBehaviour
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            UserController user = gameController.users[i];
+            BaseController user = gameController.users[i];
             sendData.Add(user.GetStatusComplete());
-            if (user.socket != null)ipList.Add(user.IPaddr);
+            if (user.socket != null) ipList.Add(user.IPaddr);
 
         }
 
@@ -125,7 +125,7 @@ public class UDP_ServerController : MonoBehaviour
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            UserController user = gameController.users[i];
+            BaseController user = gameController.users[i];
             sendData.Add(user.GetStatus());
             if (user.socket != null) ipList.Add(user.IPaddr);
 
@@ -157,7 +157,7 @@ public class UDP_ServerController : MonoBehaviour
         List<byte[]> sendData = new List<byte[]>();
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            UserController user = gameController.users[i];
+            BaseController user = gameController.users[i];
             sendData.Add(user.GetScore());
             if (user.socket != null) ipList.Add(user.IPaddr);
         }
@@ -191,7 +191,7 @@ public class UDP_ServerController : MonoBehaviour
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            UserController user = gameController.users[i];
+            BaseController user = gameController.users[i];
             if (user.userId == userName)
             {
                 if (!SequenceCheck(user.sequence, sequence)) return;

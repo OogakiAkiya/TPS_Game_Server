@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UserAnimation : MonoBehaviour
+public class BaseAnimation : MonoBehaviour
 {
     public KEY nowKey = 0;
     public StateMachine<ANIMATION_KEY> animationState { get; private set; } = new StateMachine<ANIMATION_KEY>();
-    private UserController userController;
+    private BaseController userController;
     protected Animator animator;
     protected AnimatorBehaviour animatorBehaviour;
 
@@ -23,7 +23,7 @@ public class UserAnimation : MonoBehaviour
 
     protected void Init()
     {
-        userController = this.GetComponent<UserController>();
+        userController = this.GetComponent<BaseController>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
 

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierAnimation : UserAnimation
+public class SoldierAnimation : BaseAnimation
 {
     private SoldierController soldierController;
     private bool jumpFlg = false;
 
     //コライダー
-    protected CapsuleCollider collider = null;
+    protected CapsuleCollider collider;
     protected Vector3 center;
 
     // Start is called before the first frame update
@@ -119,8 +119,6 @@ public class SoldierAnimation : UserAnimation
             soldierController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
         );
-
-
     }
 
 

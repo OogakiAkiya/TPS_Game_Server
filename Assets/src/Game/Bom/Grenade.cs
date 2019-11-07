@@ -53,7 +53,7 @@ public class Grenade : MonoBehaviour
         return data.ToArray();
     }
 
-    public void Delete(UserController userController)
+    public void Delete(BaseController userController)
     {
         explosion.GetComponent<Explosion>().userController = userController;
         Destroy(this.gameObject);

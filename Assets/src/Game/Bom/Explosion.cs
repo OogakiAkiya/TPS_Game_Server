@@ -7,8 +7,8 @@ public class Explosion : MonoBehaviour
     [SerializeField] int damage=100;
     protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
     private float range=4.5f;
-    public UserController userController;
-    public List<UserController> targets=new List<UserController>();
+    public BaseController userController;
+    public List<BaseController> targets=new List<BaseController>();
 
 
     // Start is called before the first frame update
@@ -34,6 +34,6 @@ public class Explosion : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag != "users") return;
-        targets.Add(other.GetComponent<UserController>());
+        targets.Add(other.GetComponent<BaseController>());
     }
 }

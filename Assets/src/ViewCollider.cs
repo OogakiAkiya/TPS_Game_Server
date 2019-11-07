@@ -5,7 +5,7 @@ using UnityEngine;
 public class ViewCollider : MonoBehaviour
 {
     //範囲内のuserの取得
-    public Dictionary<string, UserController> userMap = new Dictionary<string, UserController>();
+    public Dictionary<string, BaseController> userMap = new Dictionary<string, BaseController>();
     public GameController gameController;
 
     private void Update()
