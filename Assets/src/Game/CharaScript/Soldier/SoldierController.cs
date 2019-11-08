@@ -92,9 +92,10 @@ public class SoldierController : BaseController
 
         if (Physics.Raycast(ray, out hit, weapon.range, 1 << 10))
         {
+
             if (hit.collider.tag == "users")
             {
-                if (hit.collider.GetComponent<BaseController>().Damage(weapon.power)) killAmount++;
+                if (hit.collider.transform.GetComponent<BaseController>().Damage(weapon.power)) killAmount++;
             }
         }
 
