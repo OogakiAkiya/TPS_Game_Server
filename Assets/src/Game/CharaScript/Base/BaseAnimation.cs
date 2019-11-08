@@ -55,7 +55,7 @@ public class BaseAnimation : MonoBehaviour
     }
 
 
-    protected void Move(float _moveSpeed)
+    protected virtual void Move(float _moveSpeed)
     {
         //移動量算出
         Vector3 velocity = Vector3.zero;

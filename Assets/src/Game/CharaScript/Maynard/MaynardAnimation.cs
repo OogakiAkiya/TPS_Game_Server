@@ -110,7 +110,6 @@ public class MaynardAnimation : BaseAnimation
                 if (InputTemplate(KEY.SHIFT, ANIMATION_KEY.Run)) return;
 
                 if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
                 if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
                 if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
                 Move(walkSpeed);
@@ -128,25 +127,11 @@ public class MaynardAnimation : BaseAnimation
                 }
                 Move(walkSpeed);
             });
-        animationState.AddState(ANIMATION_KEY.WalkBack,
-            _update: () =>
-            {
-                if (WalkInputTemplate()) return;
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.S))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
-                }
-
-                Move(walkSpeed);
-            });
         animationState.AddState(ANIMATION_KEY.WalkLeft,
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
                 if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
                 if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(walkSpeed);
             });
@@ -155,7 +140,6 @@ public class MaynardAnimation : BaseAnimation
             {
                 if (WalkInputTemplate()) return;
                 if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
                 if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(walkSpeed);
             });
@@ -184,7 +168,6 @@ public class MaynardAnimation : BaseAnimation
                 }
 
                 if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
                 if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
                 if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
                 Move(runSpeed);
@@ -203,25 +186,11 @@ public class MaynardAnimation : BaseAnimation
 
                 Move(runSpeed);
             });
-        animationState.AddState(ANIMATION_KEY.RunBack,
-            _update: () =>
-            {
-                if (RunInputTemplate()) return;
-
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.S))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
-                }
-                Move(runSpeed);
-            });
         animationState.AddState(ANIMATION_KEY.RunLeft,
             _update: () =>
             {
                 if (RunInputTemplate()) return;
                 if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
                 if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(runSpeed);
             });
@@ -230,7 +199,6 @@ public class MaynardAnimation : BaseAnimation
             {
                 if (RunInputTemplate()) return;
                 if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
                 if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(runSpeed);
             });
@@ -294,9 +262,6 @@ public class MaynardAnimation : BaseAnimation
             );
 
     }
-
-
-
 
     private bool WalkInputTemplate()
     {
@@ -375,4 +340,16 @@ public class MaynardAnimation : BaseAnimation
         */
     }
 
+    protected override void Move(float _moveSpeed)
+    {
+        //移動量算出
+        Vector3 velocity = Vector3.zero;
+        if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
+        if (nowKey.HasFlag(KEY.A)) velocity += -this.transform.right;
+        if (nowKey.HasFlag(KEY.D)) velocity += this.transform.right;
+
+        //移動
+        this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
+
+    }
 }
