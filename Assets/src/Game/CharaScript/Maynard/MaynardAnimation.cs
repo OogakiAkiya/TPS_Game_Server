@@ -2,27 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierAnimation : BaseAnimation
+public class MaynardAnimation : BaseAnimation
 {
-    private SoldierController soldierController;
-    private bool jumpFlg = false;
-
-    //コライダー
-    protected CapsuleCollider collider;
-    protected Vector3 center;
+    private MaynardController maynardController;
+    private bool jumpFlg=false;
 
     // Start is called before the first frame update
-    public void Start()
+    void Start()
     {
         base.Init();
-
-        collider = this.GetComponent<CapsuleCollider>();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        soldierController = this.GetComponent<SoldierController>();
+        maynardController = this.GetComponent<MaynardController>();
     }
 
     // Update is called once per frame
-    public void Update()
+    void Update()
     {
         base.BaseUpdate();
     }
@@ -61,20 +55,16 @@ public class SoldierAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Reloading,
             () =>
             {
-                if (soldierController.weapon.type == WEAPONTYPE.MACHINEGUN) animator.CrossFadeInFixedTime("Reloading", 0.0f);
-                if (soldierController.weapon.type == WEAPONTYPE.HANDGUN) animator.CrossFadeInFixedTime("Pistol Reloadad", 0.0f);
-                soldierController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
+                maynardController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
             },
             () =>
             {
-                if (animatorBehaviour.NormalizedTime >= 0.95f)
-                {
-                    animationState.ChangeState(ANIMATION_KEY.Idle);
-                }
+
+                animationState.ChangeState(ANIMATION_KEY.Idle);
             },
             () =>
             {
-                soldierController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                maynardController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
             );
 
@@ -90,39 +80,17 @@ public class SoldierAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Dying, () =>
         {
             animator.CrossFadeInFixedTime("Dying", 0.0f);
-            if (collider) center = collider.center;
         },
         () =>
         {
-            if (!collider) return;
-            if (animatorBehaviour.NormalizedTime <= 0.1f && animatorBehaviour.NormalizedTime >= 0.0f)
-            {
-                if (collider.center.y < 0.89) collider.center += new Vector3(0, 0.001f, 0);
-            }
-
-            if (animatorBehaviour.NormalizedTime >= 0.4f)
-            {
-                if (collider.center.y < 1.7) collider.center += new Vector3(0, 0.003f, 0);
-            }
-
-            if (animatorBehaviour.NormalizedTime >= 0.95f)
-            {
-                collider.center = new Vector3(0, 0.85f, 0.1f);
-                animationState.ChangeState(ANIMATION_KEY.Idle);
-            }
         },
         () =>
         {
-
-            if (collider) collider.center = center;
-            soldierController.hp = 100;
-            soldierController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+            maynardController.hp = 100;
+            maynardController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
         );
     }
-
-
-
     private void AddWalkState()
     {
         //Walk
@@ -327,11 +295,16 @@ public class SoldierAnimation : BaseAnimation
 
     }
 
+
+
+
     private bool WalkInputTemplate()
     {
+        
         Atack();
         //ジャンプ
         if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
+        
         //WASDのどれか一つでも押されているかチェック
         if (ExtractionKey(nowKey, 12) == 0)
         {
@@ -340,12 +313,13 @@ public class SoldierAnimation : BaseAnimation
         }
 
         //SHIFTが押されているかチェック
+        
         if (nowKey.HasFlag(KEY.SHIFT))
         {
             animationState.ChangeState(ANIMATION_KEY.Run);
             return true;
         }
-
+        
         return false;
     }
 
@@ -374,10 +348,11 @@ public class SoldierAnimation : BaseAnimation
 
     private void Atack()
     {
+        /*
         //グレネード投擲
         if (nowKey.HasFlag(KEY.G))
         {
-            soldierController.ThrowGrenade();
+            maynardController.ThrowGrenade();
         }
 
         //リロード
@@ -386,18 +361,18 @@ public class SoldierAnimation : BaseAnimation
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
-        if (soldierController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
+        if (maynardController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
         {
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
 
         //既に攻撃していた場合の処理
-        if (soldierController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (maynardController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
 
         //攻撃
-        if (nowKey.HasFlag(KEY.LEFT_CLICK)) soldierController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
-
+        if (nowKey.HasFlag(KEY.LEFT_CLICK)) maynardController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+        */
     }
 
 }

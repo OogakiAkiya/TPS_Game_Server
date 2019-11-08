@@ -168,6 +168,22 @@ public class BaseController : MonoBehaviour
         weapon = weaponList[weaponListIndex];
     }
 
+    public bool Damage(int _damage = 1)
+    {
+        //敵を倒した時trueを返す
+        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
+
+        hp -= _damage;
+        if (hp <= 0)
+        {
+            hp = 0;
+            userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
+            deathAmount++;
+            return true;
+        }
+
+        return false;
+    }
 
     //virtual
     public virtual byte[] GetStatus()
@@ -196,15 +212,7 @@ public class BaseController : MonoBehaviour
     }
 
 
-    public virtual void Atack()
-    {
-    }
-
-
-    public virtual bool Damage(int _damage = 1)
-    {
-        return false;
-    }
+    public virtual void Atack() { }
 
 
 }

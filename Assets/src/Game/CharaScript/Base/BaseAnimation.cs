@@ -6,7 +6,7 @@ public class BaseAnimation : MonoBehaviour
 {
     public KEY nowKey = 0;
     public StateMachine<ANIMATION_KEY> animationState { get; private set; } = new StateMachine<ANIMATION_KEY>();
-    private BaseController userController;
+    private BaseController baseController;
     protected Animator animator;
     protected AnimatorBehaviour animatorBehaviour;
 
@@ -23,7 +23,7 @@ public class BaseAnimation : MonoBehaviour
 
     protected void Init()
     {
-        userController = this.GetComponent<BaseController>();
+        baseController = this.GetComponent<BaseController>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
 
@@ -38,7 +38,7 @@ public class BaseAnimation : MonoBehaviour
     protected void BaseUpdate()
     {
         if (!IsInvoking("GrandCheck")) Invoke("GrandCheck", 1f / 10);
-        nowKey = userController.nowKey;
+        nowKey = baseController.nowKey;
         animationState.Update();
     }
 
@@ -70,9 +70,30 @@ public class BaseAnimation : MonoBehaviour
 
     protected void WeaponChange()
     {
-        if (nowKey.HasFlag(KEY.LEFT_BUTTON)) userController.ChangeWeapon(false);
-        if (nowKey.HasFlag(KEY.RIGHT_BUTTON)) userController.ChangeWeapon(true);
+        if (nowKey.HasFlag(KEY.LEFT_BUTTON)) baseController.ChangeWeapon(false);
+        if (nowKey.HasFlag(KEY.RIGHT_BUTTON)) baseController.ChangeWeapon(true);
     }
+
+    protected bool InputTemplate(KEY _checkKey, ANIMATION_KEY _animationKey)
+    {
+        if (nowKey.HasFlag(_checkKey))
+        {
+            animationState.ChangeState(_animationKey);
+            return true;
+        }
+        return false;
+    }
+
+    protected bool InputTemplate(KEY _checkKey, KEY _checkKey2, ANIMATION_KEY _animationKey)
+    {
+        if (nowKey.HasFlag(_checkKey) && nowKey.HasFlag(_checkKey2))
+        {
+            animationState.ChangeState(_animationKey);
+            return true;
+        }
+        return false;
+    }
+
 
     protected virtual void AddStates() { }
     /*
@@ -81,7 +102,4 @@ public class BaseAnimation : MonoBehaviour
         Gizmos.DrawSphere(this.transform.position - new Vector3(0, groundCheckRadius, 0), groundCheckRadius);
     }
     */
-    //=================================================================
-    //statesの情報設定
-    //=================================================================
 }
