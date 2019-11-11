@@ -155,3 +155,44 @@ public class HandGun : BaseWeapon
 
 }
 
+public class Claw : BaseWeapon
+{
+    public Claw(Action _atack)
+    {
+        interval = 2000;
+        power = 10;
+        reloadTime = 1000;      //1秒
+        magazine = 99;
+        remainingBullet = magazine;
+        range = 10;
+        atackMethod = _atack;
+        type = WEAPONTYPE.CLAW;
+
+        state.AddState(WEAPONSTATE.WAIT);
+        state.AddState(WEAPONSTATE.ATACK,
+            () =>
+            {
+                timer.Restart();
+                atackMethod();
+            },
+            () =>
+            {
+            },
+            () =>
+            {
+                timer.Stop();
+            }
+            );
+
+        state.ChangeState(WEAPONSTATE.WAIT);
+    }
+
+    public override byte[] GetStatus()
+    {
+        return GetStatus(type);
+    }
+
+}
+
+
+

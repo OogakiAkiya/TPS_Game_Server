@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MaynardAnimation : BaseAnimation
 {
+
     private MaynardController maynardController;
     private bool jumpFlg=false;
 
@@ -43,31 +44,27 @@ public class MaynardAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
-                if (ExtractionKey(nowKey, 12) != 0)
-                {
-                    if (nowKey.HasFlag(KEY.W) && nowKey.HasFlag(KEY.S) || nowKey.HasFlag(KEY.A) && nowKey.HasFlag(KEY.D)) return;
-                    animationState.ChangeState(ANIMATION_KEY.Walk);
-                }
+                if (nowKey.HasFlag(KEY.W)) animationState.ChangeState(ANIMATION_KEY.Walk);
             });
 
-
-
-        animationState.AddState(ANIMATION_KEY.Reloading,
+        animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                maynardController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
+                maynardController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
             {
-
-                animationState.ChangeState(ANIMATION_KEY.Idle);
+                if (animatorBehaviour.NormalizedTime >= 0.9f)
+                {
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
+                }
             },
             () =>
             {
                 maynardController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
-            );
-
+        );
         //Walk関係
         AddWalkState();
 
@@ -83,6 +80,10 @@ public class MaynardAnimation : BaseAnimation
         },
         () =>
         {
+            if (animatorBehaviour.NormalizedTime >= 0.95f)
+            {
+                animationState.ChangeState(ANIMATION_KEY.Idle);
+            }
         },
         () =>
         {
@@ -168,9 +169,6 @@ public class MaynardAnimation : BaseAnimation
                 //移動
                 if (animatorBehaviour.NormalizedTime >= 0.3f) Move(jumpMoveSpeed);
 
-                //攻撃
-                Atack();
-
                 //
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
@@ -189,7 +187,6 @@ public class MaynardAnimation : BaseAnimation
             },
             () =>
             {
-                Atack();
                 Move(jumpMoveSpeed);
                 if (groundflg) animationState.ChangeState(ANIMATION_KEY.JumpDown);
             }
@@ -205,7 +202,6 @@ public class MaynardAnimation : BaseAnimation
             () =>
             {
                 if (animatorBehaviour.NormalizedTime < 0.3f) Move(jumpMoveSpeed);
-                Atack();
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.Idle);
             }
             );
@@ -280,13 +276,15 @@ public class MaynardAnimation : BaseAnimation
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
-
+        */
         //既に攻撃していた場合の処理
         if (maynardController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
-
         //攻撃
-        if (nowKey.HasFlag(KEY.LEFT_CLICK)) maynardController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
-        */
+        if (nowKey.HasFlag(KEY.LEFT_CLICK))
+        {
+            animationState.ChangeState(ANIMATION_KEY.Attack);
+        }
+        
     }
 
     protected override void Move(float _moveSpeed)

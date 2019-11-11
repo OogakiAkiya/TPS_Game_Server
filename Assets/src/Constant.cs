@@ -36,6 +36,7 @@ public enum ANIMATION_KEY : int
     JumpStay,
     JumpDown,
     Reloading,
+    Attack,
     Dying
 }
 
@@ -44,8 +45,8 @@ public enum WEAPONTYPE:int
 {
     BASE,
     MACHINEGUN,
-    HANDGUN
-
+    HANDGUN,
+    CLAW
 }
 
 public enum WEAPONSTATE : int
@@ -53,6 +54,5 @@ public enum WEAPONSTATE : int
     WAIT,
     ATACK,
     RELOAD
-
 }
 

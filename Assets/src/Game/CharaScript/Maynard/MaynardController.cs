@@ -10,8 +10,7 @@ public class MaynardController : BaseController
         base.Init();
 
         //武器関係
-        weaponList.Add(new MachineGun(Atack));
-        weaponList.Add(new HandGun(Atack));
+        weaponList.Add(new Claw(Atack));
         weapon = weaponList[weaponListIndex];
 
     }
