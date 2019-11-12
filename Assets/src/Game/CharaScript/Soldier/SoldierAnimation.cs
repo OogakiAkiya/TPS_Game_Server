@@ -289,7 +289,9 @@ public class SoldierAnimation : BaseAnimation
                 //
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
-                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    //this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    this.GetComponent<Rigidbody>().AddForce(this.transform.up*jumpPower*100);
+
                     jumpFlg = true;
                 }
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.JumpStay);

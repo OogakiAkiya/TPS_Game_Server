@@ -30,8 +30,6 @@ public class AnimatorBehaviour : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (IsTransition == false)
-        {
             //アニメーションの再生時間が10秒(length)だとしてアプリケーションが始まってからの経過時間が22秒
             //アニメーションが再生された時間14秒
             //22-14=8
@@ -40,7 +38,6 @@ public class AnimatorBehaviour : StateMachineBehaviour
             NormalizedTime = ((Time.time - enterTime) * stateInfo.speed) / stateInfo.length;
             IsTransition = animator.IsInTransition(layerIndex);
             StateUpdate(animator, stateInfo, layerIndex);
-        }
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
