@@ -10,8 +10,8 @@ public class BaseController : MonoBehaviour
 {
     public UserBodyData userData = new UserBodyData();
     public string userId = "";
-    public string IPaddr = "";
-    public int port=-1;
+    private string IPaddr = "";
+    public int port = -1;
     public uint sequence = 0;
     public Tcp_Server_Socket socket;
     public KEY nowKey { get; private set; } = 0;
