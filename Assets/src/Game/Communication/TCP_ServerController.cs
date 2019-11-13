@@ -92,7 +92,7 @@ public class TCP_ServerController : MonoBehaviour
         }
         if (addFlg)
         {
-            gameController.AddUserList(userId.Trim(), sendSocket);
+            gameController.AddUserList(header.gameCode,userId.Trim(), sendSocket);
             //gameController.UsersUpdate();
 
         }

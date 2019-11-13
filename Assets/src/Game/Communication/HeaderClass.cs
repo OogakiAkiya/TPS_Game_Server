@@ -23,6 +23,12 @@ public class GameHeader
         LOGINFAILURE=0x0003
     }
 
+    public enum UserTypeCode : byte
+    {
+        SOLDIER = 0x0001,
+        MAYNARD = 0x0002
+    }
+
 
     public enum GameCode : byte
     {
