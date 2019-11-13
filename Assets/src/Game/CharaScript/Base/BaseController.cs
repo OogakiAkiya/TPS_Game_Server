@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 public class BaseController : MonoBehaviour
 {
     public UserBodyData userData = new UserBodyData();
-
-
     public string userId = "";
     public string IPaddr = "";
+    public int port=-1;
     public uint sequence = 0;
     public Tcp_Server_Socket socket;
     public KEY nowKey { get; private set; } = 0;
@@ -100,11 +99,6 @@ public class BaseController : MonoBehaviour
         checkKey = _key;
         checkKeyFlg = true;
     }
-    public string GetIPAddress()
-    {
-        if (socket == null) return "";
-        return ((IPEndPoint)socket.socket.RemoteEndPoint).Address.ToString();
-    }
     public void SetUserData(string _userId, Tcp_Server_Socket _socket)
     {
         userId = _userId;
@@ -183,6 +177,12 @@ public class BaseController : MonoBehaviour
         }
 
         return false;
+    }
+
+    public KeyValuePair<string, int> GetUserAddress()
+    {
+        KeyValuePair<string, int> address = new KeyValuePair<string, int>(IPaddr,port);
+        return address;
     }
 
     //virtual

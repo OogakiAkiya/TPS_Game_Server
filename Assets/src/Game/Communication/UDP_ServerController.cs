@@ -9,7 +9,6 @@ using UnityEngine;
 public class UDP_ServerController : MonoBehaviour
 {
     [SerializeField] int port = 12344;
-    [SerializeField] int sendPort = 12343;
     private UDP_Server socket = new UDP_Server();
     private GameController gameController;
     private StateMachine<GameHeader.ID> state = new StateMachine<GameHeader.ID>();
@@ -28,7 +27,7 @@ public class UDP_ServerController : MonoBehaviour
     {
         bomList = GameObject.FindGameObjectWithTag("BomList").transform;
         gameController = this.GetComponent<GameController>();
-        socket.Init(port, sendPort);
+        socket.Init(port);
 
         state.AddState(GameHeader.ID.INIT, () => { }, InitUpdate);
         state.AddState(GameHeader.ID.GAME, () => { }, GameUpdate);
@@ -58,14 +57,17 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendClientCompData()
     {
+        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
         List<byte[]> sendData = new List<byte[]>();
-        List<string> ipList = new List<string>();
+        //List<string> ipList = new List<string>();
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
+
             sendData.Add(user.GetStatusComplete());
-            if (user.socket != null) ipList.Add(user.IPaddr);
+            if (user.port >= 0)ipList.Add(user.GetUserAddress());
+            
 
         }
 
@@ -88,47 +90,17 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendAllClientData()
     {
-        /*
-        //20人づつデータ送信
-        //sendData作成
         List<byte[]> sendData = new List<byte[]>();
-        List<string> ipList = new List<string>();
-        for (int i = 0; i < gameController.users.Length; i++)
-        {
-            UserController user = gameController.users[i];
-            sendData.Add(user.GetStatus());
-            if (user.socket != null)
-            {
-                if (i < sendCount + 20 && i >= sendCount) ipList.Add(user.GetIPAddress());
-            }
-        }
-        sendCount += 20;
-        if (sendCount > gameController.users.Length) sendCount = 0;
-
-        //グレネードの送信データ作成
-        Grenade[] boms = bomList.GetComponentsInChildren<Grenade>();
-        for (int i = 0; i < boms.Length; i++)
-        {
-            sendData.Add(boms[i].GetStatus());
-        }
-
-        if (clientDataSendTask != null) Task.WaitAll(clientDataSendTask);
-        clientDataSendTask = Task.Run(() =>
-        {
-            //送信処理
-            socket.AllClietnSend(ipList, sendData);
-            return 0;
-        });
-        */
-        List<byte[]> sendData = new List<byte[]>();
-        List<string> ipList = new List<string>();
+        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
             sendData.Add(user.GetStatus());
-            if (user.socket != null) ipList.Add(user.IPaddr);
-
+            if (user.port >= 0)
+            {
+                ipList.Add(user.GetUserAddress());
+            }
         }
 
         //グレネードの送信データ作成
@@ -152,14 +124,14 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendAllClientScoreData()
     {
-        List<string> ipList = new List<string>();
+        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
             sendData.Add(user.GetScore());
-            if (user.socket != null) ipList.Add(user.IPaddr);
+            if (user.port>=0) ipList.Add(user.GetUserAddress());
         }
         if (ipList.Count <= 0) return;
         //送信処理
@@ -194,6 +166,11 @@ public class UDP_ServerController : MonoBehaviour
             BaseController user = gameController.users[i];
             if (user.userId == userName)
             {
+                //ポート番号設定
+                user.port = recvData.Key.Port;
+
+
+                //キャラの回転を受け取る
                 if (!SequenceCheck(user.sequence, sequence)) return;
                 user.sequence = sequence;
                 user.rotat.x = vect.x;
