@@ -113,6 +113,7 @@ public class UDP_Server
         for (int i = 0; i < _address.Count; i++)
         {
             server.socket.SendAsync(encodeData, encodeData.Length, _address[i].Key, _address[i].Value);
+            FileController.GetInstance().Write("SendData", "IP:" + _address[i].Key + ",Port:" + _address[i].Value);
         }
         CountUPSequence();
 

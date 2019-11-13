@@ -57,16 +57,15 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendClientCompData()
     {
-        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
+        List<KeyValuePair<string, int>> addressList = new List<KeyValuePair<string, int>>();
         List<byte[]> sendData = new List<byte[]>();
-        //List<string> ipList = new List<string>();
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
 
             sendData.Add(user.GetStatusComplete());
-            if (user.port >= 0)ipList.Add(user.GetUserAddress());
+            if (user.port >= 0)addressList.Add(user.GetUserAddress());
             
 
         }
@@ -77,13 +76,13 @@ public class UDP_ServerController : MonoBehaviour
         {
             sendData.Add(boms[i].GetStatus());
         }
-        if (ipList.Count <= 0) return;
+        if (addressList.Count <= 0) return;
         if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
 
         clientCompDataSendTask = Task.Run(() =>
         {
             //送信処理
-            socket.AllClientSend(ipList, sendData);
+            socket.AllClientSend(addressList, sendData);
             return 0;
         });
     }
@@ -91,7 +90,7 @@ public class UDP_ServerController : MonoBehaviour
     public void SendAllClientData()
     {
         List<byte[]> sendData = new List<byte[]>();
-        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
+        List<KeyValuePair<string, int>> addressList = new List<KeyValuePair<string, int>>();
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
@@ -99,7 +98,7 @@ public class UDP_ServerController : MonoBehaviour
             sendData.Add(user.GetStatus());
             if (user.port >= 0)
             {
-                ipList.Add(user.GetUserAddress());
+                addressList.Add(user.GetUserAddress());
             }
         }
 
@@ -109,13 +108,13 @@ public class UDP_ServerController : MonoBehaviour
         {
             sendData.Add(boms[i].GetStatus());
         }
-        if (ipList.Count <= 0) return;
+        if (addressList.Count <= 0) return;
         if (clientCompDataSendTask != null) Task.WaitAll(clientCompDataSendTask);
 
         clientCompDataSendTask = Task.Run(() =>
         {
             //送信処理
-            socket.AllClientSend(ipList, sendData);
+            socket.AllClientSend(addressList, sendData);
             return 0;
         });
 
@@ -124,23 +123,23 @@ public class UDP_ServerController : MonoBehaviour
 
     public void SendAllClientScoreData()
     {
-        List<KeyValuePair<string, int>> ipList = new List<KeyValuePair<string, int>>();
+        List<KeyValuePair<string, int>> addressList = new List<KeyValuePair<string, int>>();
         //sendData作成
         List<byte[]> sendData = new List<byte[]>();
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
             sendData.Add(user.GetScore());
-            if (user.port>=0) ipList.Add(user.GetUserAddress());
+            if (user.port>=0) addressList.Add(user.GetUserAddress());
         }
-        if (ipList.Count <= 0) return;
+        if (addressList.Count <= 0) return;
         //送信処理
         if (ScoreDataSendTask != null) Task.WaitAll(ScoreDataSendTask);
 
         ScoreDataSendTask = Task.Run(() =>
         {
             //送信処理
-            socket.AllClientSend(ipList, sendData);
+            socket.AllClientSend(addressList, sendData);
             return 0;
         });
 
