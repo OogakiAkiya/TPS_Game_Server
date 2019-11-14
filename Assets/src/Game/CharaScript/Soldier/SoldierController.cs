@@ -20,7 +20,7 @@ public class SoldierController : BaseController
     public void Start()
     {
         base.Init();
-
+        type = GameHeader.UserTypeCode.SOLDIER;
         //Ray判定用
         cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();

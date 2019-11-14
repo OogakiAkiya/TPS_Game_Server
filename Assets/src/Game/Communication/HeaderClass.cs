@@ -40,13 +40,13 @@ public class GameHeader
         GRENEDEDATA=0x0003,
         CHECKDATA=0x0004
     }
-    public UserTypeCode type { get; private set; }
+    public UserTypeCode type { get; private set; } = UserTypeCode.SOLDIER;
     public string userName { get; private set; }
     public ID id { get; private set; } = ID.INIT;
     public byte gameCode { get; private set; } = 0x00ff;
     public void CreateNewData(ID _id = ID.INIT,UserTypeCode _type=UserTypeCode.SOLDIER, string _name = "", byte _gameCode=0x00ff)
     {
-        if (_type != UserTypeCode.SOLDIER) type = _type;
+        if (type != _type) type = _type;
         if (_name != "") userName = _name;
         if (id != _id) id = _id;
         if (gameCode != _gameCode) gameCode = _gameCode;

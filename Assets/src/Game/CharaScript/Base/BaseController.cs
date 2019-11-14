@@ -191,7 +191,7 @@ public class BaseController : MonoBehaviour
     {
         List<byte> returnData = new List<byte>();
         GameHeader header = new GameHeader();
-        header.CreateNewData(GameHeader.ID.GAME,type,this.name, (byte)GameHeader.GameCode.BASICDATA);
+        header.CreateNewData(GameHeader.ID.GAME,this.type,this.name, (byte)GameHeader.GameCode.BASICDATA);
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(userData.GetData());
@@ -203,7 +203,7 @@ public class BaseController : MonoBehaviour
     {
         List<byte> returnData = new List<byte>();
         GameHeader header = new GameHeader();
-        header.CreateNewData(GameHeader.ID.GAME, type,this.name, (byte)GameHeader.GameCode.CHECKDATA);
+        header.CreateNewData(GameHeader.ID.GAME, this.type,this.name, (byte)GameHeader.GameCode.CHECKDATA);
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(userData.GetCompleteData());
