@@ -8,7 +8,7 @@ public class MaynardController : BaseController
     void Start()
     {
         base.Init();
-
+        type = GameHeader.UserTypeCode.MAYNARD;
         //武器関係
         weaponList.Add(new Claw(Atack));
         weapon = weaponList[weaponListIndex];

@@ -391,7 +391,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userId: 
-  IPaddr: 
   port: -1
   sequence: 0
   hp: 100
@@ -1170,6 +1169,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5303294401810952487, guid: 10ec3e662414c45c5b505fbe4c22b8d0,
+        type: 3}
+      propertyPath: runSpeed
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10ec3e662414c45c5b505fbe4c22b8d0, type: 3}

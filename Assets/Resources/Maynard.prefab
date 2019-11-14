@@ -384,7 +384,7 @@ GameObject:
   - component: {fileID: 5303294401810952487}
   - component: {fileID: 5303294401810952486}
   m_Layer: 0
-  m_Name: user
+  m_Name: Maynard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -471,7 +471,7 @@ MonoBehaviour:
   jumpPower: 3
   jumpMoveSpeed: 3
   walkSpeed: 2
-  runSpeed: 5
+  runSpeed: 4
   checkLayer: Ground
   groundCheckRadius: 0.2
   rebornRange: 2
@@ -489,7 +489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userId: 
-  IPaddr: 
+  port: -1
   sequence: 0
   hp: 100
   rotat: {x: 0, y: 0, z: 0}

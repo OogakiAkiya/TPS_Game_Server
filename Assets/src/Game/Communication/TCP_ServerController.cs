@@ -27,26 +27,26 @@ public class TCP_ServerController : MonoBehaviour
 
         //待ち受け開始
         var task = socket.StartAccept();
+
         state.AddState(GameHeader.ID.DEBUG, () =>
         {
             DebugSend((byte)GameHeader.ID.DEBUG);
-
-            state.ChangeState(GameHeader.ID.INIT);
         });
         state.AddState(GameHeader.ID.INIT, () => { }, InitUpdate);
         state.AddState(GameHeader.ID.TITLE, () => { }, TitleUpdate);
         state.AddState(GameHeader.ID.GAME, () => { }, GameUpdate);
 
+
     }
 
     public Task<int> UPdata()
     {
+        socket.BeginUpdate();
         return Task.Run(() =>
         {
-            socket.BeginUpdate();
-
             //ログインユーザーのチェック
             if (socket.clientList.Count == 0) return 0;
+
             for (int i = 0; i < socket.clientList.Count; i++)
             {
                 Tcp_Server_Socket client = socket.clientList[i];
@@ -61,38 +61,33 @@ public class TCP_ServerController : MonoBehaviour
 
                     //受信データごとの処理
                     header.SetHeader(recvData);
-                    state.ChangeState((GameHeader.ID)recvData[0]);
+                    state.ChangeState(header.id);
                     state.Update();
                 }
 
             }
-
             socket.EndUpdate();
+
             return 0;
         });
-
-
     }
 
 
     private void InitUpdate()
     {
-        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
-        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
-        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
 
         //同じユーザーで複数ログインを防ぐ
         bool addFlg = true;
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            if (gameController.users[i].userId == userId.Trim())
+            if (gameController.users[i].userId == header.userName.Trim())
             {
                 addFlg = false;
             }
         }
         if (addFlg)
         {
-            gameController.AddUserList(header.gameCode,userId.Trim(), sendSocket);
+            gameController.AddUserList(header.gameCode, header.userName.Trim(), sendSocket);
             //gameController.UsersUpdate();
 
         }
@@ -101,16 +96,11 @@ public class TCP_ServerController : MonoBehaviour
 
     private void TitleUpdate()
     {
-        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
-        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
-        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
-
-
         if ((GameHeader.LoginCode)header.gameCode == GameHeader.LoginCode.LOGINCHECK)
         {
             for (int i = 0; i < gameController.users.Length; i++)
             {
-                if (gameController.users[i].userId == userId.Trim())
+                if (gameController.users[i].userId == header.userName.Trim())
                 {
                     TestSend((byte)GameHeader.ID.TITLE, (byte)GameHeader.LoginCode.LOGINFAILURE);
                     return;
@@ -123,24 +113,21 @@ public class TCP_ServerController : MonoBehaviour
 
     private void GameUpdate()
     {
-        byte[] b_userId = new byte[GameHeader.USERID_LENGTH];
-        Array.Copy(recvData, sizeof(byte), b_userId, 0, b_userId.Length);
-        string userId = System.Text.Encoding.UTF8.GetString(b_userId);
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
-            if (user.userId.Equals(userId.Trim()))
+            if (user.userId.Equals(header.userName.Trim()))
             {
-                if (recvData[sizeof(byte) + GameHeader.USERID_LENGTH] == (byte)GameHeader.GameCode.BASICDATA)
+                if (header.gameCode == (byte)GameHeader.GameCode.BASICDATA)
                 {
-                    KEY addData = (KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + GameHeader.USERID_LENGTH);
+                    KEY addData = (KEY)BitConverter.ToInt16(recvData, GameHeader.HEADER_SIZE);
 
                     user.AddInputKeyList(addData);
                 }
 
-                if (recvData[sizeof(byte) + GameHeader.USERID_LENGTH] == (byte)GameHeader.GameCode.CHECKDATA)
+                if (header.gameCode == (byte)GameHeader.GameCode.CHECKDATA)
                 {
-                    user.SetCheckKey((KEY)BitConverter.ToInt16(recvData, sizeof(byte) * 2 + GameHeader.USERID_LENGTH));
+                    user.SetCheckKey((KEY)BitConverter.ToInt16(recvData, GameHeader.HEADER_SIZE));
                 }
 
 
@@ -152,14 +139,14 @@ public class TCP_ServerController : MonoBehaviour
     void TestSend(byte _id, byte _code = 0x0001)
     {
         List<byte> sendData = new List<byte>();
-        header.CreateNewData((GameHeader.ID)_id, "Debug", _code);
+        header.CreateNewData((GameHeader.ID)_id,GameHeader.UserTypeCode.SOLDIER, "Debug", _code);
         sendData.AddRange(header.GetHeader());
         Task task = sendSocket.Send(sendData.ToArray(), sendData.Count);
     }
     void DebugSend(byte _id, byte _code = 0x0001)
     {
         List<byte> sendData = new List<byte>();
-        header.CreateNewData((GameHeader.ID)_id, "Debug", _code);
+        header.CreateNewData((GameHeader.ID)_id, GameHeader.UserTypeCode.SOLDIER, "Debug", _code);
         sendData.AddRange(header.GetHeader());
         sendData.AddRange(Convert.Conversion(gameController.users.Length - 1));
         Task task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);

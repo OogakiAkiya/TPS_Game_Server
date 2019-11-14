@@ -38,7 +38,6 @@ public class UDP_ServerController : MonoBehaviour
     {
         return Task.Run(() =>
         {
-
             //socket.Update();
             if (socket.server.GetRecvDataSize() > 0)
             {
@@ -50,6 +49,7 @@ public class UDP_ServerController : MonoBehaviour
                 state.ChangeState(header.id);
                 state.Update();
             }
+
             return 0;
         });
 
@@ -158,7 +158,7 @@ public class UDP_ServerController : MonoBehaviour
 
         uint sequence = BitConverter.ToUInt32(recvData.Value, 0);
 
-        Vector2 vect = Convert.GetVector2(recvData.Value, sizeof(uint) + header.GetHeaderLength());
+        Vector2 vect = Convert.GetVector2(recvData.Value, sizeof(uint) + GameHeader.HEADER_SIZE);
 
         for (int i = 0; i < gameController.users.Length; i++)
         {
