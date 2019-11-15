@@ -46,7 +46,6 @@ public class BaseAnimation : MonoBehaviour
     {
         groundflg = true;
         if (!Physics.CheckSphere(this.transform.position - new Vector3(0, groundCheckRadius / 3, 0), groundCheckRadius, 1 << layerNo)) groundflg = false;
-
     }
 
     protected short ExtractionKey(KEY _key, int _shift)

@@ -160,7 +160,7 @@ public class Claw : BaseWeapon
     public Claw(Action _atack)
     {
         interval = 2000;
-        power = 10;
+        power = 20;
         reloadTime = 1000;      //1秒
         magazine = 99;
         remainingBullet = magazine;

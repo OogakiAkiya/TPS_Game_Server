@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MaynardController : BaseController
 {
+    [SerializeField] Vector3 attackRange = new Vector3(0.55f, 0.3f, 0.55f);
     // Start is called before the first frame update
     void Start()
     {
@@ -20,10 +21,29 @@ public class MaynardController : BaseController
     {
         base.BaseUpdate();
     }
+    private void OnDrawGizmos()
+    {
+        Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;
+        //Vector3 vector = this.transform.forward * 0.4f + new Vector3(0, 1, 0.2f);
+        Gizmos.DrawCube(vector, attackRange);
+    }
 
     public override void Atack()
     {
+        Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;
+        //Vector3 vector = this.transform.forward * 0.4f + new Vector3(0, 1, 0.2f);
+        Collider[] colliders=Physics.OverlapBox(vector, attackRange,this.transform.localRotation);
+        for(int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].tag=="users")
+            {
+                if (colliders[i].GetComponent<BaseController>().Damage(weapon.power))
+                {
+                    killAmount++;
+                }
 
+            }
+        }
     }
 
 }
