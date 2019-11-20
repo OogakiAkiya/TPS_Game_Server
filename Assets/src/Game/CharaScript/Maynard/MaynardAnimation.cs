@@ -102,7 +102,7 @@ public class MaynardAnimation : BaseAnimation
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
 
                 //WASDのどれか一つでも押されているかチェック
-                if (ExtractionKey(nowKey, 12) == 0)
+                if (!nowKey.HasFlag(KEY.W))
                 {
                     animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
@@ -130,7 +130,7 @@ public class MaynardAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //WASDのどれか一つでも押されているかチェック
-                if (ExtractionKey(nowKey, 12) == 0)
+                if (!nowKey.HasFlag(KEY.W))
                 {
                     animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
@@ -214,9 +214,9 @@ public class MaynardAnimation : BaseAnimation
         Atack();
         //ジャンプ
         if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
-        
+
         //WASDのどれか一つでも押されているかチェック
-        if (ExtractionKey(nowKey, 12) == 0)
+        if (!nowKey.HasFlag(KEY.W))
         {
             animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;
@@ -239,7 +239,7 @@ public class MaynardAnimation : BaseAnimation
         //ジャンプ
         if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
-        if (ExtractionKey(nowKey, 12) == 0)
+        if (!nowKey.HasFlag(KEY.W))
         {
             animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;

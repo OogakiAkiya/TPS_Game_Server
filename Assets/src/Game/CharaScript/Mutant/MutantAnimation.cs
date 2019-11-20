@@ -6,6 +6,7 @@ public class MutantAnimation : BaseAnimation
 {
     private MutantController mutantController;
     private bool jumpFlg = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,31 +43,27 @@ public class MutantAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
-                if (ExtractionKey(nowKey, 12) != 0)
-                {
-                    if (nowKey.HasFlag(KEY.W) && nowKey.HasFlag(KEY.S) || nowKey.HasFlag(KEY.A) && nowKey.HasFlag(KEY.D)) return;
-                    animationState.ChangeState(ANIMATION_KEY.Walk);
-                }
+                if (nowKey.HasFlag(KEY.W)) animationState.ChangeState(ANIMATION_KEY.Walk);
             });
 
-
-
-        animationState.AddState(ANIMATION_KEY.Reloading,
+        animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                mutantController.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
+                mutantController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
             {
-
-                animationState.ChangeState(ANIMATION_KEY.Idle);
+                if (animatorBehaviour.NormalizedTime >= 0.9f)
+                {
+                    animationState.ChangeState(ANIMATION_KEY.Idle);
+                }
             },
             () =>
             {
                 mutantController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
-            );
-
+        );
         //Walk関係
         AddWalkState();
 
@@ -82,6 +79,10 @@ public class MutantAnimation : BaseAnimation
         },
         () =>
         {
+            if (animatorBehaviour.NormalizedTime >= 0.95f)
+            {
+                animationState.ChangeState(ANIMATION_KEY.Idle);
+            }
         },
         () =>
         {
@@ -100,18 +101,14 @@ public class MutantAnimation : BaseAnimation
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
 
                 //WASDのどれか一つでも押されているかチェック
-                if (ExtractionKey(nowKey, 12) == 0)
+                if (!nowKey.HasFlag(KEY.W))
                 {
                     animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
                 }
                 //SHIFTが押されているかチェック
                 if (InputTemplate(KEY.SHIFT, ANIMATION_KEY.Run)) return;
-
                 if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
-                if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
-                if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
                 Move(walkSpeed);
             });
 
@@ -119,43 +116,6 @@ public class MutantAnimation : BaseAnimation
             _update: () =>
             {
                 if (WalkInputTemplate()) return;
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.W))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
-                }
-                Move(walkSpeed);
-            });
-        animationState.AddState(ANIMATION_KEY.WalkBack,
-            _update: () =>
-            {
-                if (WalkInputTemplate()) return;
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.S))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.WalkLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.WalkRight)) return;
-                }
-
-                Move(walkSpeed);
-            });
-        animationState.AddState(ANIMATION_KEY.WalkLeft,
-            _update: () =>
-            {
-                if (WalkInputTemplate()) return;
-                if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
-                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
-                Move(walkSpeed);
-            });
-        animationState.AddState(ANIMATION_KEY.WalkRight,
-            _update: () =>
-            {
-                if (WalkInputTemplate()) return;
-                if (InputTemplate(KEY.W, ANIMATION_KEY.WalkForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.WalkBack)) return;
-                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
                 Move(walkSpeed);
             });
     }
@@ -169,7 +129,7 @@ public class MutantAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //WASDのどれか一つでも押されているかチェック
-                if (ExtractionKey(nowKey, 12) == 0)
+                if (!nowKey.HasFlag(KEY.W))
                 {
                     animationState.ChangeState(ANIMATION_KEY.Idle);
                     return;
@@ -183,9 +143,6 @@ public class MutantAnimation : BaseAnimation
                 }
 
                 if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
-                if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
-                if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
                 Move(runSpeed);
             });
 
@@ -193,47 +150,8 @@ public class MutantAnimation : BaseAnimation
             _update: () =>
             {
                 if (RunInputTemplate()) return;
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.W))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
-                }
-
                 Move(runSpeed);
             });
-        animationState.AddState(ANIMATION_KEY.RunBack,
-            _update: () =>
-            {
-                if (RunInputTemplate()) return;
-
-                if (InputTemplate(KEY.W, KEY.S, ANIMATION_KEY.Idle)) return;
-                if (!nowKey.HasFlag(KEY.S))
-                {
-                    if (InputTemplate(KEY.A, ANIMATION_KEY.RunLeft)) return;
-                    if (InputTemplate(KEY.D, ANIMATION_KEY.RunRight)) return;
-                }
-                Move(runSpeed);
-            });
-        animationState.AddState(ANIMATION_KEY.RunLeft,
-            _update: () =>
-            {
-                if (RunInputTemplate()) return;
-                if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
-                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
-                Move(runSpeed);
-            });
-        animationState.AddState(ANIMATION_KEY.RunRight,
-            _update: () =>
-            {
-                if (RunInputTemplate()) return;
-                if (InputTemplate(KEY.W, ANIMATION_KEY.RunForward)) return;
-                if (InputTemplate(KEY.S, ANIMATION_KEY.RunBack)) return;
-                if (InputTemplate(KEY.A, KEY.D, ANIMATION_KEY.Idle)) return;
-                Move(runSpeed);
-            });
-
     }
     private void AddJump()
     {
@@ -250,11 +168,8 @@ public class MutantAnimation : BaseAnimation
                 //移動
                 if (animatorBehaviour.NormalizedTime >= 0.3f) Move(jumpMoveSpeed);
 
-                //攻撃
-                Atack();
-
                 //
-                if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
+                if (animatorBehaviour.NormalizedTime >= 0.6f && !jumpFlg)
                 {
                     this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
                     jumpFlg = true;
@@ -271,7 +186,6 @@ public class MutantAnimation : BaseAnimation
             },
             () =>
             {
-                Atack();
                 Move(jumpMoveSpeed);
                 if (groundflg) animationState.ChangeState(ANIMATION_KEY.JumpDown);
             }
@@ -287,15 +201,11 @@ public class MutantAnimation : BaseAnimation
             () =>
             {
                 if (animatorBehaviour.NormalizedTime < 0.3f) Move(jumpMoveSpeed);
-                Atack();
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.Idle);
             }
             );
 
     }
-
-
-
 
     private bool WalkInputTemplate()
     {
@@ -305,7 +215,7 @@ public class MutantAnimation : BaseAnimation
         if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
 
         //WASDのどれか一つでも押されているかチェック
-        if (ExtractionKey(nowKey, 12) == 0)
+        if (!nowKey.HasFlag(KEY.W))
         {
             animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;
@@ -328,7 +238,7 @@ public class MutantAnimation : BaseAnimation
         //ジャンプ
         if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return true;
         //WASDのどれか一つでも押されているかチェック
-        if (ExtractionKey(nowKey, 12) == 0)
+        if (!nowKey.HasFlag(KEY.W))
         {
             animationState.ChangeState(ANIMATION_KEY.Idle);
             return true;
@@ -347,30 +257,24 @@ public class MutantAnimation : BaseAnimation
 
     private void Atack()
     {
-        /*
-        //グレネード投擲
-        if (nowKey.HasFlag(KEY.G))
-        {
-            mutantController.ThrowGrenade();
-        }
-
-        //リロード
-        if (nowKey.HasFlag(KEY.R))
-        {
-            animationState.ChangeState(ANIMATION_KEY.Reloading);
-            return;
-        }
-        if (mutantController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
-        {
-            animationState.ChangeState(ANIMATION_KEY.Reloading);
-            return;
-        }
-
         //既に攻撃していた場合の処理
         if (mutantController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
-
         //攻撃
-        if (nowKey.HasFlag(KEY.LEFT_CLICK)) mutantController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
-        */
+        if (nowKey.HasFlag(KEY.LEFT_CLICK))
+        {
+            animationState.ChangeState(ANIMATION_KEY.Attack);
+        }
+
+    }
+
+    protected override void Move(float _moveSpeed)
+    {
+        //移動量算出
+        Vector3 velocity = Vector3.zero;
+        if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
+
+        //移動
+        this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
+
     }
 }
