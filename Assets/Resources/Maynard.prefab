@@ -383,9 +383,9 @@ GameObject:
   - component: {fileID: 5303294401810952488}
   - component: {fileID: 5303294401810952487}
   - component: {fileID: 5303294401810952486}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Maynard
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -493,6 +493,7 @@ MonoBehaviour:
   sequence: 0
   hp: 100
   rotat: {x: 0, y: 0, z: 0}
+  attackRange: {x: 0.55, y: 0.3, z: 0.55}
 --- !u!1 &5303294401816167173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1216,7 +1217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5303294402721252975}
   - component: {fileID: 5303294402721252976}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ch30
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -33,7 +33,6 @@ public class Explosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "users") return;
-        targets.Add(other.GetComponent<BaseController>());
+        if(other.tag==Tags.SOLDIER||other.tag==Tags.MONSTER)targets.Add(other.GetComponent<BaseController>());
     }
 }

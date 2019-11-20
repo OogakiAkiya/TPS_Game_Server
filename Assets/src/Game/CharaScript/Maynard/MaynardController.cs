@@ -32,10 +32,10 @@ public class MaynardController : BaseController
     {
         Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;
         //Vector3 vector = this.transform.forward * 0.4f + new Vector3(0, 1, 0.2f);
-        Collider[] colliders=Physics.OverlapBox(vector, attackRange,this.transform.localRotation);
+        Collider[] colliders=Physics.OverlapBox(vector, attackRange,this.transform.localRotation, 1 << 10);
         for(int i = 0; i < colliders.Length; i++)
         {
-            if (colliders[i].tag=="users")
+            if (colliders[i].tag==Tags.SOLDIER)
             {
                 if (colliders[i].GetComponent<BaseController>().Damage(weapon.power))
                 {

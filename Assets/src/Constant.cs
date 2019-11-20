@@ -1,8 +1,5 @@
 ﻿using System;
 
-
-
-
 public enum KEY : short
 {
     W = 0x001,
@@ -56,3 +53,8 @@ public enum WEAPONSTATE : int
     RELOAD
 }
 
+public static class Tags
+{
+    public static readonly string SOLDIER = "Soldier";
+    public static readonly string MONSTER = "Monster";
+}

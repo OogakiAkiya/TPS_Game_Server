@@ -1189,6 +1189,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: user
       objectReference: {fileID: 0}
+    - target: {fileID: 8927101967121671454, guid: 5d13a787678434356bffab7139087873,
+        type: 3}
+      propertyPath: m_TagString
+      value: Soldier
+      objectReference: {fileID: 0}
     - target: {fileID: 8927101965382535129, guid: 5d13a787678434356bffab7139087873,
         type: 3}
       propertyPath: m_LocalPosition.x
