@@ -166,7 +166,7 @@ public class MutantAnimation : BaseAnimation
             () =>
             {
                 //移動
-                if (animatorBehaviour.NormalizedTime >= 0.3f) Move(jumpMoveSpeed);
+                if (animatorBehaviour.NormalizedTime >= 0.6f) Move(jumpMoveSpeed);
 
                 //
                 if (animatorBehaviour.NormalizedTime >= 0.6f && !jumpFlg)

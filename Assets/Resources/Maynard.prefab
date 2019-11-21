@@ -303,7 +303,7 @@ Transform:
   m_GameObject: {fileID: 8509128291244617102}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1.22, y: -0.44, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 8509128291244519904}
   - {fileID: 8509128291244519848}
@@ -375,7 +375,7 @@ MonoBehaviour:
   jumpPower: 4
   jumpMoveSpeed: 1
   walkSpeed: 1
-  runSpeed: 2
+  runSpeed: 3
   checkLayer: Ground
   groundCheckRadius: 0.2
   rebornRange: 2
@@ -397,7 +397,7 @@ MonoBehaviour:
   sequence: 0
   hp: 100
   rotat: {x: 0, y: 0, z: 0}
-  attackRange: {x: 0.55, y: 0.3, z: 0.55}
+  attackRange: {x: 1.4, y: 1, z: 1.1}
 --- !u!1 &8509128291244617120
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,7 +937,7 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.35
-  m_Height: 1.6
+  m_Height: 1.58
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8509128291244617154

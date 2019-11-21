@@ -24,7 +24,7 @@ public class MutantController : BaseController
     }
     private void OnDrawGizmos()
     {
-        Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;
+        Vector3 vector = this.transform.position + this.transform.forward * 1f + this.transform.up;
         //Vector3 vector = this.transform.forward * 0.4f + new Vector3(0, 1, 0.2f);
         Gizmos.DrawCube(vector, attackRange);
     }
