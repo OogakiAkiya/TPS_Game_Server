@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour
             {
                 if (notActiveUsers[j].gameObject.activeSelf) continue;
                 //Soldier
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.SOLDIER && notActiveUsers[j].GetType().Name == typeof(SoldierController).Name)
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.SOLDIER )
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -115,7 +115,7 @@ public class GameController : MonoBehaviour
                 }
 
                 //Maynard
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD && notActiveUsers[j].GetType().Name == typeof(MaynardController).Name)
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -124,7 +124,7 @@ public class GameController : MonoBehaviour
                 }
 
                 //Mutant
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD && notActiveUsers[j].GetType().Name == typeof(MutantController).Name)
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -133,13 +133,6 @@ public class GameController : MonoBehaviour
                 }
 
             }
-            /*
-            if (notActiveIndex < 0) return;
-            int index = userAmount - notActiveIndex--;
-            notActiveUsers[index].gameObject.SetActive(true);
-            notActiveUsers[index].name = addUserList[i].userID;
-            notActiveUsers[index].SetUserData(addUserList[i].userID, addUserList[i].socket);
-            */
         }
         addUserList.Clear();
         UsersUpdate();

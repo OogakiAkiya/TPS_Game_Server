@@ -28,23 +28,19 @@ public class BaseController : MonoBehaviour
     //現在の回転度
     public Vector3 rotat = Vector3.zero;
 
-    //武器
-    public BaseWeapon weapon { get; protected set; }
-    protected List<BaseWeapon> weaponList = new List<BaseWeapon>();
-    protected int weaponListIndex = 0;
-
-
     //Score
     public int deathAmount { get; protected set; } = 0;          //死んだ回数
     public int killAmount { get; set; } = 0;           //殺した回数
 
-    protected void Init()
+    public BaseComponent current;
+
+    void Start()
     {
         animator = this.GetComponent<Animator>();
         userAnimation = this.GetComponent<BaseAnimation>();
-    }
 
-    protected void BaseUpdate()
+    }
+    void Update()
     {
         //回転
         Vector3 nowRotation = rotat;
@@ -52,15 +48,13 @@ public class BaseController : MonoBehaviour
         nowRotation.z = 0;
         this.transform.rotation = Quaternion.Euler(nowRotation);
 
-
     }
-
     public Task<int> UPdate()
     {
         return Task.Run(() =>
         {
 
-            weapon.state.Update();
+            current.weapon.state.Update();
 
             //ダウンだけ検出するキーの初期化
             if (nowKey.HasFlag(KEY.G)) nowKey = nowKey ^ KEY.G;
@@ -147,20 +141,7 @@ public class BaseController : MonoBehaviour
 
     public void ChangeWeapon(bool _up = true)
     {
-        if (_up)
-        {
-            weaponListIndex++;
-            if (weaponListIndex == weaponList.Count) weaponListIndex = 0;
-            nowKey = nowKey ^ KEY.LEFT_BUTTON;
-        }
-        else
-        {
-            weaponListIndex--;
-            if (weaponListIndex < 0) weaponListIndex = weaponList.Count - 1;
-            nowKey = nowKey ^ KEY.RIGHT_BUTTON;
-        }
-        //武器変更
-        weapon = weaponList[weaponListIndex];
+        current.ChangeWeapon(_up, () => { nowKey = nowKey ^ KEY.LEFT_BUTTON; });
     }
 
     public bool Damage(int _damage = 1)
@@ -195,7 +176,7 @@ public class BaseController : MonoBehaviour
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(userData.GetData());
-        if (weapon != null) returnData.AddRange(weapon.GetStatus());
+        if (current.weapon != null) returnData.AddRange(current.weapon.GetStatus());
         return returnData.ToArray();
     }
 
@@ -207,14 +188,9 @@ public class BaseController : MonoBehaviour
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
         returnData.AddRange(userData.GetCompleteData());
-        if (weapon != null) returnData.AddRange(weapon.GetStatus());
+        if (current.weapon != null) returnData.AddRange(current.weapon.GetStatus());
         return returnData.ToArray();
 
     }
-
-
-    public virtual void Atack() { }
-
-
 }
 

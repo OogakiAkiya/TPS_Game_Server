@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierController : BaseController
+public class SoldierController : BaseComponent
 {
     //Ray判定用
     private Camera cam;
@@ -19,7 +19,6 @@ public class SoldierController : BaseController
     // Start is called before the first frame update
     public void Start()
     {
-        base.Init();
         type = GameHeader.UserTypeCode.SOLDIER;
         //Ray判定用
         cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
@@ -27,8 +26,8 @@ public class SoldierController : BaseController
         imageRect = GameObject.Find("Canvas").transform.Find("Pointer").GetComponent<RectTransform>();
 
         //武器関係
-        weaponList.Add(new MachineGun(Atack));
-        weaponList.Add(new HandGun(Atack));
+        weaponList.Add(new MachineGun(Attack));
+        weaponList.Add(new HandGun(Attack));
         weapon = weaponList[weaponListIndex];
 
         //グレネード
@@ -40,13 +39,11 @@ public class SoldierController : BaseController
     // Update is called once per frame
     public void Update()
     {
-        base.BaseUpdate();
-
         //ボム制御を手放す
         if (throwBom == null) return;
         if (throwBom.destroyFlg)
         {
-            throwBom.Delete(this);
+            throwBom.Delete(myController);
             throwBom = null;
         }
 
@@ -74,14 +71,14 @@ public class SoldierController : BaseController
 
 
     //override
-    public override void Atack()
+    public override void Attack()
     {
         //レイヤー変更
         this.gameObject.layer = LayerMask.NameToLayer("Default");
 
         //playerの移動,回転
         Vector3 nowRotation = this.transform.localEulerAngles;
-        this.transform.rotation = Quaternion.Euler(rotat);
+        this.transform.rotation = Quaternion.Euler(myController.rotat);
 
         //レイの作成
         Ray ray = cam.ScreenPointToRay(GetUIScreenPos(imageRect));
@@ -94,7 +91,7 @@ public class SoldierController : BaseController
         {
             if (hit.collider.tag == Tags.MONSTER)
             {
-                if (hit.collider.transform.GetComponent<BaseController>().Damage(weapon.power)) killAmount++;
+                if (hit.collider.transform.GetComponent<BaseController>().Damage(weapon.power)) myController.killAmount++;
             }
         }
 

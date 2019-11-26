@@ -5,7 +5,7 @@ using UnityEngine;
 public class MaynardAnimation : BaseAnimation
 {
 
-    private MaynardController maynardController;
+    private BaseController maynardController;
     private bool jumpFlg=false;
 
     // Start is called before the first frame update
@@ -13,7 +13,7 @@ public class MaynardAnimation : BaseAnimation
     {
         base.Init();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        maynardController = this.GetComponent<MaynardController>();
+        maynardController = this.GetComponent<BaseController>();
     }
 
     // Update is called once per frame
@@ -50,7 +50,7 @@ public class MaynardAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                maynardController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                maynardController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
                 animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
@@ -62,7 +62,7 @@ public class MaynardAnimation : BaseAnimation
             },
             () =>
             {
-                maynardController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                maynardController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
         );
         //Walk関係
@@ -278,7 +278,7 @@ public class MaynardAnimation : BaseAnimation
         }
         */
         //既に攻撃していた場合の処理
-        if (maynardController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (maynardController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
         //攻撃
         if (nowKey.HasFlag(KEY.LEFT_CLICK))
         {
@@ -292,7 +292,7 @@ public class MaynardAnimation : BaseAnimation
         //移動量算出
         Vector3 velocity = Vector3.zero;
         if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
-
+        
         //移動
         this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
 

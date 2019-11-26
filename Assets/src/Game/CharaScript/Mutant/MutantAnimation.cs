@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MutantAnimation : BaseAnimation
 {
-    private MutantController mutantController;
+    private BaseController mutantController;
     private bool jumpFlg = false;
 
     // Start is called before the first frame update
@@ -12,7 +12,7 @@ public class MutantAnimation : BaseAnimation
     {
         base.Init();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        mutantController = this.GetComponent<MutantController>();
+        mutantController = this.GetComponent<BaseController>();
     }
 
     // Update is called once per frame
@@ -49,7 +49,7 @@ public class MutantAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                mutantController.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                mutantController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
                 animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
@@ -61,7 +61,7 @@ public class MutantAnimation : BaseAnimation
             },
             () =>
             {
-                mutantController.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                mutantController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
         );
         //Walk関係
@@ -258,7 +258,7 @@ public class MutantAnimation : BaseAnimation
     private void Atack()
     {
         //既に攻撃していた場合の処理
-        if (mutantController.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (mutantController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
         //攻撃
         if (nowKey.HasFlag(KEY.LEFT_CLICK))
         {
