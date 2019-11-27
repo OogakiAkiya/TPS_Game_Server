@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierController : BaseComponent
+public class SoldierComponent : BaseComponent
 {
     //Ray判定用
     private Camera cam;
@@ -90,10 +90,10 @@ public class SoldierController : BaseComponent
         {
             if (hit.collider.tag == Tags.MONSTER)
             {
-				BaseController controller = hit.collider.transform.GetComponent<BaseController>();
-                if(!controller) controller = hit.collider.transform.parent.GetComponent<BaseController>();
+                BaseController controller = hit.collider.transform.GetComponent<BaseController>();
+                if (!controller) controller = hit.collider.transform.parent.GetComponent<BaseController>();
 
-				if (controller.Damage(weapon.power)) myController.killAmount++;
+                if (controller.Damage(weapon.power)) myController.killAmount++;
             }
         }
 
@@ -107,6 +107,4 @@ public class SoldierController : BaseComponent
     {
         return RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rt.position);
     }
-
-
 }

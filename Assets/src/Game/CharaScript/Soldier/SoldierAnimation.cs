@@ -378,7 +378,7 @@ public class SoldierAnimation : BaseAnimation
         //グレネード投擲
         if (nowKey.HasFlag(KEY.G))
         {
-            SoldierController component = (SoldierController)baseController.current;
+            SoldierComponent component = (SoldierComponent)baseController.current;
             component.ThrowGrenade();
         }
 

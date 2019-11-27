@@ -2342,8 +2342,8 @@ GameObject:
   - component: {fileID: 8927101967121671450}
   - component: {fileID: 8927101967121671453}
   - component: {fileID: 8927101967121671455}
-  - component: {fileID: 8927101967121671452}
   - component: {fileID: 520292741352293976}
+  - component: {fileID: 1774628500722536556}
   m_Layer: 10
   m_Name: user
   m_TagString: Soldier
@@ -2438,21 +2438,6 @@ MonoBehaviour:
   groundCheckRadius: 0.5
   rebornRange: 2
   groundflg: 1
---- !u!114 &8927101967121671452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8927101967121671454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6326fe248564844d8ac8ddd457c35e3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myController: {fileID: 520292741352293976}
-  weaponListIndex: 0
-  type: 1
 --- !u!114 &520292741352293976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2470,7 +2455,22 @@ MonoBehaviour:
   sequence: 0
   hp: 100
   rotat: {x: 0, y: 0, z: 0}
-  current: {fileID: 8927101967121671452}
+  current: {fileID: 1774628500722536556}
+--- !u!114 &1774628500722536556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8927101967121671454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6013a2cd7184045ac93f99212f0c9598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myController: {fileID: 520292741352293976}
+  weaponListIndex: 0
+  type: 1
 --- !u!1 &8927101967155374480
 GameObject:
   m_ObjectHideFlags: 0
