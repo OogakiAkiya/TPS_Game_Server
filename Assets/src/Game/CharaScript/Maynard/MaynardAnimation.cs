@@ -5,7 +5,6 @@ using UnityEngine;
 public class MaynardAnimation : BaseAnimation
 {
 
-    private BaseController maynardController;
     private bool jumpFlg=false;
 
     // Start is called before the first frame update
@@ -13,7 +12,7 @@ public class MaynardAnimation : BaseAnimation
     {
         base.Init();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        maynardController = this.GetComponent<BaseController>();
+
     }
 
     // Update is called once per frame
@@ -44,13 +43,16 @@ public class MaynardAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
-                if (nowKey.HasFlag(KEY.W)) animationState.ChangeState(ANIMATION_KEY.Walk);
+                if (nowKey.HasFlag(KEY.W))
+                {
+                    animationState.ChangeState(ANIMATION_KEY.Walk);
+                }
             });
 
         animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                maynardController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
                 animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
@@ -62,7 +64,7 @@ public class MaynardAnimation : BaseAnimation
             },
             () =>
             {
-                maynardController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
         );
         //Walk関係
@@ -87,8 +89,8 @@ public class MaynardAnimation : BaseAnimation
         },
         () =>
         {
-            maynardController.hp = 100;
-            maynardController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+            baseController.hp = 100;
+            baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
         );
     }
@@ -172,7 +174,7 @@ public class MaynardAnimation : BaseAnimation
                 //
                 if (animatorBehaviour.NormalizedTime >= 0.4f && !jumpFlg)
                 {
-                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    baseController.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
                     jumpFlg = true;
                 }
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.JumpStay);
@@ -262,7 +264,7 @@ public class MaynardAnimation : BaseAnimation
         //グレネード投擲
         if (nowKey.HasFlag(KEY.G))
         {
-            maynardController.ThrowGrenade();
+            baseController.ThrowGrenade();
         }
 
         //リロード
@@ -271,14 +273,15 @@ public class MaynardAnimation : BaseAnimation
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
-        if (maynardController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
+        if (baseController.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
         {
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
         */
         //既に攻撃していた場合の処理
-        if (maynardController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (baseController.current.weapon == null) return;
+        if (baseController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
         //攻撃
         if (nowKey.HasFlag(KEY.LEFT_CLICK))
         {
@@ -291,10 +294,10 @@ public class MaynardAnimation : BaseAnimation
     {
         //移動量算出
         Vector3 velocity = Vector3.zero;
-        if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
+        if (nowKey.HasFlag(KEY.W)) velocity += baseController.transform.forward;
         
         //移動
-        this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
+        baseController.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
 
     }
 }

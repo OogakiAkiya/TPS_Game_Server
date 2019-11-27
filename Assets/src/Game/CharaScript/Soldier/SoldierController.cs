@@ -17,7 +17,7 @@ public class SoldierController : BaseComponent
     Grenade throwBom = null;
 
     // Start is called before the first frame update
-    public void Start()
+    public override void Init()
     {
         type = GameHeader.UserTypeCode.SOLDIER;
         //Ray判定用
@@ -33,7 +33,6 @@ public class SoldierController : BaseComponent
         //グレネード
         grenadePref = Resources.Load("Bom") as GameObject;
         bomPar = GameObject.FindGameObjectWithTag("BomList").transform;
-
     }
 
     // Update is called once per frame
@@ -91,7 +90,10 @@ public class SoldierController : BaseComponent
         {
             if (hit.collider.tag == Tags.MONSTER)
             {
-                if (hit.collider.transform.GetComponent<BaseController>().Damage(weapon.power)) myController.killAmount++;
+				BaseController controller = hit.collider.transform.GetComponent<BaseController>();
+                if(!controller) controller = hit.collider.transform.parent.GetComponent<BaseController>();
+
+				if (controller.Damage(weapon.power)) myController.killAmount++;
             }
         }
 

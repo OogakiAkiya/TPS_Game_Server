@@ -12,7 +12,9 @@ public class MaynardController : BaseComponent
         //武器関係
         weaponList.Add(new Claw(Attack));
         weapon = weaponList[weaponListIndex];
+
     }
+
     private void OnDrawGizmos()
     {
         Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;

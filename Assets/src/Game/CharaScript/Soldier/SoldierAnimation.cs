@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SoldierAnimation : BaseAnimation
 {
-    private BaseController soldierController;
     private bool jumpFlg = false;
 
     //コライダー
@@ -18,7 +17,7 @@ public class SoldierAnimation : BaseAnimation
 
         collider = this.GetComponent<CapsuleCollider>();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        soldierController = this.GetComponent<BaseController>();
+        baseController = this.GetComponent<BaseController>();
     }
 
     // Update is called once per frame
@@ -61,9 +60,9 @@ public class SoldierAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Reloading,
             () =>
             {
-                if (soldierController.current.weapon.type == WEAPONTYPE.MACHINEGUN) animator.CrossFadeInFixedTime("Reloading", 0.0f);
-                if (soldierController.current.weapon.type == WEAPONTYPE.HANDGUN) animator.CrossFadeInFixedTime("Pistol Reloadad", 0.0f);
-                soldierController.current.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
+                if (baseController.current.weapon.type == WEAPONTYPE.MACHINEGUN) animator.CrossFadeInFixedTime("Reloading", 0.0f);
+                if (baseController.current.weapon.type == WEAPONTYPE.HANDGUN) animator.CrossFadeInFixedTime("Pistol Reloadad", 0.0f);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.RELOAD);
             },
             () =>
             {
@@ -74,7 +73,7 @@ public class SoldierAnimation : BaseAnimation
             },
             () =>
             {
-                soldierController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
             );
 
@@ -115,8 +114,8 @@ public class SoldierAnimation : BaseAnimation
         {
 
             //if (collider) collider.center = center;
-            soldierController.hp = 100;
-            soldierController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+            baseController.hp = 100;
+            baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
         );
     }
@@ -379,7 +378,7 @@ public class SoldierAnimation : BaseAnimation
         //グレネード投擲
         if (nowKey.HasFlag(KEY.G))
         {
-            SoldierController component = (SoldierController)soldierController.current;
+            SoldierController component = (SoldierController)baseController.current;
             component.ThrowGrenade();
         }
 
@@ -389,17 +388,17 @@ public class SoldierAnimation : BaseAnimation
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
-        if (soldierController.current.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
+        if (baseController.current.weapon.state.currentKey == WEAPONSTATE.RELOAD && animationState.currentKey != ANIMATION_KEY.Reloading)
         {
             animationState.ChangeState(ANIMATION_KEY.Reloading);
             return;
         }
 
         //既に攻撃していた場合の処理
-        if (soldierController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (baseController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
 
         //攻撃
-        if (nowKey.HasFlag(KEY.LEFT_CLICK)) soldierController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+        if (nowKey.HasFlag(KEY.LEFT_CLICK)) baseController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
 
     }
 

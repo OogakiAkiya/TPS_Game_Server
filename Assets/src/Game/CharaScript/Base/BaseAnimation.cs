@@ -6,7 +6,7 @@ public class BaseAnimation : MonoBehaviour
 {
     public KEY nowKey = 0;
     public StateMachine<ANIMATION_KEY> animationState { get; private set; } = new StateMachine<ANIMATION_KEY>();
-    private BaseController baseController;
+    protected BaseController baseController;
     protected Animator animator;
     protected AnimatorBehaviour animatorBehaviour;
 
@@ -24,6 +24,7 @@ public class BaseAnimation : MonoBehaviour
     protected void Init()
     {
         baseController = this.GetComponent<BaseController>();
+        if (!baseController) baseController = this.transform.parent.GetComponent<BaseController>();
         animator = this.GetComponent<Animator>();
         animatorBehaviour = animator.GetBehaviour<AnimatorBehaviour>();
 

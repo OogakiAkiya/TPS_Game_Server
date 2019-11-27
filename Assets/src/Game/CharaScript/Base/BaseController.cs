@@ -37,8 +37,7 @@ public class BaseController : MonoBehaviour
     void Start()
     {
         animator = this.GetComponent<Animator>();
-        userAnimation = this.GetComponent<BaseAnimation>();
-
+        userAnimation = current.GetComponent<BaseAnimation>();
     }
     void Update()
     {

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MutantAnimation : BaseAnimation
 {
-    private BaseController mutantController;
     private bool jumpFlg = false;
 
     // Start is called before the first frame update
@@ -12,7 +11,6 @@ public class MutantAnimation : BaseAnimation
     {
         base.Init();
         animationState.ChangeState(ANIMATION_KEY.Idle);
-        mutantController = this.GetComponent<BaseController>();
     }
 
     // Update is called once per frame
@@ -49,7 +47,7 @@ public class MutantAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Attack,
             () =>
             {
-                mutantController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.ATACK);
                 animator.CrossFadeInFixedTime("Attack", 0.1f);
             },
             () =>
@@ -61,7 +59,7 @@ public class MutantAnimation : BaseAnimation
             },
             () =>
             {
-                mutantController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
+                baseController.current.weapon.state.ChangeState(WEAPONSTATE.WAIT);
             }
         );
         //Walk関係
@@ -86,8 +84,8 @@ public class MutantAnimation : BaseAnimation
         },
         () =>
         {
-            mutantController.hp = 100;
-            mutantController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+            baseController.hp = 100;
+            baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
         }
         );
     }
@@ -171,7 +169,7 @@ public class MutantAnimation : BaseAnimation
                 //
                 if (animatorBehaviour.NormalizedTime >= 0.6f && !jumpFlg)
                 {
-                    this.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
+                    baseController.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower * 100, 0));
                     jumpFlg = true;
                 }
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.JumpStay);
@@ -258,7 +256,7 @@ public class MutantAnimation : BaseAnimation
     private void Atack()
     {
         //既に攻撃していた場合の処理
-        if (mutantController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
+        if (baseController.current.weapon.state.currentKey != WEAPONSTATE.WAIT) return;
         //攻撃
         if (nowKey.HasFlag(KEY.LEFT_CLICK))
         {
@@ -274,7 +272,7 @@ public class MutantAnimation : BaseAnimation
         if (nowKey.HasFlag(KEY.W)) velocity += this.transform.forward;
 
         //移動
-        this.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
+        baseController.transform.position += velocity.normalized * _moveSpeed * Time.deltaTime;
 
     }
 }

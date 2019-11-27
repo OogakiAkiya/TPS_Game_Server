@@ -11,10 +11,7 @@ public class BaseComponent:MonoBehaviour
     public int weaponListIndex = 0;
     public GameHeader.UserTypeCode type = GameHeader.UserTypeCode.SOLDIER;
 
-    public virtual void Init()
-    {
-    }
-
+    public virtual void Init() { }
     public void ChangeWeapon(bool _up, System.Action _action = null)
     {
         if (_up)

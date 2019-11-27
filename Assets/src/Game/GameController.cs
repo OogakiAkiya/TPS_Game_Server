@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour
             {
                 if (notActiveUsers[j].gameObject.activeSelf) continue;
                 //Soldier
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.SOLDIER )
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.SOLDIER&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.SOLDIER)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -115,7 +115,7 @@ public class GameController : MonoBehaviour
                 }
 
                 //Maynard
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD)
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.MAYNARD)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -124,7 +124,7 @@ public class GameController : MonoBehaviour
                 }
 
                 //Mutant
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD)
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.MAYNARD)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
@@ -142,7 +142,7 @@ public class GameController : MonoBehaviour
     {
         //userのインスタンスを作成
         GameObject userPrefab = (GameObject)Resources.Load("user");
-        GameObject maynardPrefab = (GameObject)Resources.Load("Maynard");
+        GameObject maynardPrefab = (GameObject)Resources.Load("Monster");
 
         for (int i = 0; i < userAmount; i++)
         {
@@ -159,9 +159,9 @@ public class GameController : MonoBehaviour
 
             add.name = "___" + i;
             add.transform.position = new Vector3(i, 0.0f, 0.0f);
-            add.SetActive(false);
             notActiveUsers[i] = add.GetComponent<BaseController>();
-
+            notActiveUsers[i].current.Init();
+            add.SetActive(false);
         }
 
     }

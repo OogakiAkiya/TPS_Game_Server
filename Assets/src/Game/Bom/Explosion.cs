@@ -8,7 +8,6 @@ public class Explosion : MonoBehaviour
     protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
     private float range=4.5f;
     public BaseController userController;
-    public List<BaseController> targets=new List<BaseController>();
 
 
     // Start is called before the first frame update
@@ -22,17 +21,18 @@ public class Explosion : MonoBehaviour
     void Update()
     {
         if (this.transform.localScale.x < range) this.transform.localScale = this.transform.localScale + new Vector3(0.2f, 0.2f, 0.2f);
-        if (this.transform.localScale.x >= range) Destroy(this.gameObject);
+        if (this.transform.localScale.x >= range){
+            Collider[] hitColliders = Physics.OverlapSphere(this.transform.position, range, 1 << 10);
+            for(int i=0;i< hitColliders.Length; i++)
+            {
+                BaseController controller=hitColliders[i].GetComponent<BaseController>();
+                if (!controller) controller = hitColliders[i].transform.parent.GetComponent<BaseController>();
+                if(controller)controller.Damage(damage);
+            }
 
-        for(int i = 0; i < targets.Count; i++)
-        {
-            if (targets[i].Damage(damage)) userController.killAmount++;
+            Destroy(this.gameObject);
         }
-        targets.Clear();
+
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.tag==Tags.SOLDIER||other.tag==Tags.MONSTER)targets.Add(other.GetComponent<BaseController>());
-    }
 }
