@@ -9,6 +9,9 @@ public class MutantComponent : BaseComponent
     public override void Init()
     {
         type = GameHeader.UserTypeCode.MAYNARD;
+
+        base.Init();
+
         //武器関係
         weaponList.Add(new Claw(Attack));
         weapon = weaponList[weaponListIndex];

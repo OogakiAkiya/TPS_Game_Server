@@ -23,7 +23,7 @@ public class BaseController : MonoBehaviour
     protected bool checkKeyFlg = false;
     protected Animator animator;
     protected BaseAnimation userAnimation;
-    protected GameHeader.UserTypeCode type=GameHeader.UserTypeCode.SOLDIER;
+    public GameHeader.UserTypeCode type=GameHeader.UserTypeCode.SOLDIER;
 
     //現在の回転度
     public Vector3 rotat = Vector3.zero;

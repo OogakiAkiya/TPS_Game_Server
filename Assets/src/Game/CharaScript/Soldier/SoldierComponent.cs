@@ -20,6 +20,9 @@ public class SoldierComponent : BaseComponent
     public override void Init()
     {
         type = GameHeader.UserTypeCode.SOLDIER;
+
+        base.Init();
+
         //Ray判定用
         cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
