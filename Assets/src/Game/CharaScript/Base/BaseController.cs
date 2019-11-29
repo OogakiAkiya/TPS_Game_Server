@@ -34,31 +34,22 @@ public class BaseController : MonoBehaviour
 
     public BaseComponent current;
 
-    void Start()
+    protected virtual void Awake() {
+        current.Init();
+    }
+
+    protected virtual void Start()
     {
         animator = this.GetComponent<Animator>();
         userAnimation = current.GetComponent<BaseAnimation>();
     }
-    void Update()
+    protected virtual void Update()
     {
-        if (userAnimation.animationState.currentKey == ANIMATION_KEY.Idle)
-        {
-
-        }
-
         //回転
         Vector3 nowRotation = rotat;
         nowRotation.x = 0;
         nowRotation.z = 0;
         this.transform.rotation = Quaternion.Euler(nowRotation);
-
-        if (userAnimation.animationState.currentKey != ANIMATION_KEY.Idle)
-        {
-            nowRotation.y = 0;
-
-        }
-
-
     }
     public Task<int> UPdate()
     {

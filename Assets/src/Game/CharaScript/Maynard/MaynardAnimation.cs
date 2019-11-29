@@ -43,10 +43,8 @@ public class MaynardAnimation : BaseAnimation
                 //ジャンプ
                 if (InputTemplate(KEY.SPACE, ANIMATION_KEY.JumpUP)) return;
                 //歩き
-                if (nowKey.HasFlag(KEY.W))
-                {
-                    animationState.ChangeState(ANIMATION_KEY.Walk);
-                }
+                if (nowKey.HasFlag(KEY.W))animationState.ChangeState(ANIMATION_KEY.Walk);
+                
             });
 
         animationState.AddState(ANIMATION_KEY.Attack,

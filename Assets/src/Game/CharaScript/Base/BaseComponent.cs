@@ -12,8 +12,10 @@ public class BaseComponent:MonoBehaviour
     public GameHeader.UserTypeCode type = GameHeader.UserTypeCode.SOLDIER;
 
     public virtual void Init() {
-        myController.type = type;
+        if(myController)myController.type = type;
     }
+
+
     public void ChangeWeapon(bool _up, System.Action _action = null)
     {
         if (_up)

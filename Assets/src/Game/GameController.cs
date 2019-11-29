@@ -160,7 +160,6 @@ public class GameController : MonoBehaviour
             add.name = "___" + i;
             add.transform.position = new Vector3(i, 0.0f, 0.0f);
             notActiveUsers[i] = add.GetComponent<BaseController>();
-            notActiveUsers[i].current.Init();
             add.SetActive(false);
         }
 
