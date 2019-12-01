@@ -29,7 +29,8 @@ public class GameHeader
     {
         SOLDIER = 0x0001,
         MAYNARD = 0x0002,
-        GRENEDED=0x0003
+        GRENEDED=0x0003,
+        MONSTER=0x0004
     }
 
 

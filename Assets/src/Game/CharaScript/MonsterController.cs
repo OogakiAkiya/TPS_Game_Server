@@ -28,7 +28,7 @@ public class MonsterController : BaseController
         {
             if (flg)
             {
-                ChangeModele("Mutant");
+                //ChangeModele("Mutant");
                 flg = false;
             }
         }

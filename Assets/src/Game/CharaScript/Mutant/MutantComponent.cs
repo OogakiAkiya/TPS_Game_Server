@@ -8,7 +8,7 @@ public class MutantComponent : BaseComponent
     // Start is called before the first frame update
     public override void Init()
     {
-        type = GameHeader.UserTypeCode.MAYNARD;
+        type = GameHeader.UserTypeCode.MONSTER;
 
         base.Init();
 

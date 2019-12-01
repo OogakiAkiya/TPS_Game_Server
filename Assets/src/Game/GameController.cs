@@ -114,24 +114,14 @@ public class GameController : MonoBehaviour
 
                 }
 
-                //Maynard
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.MAYNARD)
+                //Monster
+                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MONSTER&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.MONSTER)
                 {
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
                     notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
                     break;
                 }
-
-                //Mutant
-                if (addUserList[i].userType == (byte)GameHeader.UserTypeCode.MAYNARD&& notActiveUsers[j].current.type == GameHeader.UserTypeCode.MAYNARD)
-                {
-                    notActiveUsers[j].gameObject.SetActive(true);
-                    notActiveUsers[j].name = addUserList[i].userID;
-                    notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
-                    break;
-                }
-
             }
         }
         addUserList.Clear();
