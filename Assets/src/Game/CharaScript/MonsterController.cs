@@ -5,6 +5,8 @@ using UnityEngine;
 public class MonsterController : BaseController
 {
     [SerializeField]BaseComponent next;
+    private MonsterComponent castCurrent;
+
     override protected void Awake()
     {
         ChangeModele("Maynard");
@@ -28,7 +30,7 @@ public class MonsterController : BaseController
         {
             if (flg)
             {
-                //ChangeModele("Mutant");
+                ChangeModele("Mutant");
                 flg = false;
             }
         }
@@ -48,8 +50,11 @@ public class MonsterController : BaseController
         header.CreateNewData(GameHeader.ID.GAME, this.type, this.name, (byte)GameHeader.GameCode.BASICDATA);
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
+        returnData.Add((byte)castCurrent.monsterType);
+
         returnData.AddRange(userData.GetData());
         if (current.weapon != null) returnData.AddRange(current.weapon.GetStatus());
+
         return returnData.ToArray();
     }
 
@@ -60,6 +65,8 @@ public class MonsterController : BaseController
         header.CreateNewData(GameHeader.ID.GAME, this.type, this.name, (byte)GameHeader.GameCode.CHECKDATA);
         userData.SetData(this.transform.position, this.transform.localEulerAngles, (int)userAnimation.animationState.currentKey, hp);
         returnData.AddRange(header.GetHeader());
+        returnData.Add((byte)castCurrent.monsterType);
+
         returnData.AddRange(userData.GetCompleteData());
         if (current.weapon != null) returnData.AddRange(current.weapon.GetStatus());
         return returnData.ToArray();
@@ -72,6 +79,7 @@ public class MonsterController : BaseController
         current = Instantiate((GameObject)Resources.Load(_pass), this.transform).GetComponent<BaseComponent>();
         current.myController = this;
         current.Init();
+        castCurrent = (MonsterComponent)current;
         base.Start(); // 親クラスのメソッドを呼ぶ
 
     }

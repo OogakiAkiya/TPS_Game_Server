@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MaynardComponent : BaseComponent
+public class MaynardComponent : MonsterComponent
 {
     [SerializeField] Vector3 attackRange = new Vector3(0.55f, 0.3f, 0.55f);
     // Start is called before the first frame update
-
     public override void Init()
     {
-        type = GameHeader.UserTypeCode.MONSTER;
+        monsterType = MonsterType.MAYNARD;
         base.Init();
         //武器関係
         weaponList.Add(new Claw(Attack));
