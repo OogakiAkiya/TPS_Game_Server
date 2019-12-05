@@ -34,6 +34,7 @@ public class BaseController : MonoBehaviour
 
     public BaseComponent current;
 
+
     protected virtual void Awake() {
         current.Init();
     }
@@ -194,5 +195,6 @@ public class BaseController : MonoBehaviour
         return returnData.ToArray();
 
     }
+
 }
 

@@ -32,6 +32,14 @@ public class MonsterController : BaseController
             {
                 ChangeModele("Mutant");
                 flg = false;
+                count=0;
+            }
+            else
+            {
+                ChangeModele("Maynard");
+                flg = true;
+                count=0;
+
             }
         }
         else
