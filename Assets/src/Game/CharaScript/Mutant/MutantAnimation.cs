@@ -5,7 +5,6 @@ using UnityEngine;
 public class MutantAnimation : BaseAnimation
 {
     private bool jumpFlg = false;
-    private bool diyFlg = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,10 +24,6 @@ public class MutantAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Idle,
              () =>
              {
-                 if (diyFlg)
-                 {
-                     baseController.End();
-                 }
                  animator.CrossFadeInFixedTime("Idle", 0.0f);
              },
 
@@ -92,7 +87,7 @@ public class MutantAnimation : BaseAnimation
         {
             baseController.hp = 100;
             baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
-            diyFlg = true;
+            baseController.End();
         }
         );
     }
