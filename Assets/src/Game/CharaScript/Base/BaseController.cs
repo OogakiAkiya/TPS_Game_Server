@@ -196,5 +196,9 @@ public class BaseController : MonoBehaviour
 
     }
 
+    public virtual void End()
+    {
+        current.End();
+    }
 }
 

@@ -6,7 +6,7 @@ public class MonsterController : BaseController
 {
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
-
+    private int changeCounter=0;
     override protected void Awake()
     {
         ChangeModele("Maynard");
@@ -20,33 +20,15 @@ public class MonsterController : BaseController
         */
     }
 
-    public int count = 0;
-    public bool flg = true;
     override protected void Update()
     {
-
-        //一時的な進化処理
-        if (count > 1000)
+        
+        if (changeCounter > 1000)
         {
-            if (flg)
-            {
-                ChangeModele("Mutant");
-                flg = false;
-                count=0;
-            }
-            else
-            {
-                ChangeModele("Maynard");
-                flg = true;
-                count=0;
-
-            }
+            ChangeModele("Mutant");
+            changeCounter =-2000;
         }
-        else
-        {
-            count++;
-        }
-
+        if (changeCounter <=1000) changeCounter++;
         base.Update();    // 親クラスのメソッドを呼ぶ
     }
 
@@ -81,7 +63,7 @@ public class MonsterController : BaseController
 
     }
 
-    private void ChangeModele(string _pass)
+    public void ChangeModele(string _pass)
     {
         if(current)Destroy(current.gameObject);
         current = Instantiate((GameObject)Resources.Load(_pass), this.transform).GetComponent<BaseComponent>();
@@ -90,5 +72,11 @@ public class MonsterController : BaseController
         castCurrent = (MonsterComponent)current;
         base.Start(); // 親クラスのメソッドを呼ぶ
 
+    }
+
+    public override void End()
+    {
+        base.End();
+        changeCounter = 0;
     }
 }

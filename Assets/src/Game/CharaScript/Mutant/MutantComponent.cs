@@ -39,4 +39,11 @@ public class MutantComponent : MonsterComponent
             }
         }
     }
+
+    public override void End()
+    {
+        base.End();
+        MonsterController monsterCtr = (MonsterController)myController;
+        monsterCtr.ChangeModele("Maynard");
+    }
 }

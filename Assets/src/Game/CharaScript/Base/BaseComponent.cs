@@ -36,4 +36,5 @@ public class BaseComponent:MonoBehaviour
     }
 
     public virtual void Attack() { }
+    public virtual void End() { }
 }
