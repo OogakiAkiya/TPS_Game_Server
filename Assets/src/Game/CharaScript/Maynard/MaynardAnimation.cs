@@ -80,7 +80,7 @@ public class MaynardAnimation : BaseAnimation
         },
         () =>
         {
-            if (animatorBehaviour.NormalizedTime >= 0.95f)
+            if (animatorBehaviour.NormalizedTime >= 0.95f&&animatorBehaviour.NormalizedTime<=1)
             {
                 animationState.ChangeState(ANIMATION_KEY.Idle);
             }

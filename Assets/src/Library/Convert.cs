@@ -68,4 +68,14 @@ public static class Convert
         return System.BitConverter.GetBytes(_data);
     }
 
+    public static float FloatConversion(byte[] _data,int _index)
+    {
+        return System.BitConverter.ToSingle(_data, _index);
+    }
+    public static int IntConversion(byte[] _data, int _index)
+    {
+        return System.BitConverter.ToInt32(_data, _index);
+    }
+
+
 }

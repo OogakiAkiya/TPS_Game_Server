@@ -6,7 +6,7 @@ public class MonsterController : BaseController
 {
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
-    private int changeCounter=0;
+    public int changeCounter=0;
     override protected void Awake()
     {
         ChangeModele("Maynard");
@@ -22,13 +22,13 @@ public class MonsterController : BaseController
 
     override protected void Update()
     {
-        
-        if (changeCounter > 1000)
+        if (!IsInvoking("Second5000Invoke")) Invoke("Second5000Invoke", 5f);
+
+        if (changeCounter > 100&&castCurrent.monsterType==MonsterType.MAYNARD)
         {
+            changeCounter = 0;
             ChangeModele("Mutant");
-            changeCounter =-2000;
         }
-        if (changeCounter <=1000) changeCounter++;
         base.Update();    // 親クラスのメソッドを呼ぶ
     }
 
@@ -43,6 +43,7 @@ public class MonsterController : BaseController
         returnData.Add((byte)castCurrent.monsterType);
 
         returnData.AddRange(userData.GetData());
+        returnData.AddRange(Convert.Conversion(changeCounter));
         if (current.weapon != null) returnData.AddRange(current.weapon.GetStatus());
 
         return returnData.ToArray();
@@ -78,5 +79,11 @@ public class MonsterController : BaseController
     {
         base.End();
         changeCounter = 0;
+    }
+
+    private void Second5000Invoke()
+    {
+        changeCounter+=10;
+
     }
 }
