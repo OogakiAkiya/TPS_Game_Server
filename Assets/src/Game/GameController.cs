@@ -24,12 +24,16 @@ public class GameController : MonoBehaviour
     private List<AddUserState> addUserList = new List<AddUserState>();
     private const int userAmount = 40;                                                 //ログイン最大数
 
+    public System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+
     //デバッグ用
     TimeMeasurment timeMeasurment = new TimeMeasurment();
 
     // Start is called before the first frame update
     void Start()
     {
+        timer.Start();
+
         //Update回数制御
         QualitySettings.vSyncCount = 0; // VSyncをOFFにする
 
@@ -110,6 +114,7 @@ public class GameController : MonoBehaviour
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
                     notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
+                    tcp_Controller.TimerSend(notActiveUsers[j].socket, (byte)GameHeader.ID.INIT, (byte)GameHeader.GameCode.CHECKDATA);
                     break;
 
                 }
@@ -120,6 +125,7 @@ public class GameController : MonoBehaviour
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
                     notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
+                    tcp_Controller.TimerSend(notActiveUsers[j].socket, (byte)GameHeader.ID.INIT, (byte)GameHeader.GameCode.CHECKDATA);
                     break;
                 }
             }

@@ -75,22 +75,13 @@ public class TCP_ServerController : MonoBehaviour
 
     private void InitUpdate()
     {
-
         //同じユーザーで複数ログインを防ぐ
         bool addFlg = true;
         for (int i = 0; i < gameController.users.Length; i++)
         {
-            if (gameController.users[i].userId == header.userName.Trim())
-            {
-                addFlg = false;
-            }
+            if (gameController.users[i].userId == header.userName.Trim())addFlg = false;
         }
-        if (addFlg)
-        {
-            gameController.AddUserList(header.gameCode, header.userName.Trim(), sendSocket);
-            //gameController.UsersUpdate();
-
-        }
+        if (addFlg)gameController.AddUserList(header.gameCode, header.userName.Trim(), sendSocket);
 
     }
 
@@ -150,7 +141,19 @@ public class TCP_ServerController : MonoBehaviour
         sendData.AddRange(header.GetHeader());
         sendData.AddRange(Convert.Conversion(gameController.users.Length - 1));
         Task task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
+    }
+
+    public void TimerSend(Tcp_Server_Socket _socket,byte _id, byte _code = 0x0001)
+    {
+        List<byte> sendData = new List<byte>();
+        header.CreateNewData((GameHeader.ID)_id, GameHeader.UserTypeCode.SOLDIER, "Timer", _code);
+        sendData.AddRange(header.GetHeader());
+        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Minutes));
+        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Seconds+1));              //この+1はラグ分の1秒
+
+        Task task = _socket.Send(sendData.ToArray(), sendData.ToArray().Length);
 
     }
+
 
 }

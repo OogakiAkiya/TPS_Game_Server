@@ -83,7 +83,7 @@ public class MonsterController : BaseController
 
     private void Second5000Invoke()
     {
-        changeCounter+=10;
+        changeCounter+=5;
 
     }
 }

@@ -24,7 +24,7 @@ public class BaseController : MonoBehaviour
     protected Animator animator;
     protected BaseAnimation userAnimation;
     public GameHeader.UserTypeCode type=GameHeader.UserTypeCode.SOLDIER;
-
+    protected GameController gameController;
     //現在の回転度
     public Vector3 rotat = Vector3.zero;
 
@@ -41,6 +41,7 @@ public class BaseController : MonoBehaviour
 
     protected virtual void Start()
     {
+        gameController = GameObject.FindGameObjectWithTag("Server").GetComponent<GameController>();
         animator = this.GetComponent<Animator>();
         userAnimation = current.GetComponent<BaseAnimation>();
     }
@@ -157,11 +158,15 @@ public class BaseController : MonoBehaviour
         {
             hp = 0;
             userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
-            deathAmount++;
+            DamageTemple();
             return true;
         }
 
         return false;
+    }
+    protected virtual void DamageTemple()
+    {
+        deathAmount++;
     }
 
     public KeyValuePair<string, int> GetUserAddress()

@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 43546916}
   m_Layer: 0
   m_Name: Server
-  m_TagString: Untagged
+  m_TagString: Server
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
