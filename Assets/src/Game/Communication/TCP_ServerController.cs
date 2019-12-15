@@ -143,17 +143,28 @@ public class TCP_ServerController : MonoBehaviour
         Task task = sendSocket.Send(sendData.ToArray(), sendData.ToArray().Length);
     }
 
-    public void TimerSend(Tcp_Server_Socket _socket,byte _id, byte _code = 0x0001)
+    public void FinishAlertSend(Tcp_Server_Socket _socket,byte _code = 0x0001)
     {
         List<byte> sendData = new List<byte>();
-        header.CreateNewData((GameHeader.ID)_id, GameHeader.UserTypeCode.SOLDIER, "Timer", _code);
+        header.CreateNewData((GameHeader.ID)GameHeader.ID.ALERT, GameHeader.UserTypeCode.SOLDIER, "Timer", _code);
         sendData.AddRange(header.GetHeader());
-        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Minutes));
-        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Seconds+1));              //この+1はラグ分の1秒
-
+        for(int i = 0; i < gameController.users.Length; i++)
+        {
+            sendData.AddRange(gameController.users[i].GetFinishStatus());
+        }
         Task task = _socket.Send(sendData.ToArray(), sendData.ToArray().Length);
 
     }
 
+
+    private byte[] FinishData()
+    {
+        List<byte> data = new List<byte>();
+        for(int i = 0; i < gameController.users.Length;i++)
+        {
+            data.AddRange(gameController.users[i].GetFinishStatus());
+        }
+        return data.ToArray();
+    } 
 
 }

@@ -52,6 +52,10 @@ public static class Convert
         return vect;
     }
 
+    public static byte[] Conversion(bool _data)
+    {
+        return System.BitConverter.GetBytes(_data);
+    }
 
     public static byte[] Conversion(int _data)
     {

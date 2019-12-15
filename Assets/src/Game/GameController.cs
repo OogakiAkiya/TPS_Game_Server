@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
         public string userID;
         public Tcp_Server_Socket socket;
     }
-    public GameObject userListObj;                                                          //userを追加する親の参照
+    [SerializeField] public GameObject userListObj;                                                          //userを追加する親の参照
     public BaseController[] users;                                                          //ログインしているユーザー
     private BaseController[] notActiveUsers = new BaseController[userAmount];                 //ログイン待ちインスタンス
     private int notActiveIndex = userAmount;
@@ -25,7 +25,7 @@ public class GameController : MonoBehaviour
     private const int userAmount = 40;                                                 //ログイン最大数
 
     public System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-
+    [SerializeField] public int GAMEFINISHUMINUTES = 5;
     //デバッグ用
     TimeMeasurment timeMeasurment = new TimeMeasurment();
 
@@ -74,9 +74,27 @@ public class GameController : MonoBehaviour
         //TCPとUDPのUpdate処理を終わるのをまつ
         Task.WaitAll(tasks);
 
+
+        //ゲーム終了処理
+        if (timer.Elapsed.Minutes >= GAMEFINISHUMINUTES && timer.Elapsed.Seconds > 0)
+        {
+            for (int i = 0; i < users.Length; i++)
+            {
+                Tcp_Server_Socket socket = users[i].socket;
+                if (socket == null) continue;
+                tcp_Controller.FinishAlertSend(socket, (byte)GameHeader.GameCode.CHECKDATA);
+            }
+
+            //シーン再読み込み
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;                        //エディタ(デバッグ)の時のみ動作を止める
+#else
+Application.Quit();                                                                      //コンパイル後に動作する
+#endif         
+        }
     }
 
-    private void LateUpdate()
+        private void LateUpdate()
     {
         //if(!IsInvoking("Second30Invoke"))Invoke("Second30Invoke", 1f/30*((int)(users.Length/20)+1));
         if (!IsInvoking("Second30Invoke")) Invoke("Second30Invoke", 1f / 30);
@@ -114,7 +132,6 @@ public class GameController : MonoBehaviour
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
                     notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
-                    tcp_Controller.TimerSend(notActiveUsers[j].socket, (byte)GameHeader.ID.INIT, (byte)GameHeader.GameCode.CHECKDATA);
                     break;
 
                 }
@@ -125,7 +142,6 @@ public class GameController : MonoBehaviour
                     notActiveUsers[j].gameObject.SetActive(true);
                     notActiveUsers[j].name = addUserList[i].userID;
                     notActiveUsers[j].SetUserData(addUserList[i].userID, addUserList[i].socket);
-                    tcp_Controller.TimerSend(notActiveUsers[j].socket, (byte)GameHeader.ID.INIT, (byte)GameHeader.GameCode.CHECKDATA);
                     break;
                 }
             }
@@ -174,6 +190,7 @@ public class GameController : MonoBehaviour
     public void SecondInvoke()
     {
         udp_Controller.SendAllClientScoreData();
+        udp_Controller.SendTimeData();
     }
     public void SecondTempInvoke()
     {

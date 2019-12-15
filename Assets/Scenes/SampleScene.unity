@@ -186,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userListObj: {fileID: 67459942}
   users: []
+  GAMEFINISHUMINUTES: 1
 --- !u!1 &67459942
 GameObject:
   m_ObjectHideFlags: 0

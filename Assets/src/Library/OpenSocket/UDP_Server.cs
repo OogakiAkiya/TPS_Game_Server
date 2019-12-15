@@ -119,6 +119,25 @@ public class UDP_Server
 
     }
 
+    public void AllClientSend(List<KeyValuePair<string, int>> _address, List<byte> _data)
+    {
+        List<byte> sendDataList = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+        sendDataList.AddRange(BitConverter.GetBytes((_data.Count + sequenceByte.Length + sizeof(int))));
+        sendDataList.AddRange(sequenceByte);
+        sendDataList.AddRange(_data);
+
+        byte[] encodeData = CompressionWrapper.Encode(sendDataList.ToArray());
+        for (int i = 0; i < _address.Count; i++)
+        {
+            server.socket.SendAsync(encodeData, encodeData.Length, _address[i].Key, _address[i].Value);
+            FileController.GetInstance().Write("SendData", "IP:" + _address[i].Key + ",Port:" + _address[i].Value);
+        }
+        CountUPSequence();
+
+    }
+
+
     public byte[] EncodeData(byte[] _data)
     {
         List<byte> data = new List<byte>();

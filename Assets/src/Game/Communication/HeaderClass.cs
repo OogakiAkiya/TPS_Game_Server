@@ -12,10 +12,11 @@ public class GameHeader
 
     public enum ID : byte
     {
-        DEBUG = 0x001,
-        INIT = 0x002,
-        TITLE=0x003,
-        GAME = 0x004
+        DEBUG = 0x0001,
+        INIT = 0x0002,
+        TITLE=0x0003,
+        GAME = 0x0004,
+        ALERT=0x0005
     }
 
     public enum LoginCode : byte

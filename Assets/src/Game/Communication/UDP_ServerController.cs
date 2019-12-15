@@ -19,7 +19,7 @@ public class UDP_ServerController : MonoBehaviour
 
     Task clientDataSendTask;
     Task clientCompDataSendTask;
-
+    Task timeTask;
     Task ScoreDataSendTask;
 
     // Start is called before the first frame update
@@ -142,6 +142,38 @@ public class UDP_ServerController : MonoBehaviour
             return 0;
         });
 
+
+    }
+    public void SendTimeData()
+    {
+        List<KeyValuePair<string, int>> addressList = new List<KeyValuePair<string, int>>();
+        //sendData作成
+        List<byte> sendData = new List<byte>();
+        GameHeader lheader = new GameHeader();
+
+        for (int i = 0; i < gameController.users.Length; i++)
+        {
+            BaseController user = gameController.users[i];
+            if (user.port >= 0) addressList.Add(user.GetUserAddress());
+        }
+
+        if (addressList.Count <= 0) return;
+
+        lheader.CreateNewData(GameHeader.ID.ALERT, GameHeader.UserTypeCode.SOLDIER, "Timer", (byte)GameHeader.GameCode.CHECKDATA);
+        sendData.AddRange(lheader.GetHeader());
+        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Minutes));
+        sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Seconds));
+
+
+        //送信処理
+        if (timeTask != null) Task.WaitAll(timeTask);
+
+        timeTask = Task.Run(() =>
+        {
+            //送信処理
+            socket.AllClientSend(addressList, sendData);
+            return 0;
+        });
 
     }
 

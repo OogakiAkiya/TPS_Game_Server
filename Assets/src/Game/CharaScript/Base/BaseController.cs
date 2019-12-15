@@ -201,9 +201,60 @@ public class BaseController : MonoBehaviour
 
     }
 
+    public virtual byte[] GetFinishStatus()
+    {
+        List<byte> returnData = new List<byte>();
+        GameHeader header = new GameHeader();
+        header.CreateNewData(GameHeader.ID.GAME, this.type, this.name, (byte)GameHeader.GameCode.CHECKDATA);
+        returnData.AddRange(header.GetHeader());
+        FinishData finish = new FinishData();
+        finish.SetData(this.killAmount, this.deathAmount, 1, 1, true);
+        returnData.AddRange(finish.GetData());
+        return returnData.ToArray();
+
+    }
+
     public virtual void End()
     {
         current.End();
     }
 }
 
+class FinishData
+{
+    public static int FINISHUDATALENGHT = sizeof(int)*4+sizeof(bool);
+    private int killAmount = 0;
+    private int deathAmount = 0;
+    private int timeMinute = 0;
+    private int timeSecond = 0;
+    private bool survivalFlg = true;
+
+    public void SetData(int _kill,int _death,int _timeMinute,int _timeSecond,bool _survivalFlg)
+    {
+        killAmount = _kill;
+        deathAmount = _death;
+        timeMinute = _timeMinute;
+        timeSecond = _timeSecond;
+        survivalFlg = _survivalFlg;
+    }
+
+    public byte[] GetData()
+    {
+        byte[] data = new byte[FINISHUDATALENGHT];
+        int index = 0;
+
+        Buffer.BlockCopy(Convert.Conversion(killAmount), 0,data, index,sizeof(int));
+        index += sizeof(int);
+        Buffer.BlockCopy(Convert.Conversion(deathAmount), 0, data, index, sizeof(int));
+        index += sizeof(int);
+        Buffer.BlockCopy(Convert.Conversion(timeMinute), 0, data, index, sizeof(int));
+        index += sizeof(int);
+        Buffer.BlockCopy(Convert.Conversion(timeSecond), 0, data, index, sizeof(int));
+        index += sizeof(int);
+        Buffer.BlockCopy(Convert.Conversion(survivalFlg), 0, data, index, sizeof(bool));
+        index += sizeof(bool);
+
+        return data;
+    }
+
+}
