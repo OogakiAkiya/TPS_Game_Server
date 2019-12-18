@@ -208,7 +208,7 @@ public class BaseController : MonoBehaviour
         header.CreateNewData(GameHeader.ID.GAME, this.type, this.name, (byte)GameHeader.GameCode.CHECKDATA);
         returnData.AddRange(header.GetHeader());
         FinishData finish = new FinishData();
-        finish.SetData(this.killAmount, this.deathAmount, 1, 1, true);
+        finish.SetData(this.killAmount, this.deathAmount, 1, 1, true,(byte)this.type);
         returnData.AddRange(finish.GetData());
         return returnData.ToArray();
 
@@ -222,20 +222,22 @@ public class BaseController : MonoBehaviour
 
 class FinishData
 {
-    public static int FINISHUDATALENGHT = sizeof(int)*4+sizeof(bool);
+    public static int FINISHUDATALENGHT = sizeof(int)*4+sizeof(bool)+sizeof(byte);
     private int killAmount = 0;
     private int deathAmount = 0;
     private int timeMinute = 0;
     private int timeSecond = 0;
     private bool survivalFlg = true;
+    private byte objectType= 0x0000;
 
-    public void SetData(int _kill,int _death,int _timeMinute,int _timeSecond,bool _survivalFlg)
+    public void SetData(int _kill,int _death,int _timeMinute,int _timeSecond,bool _survivalFlg,byte _objectType)
     {
         killAmount = _kill;
         deathAmount = _death;
         timeMinute = _timeMinute;
         timeSecond = _timeSecond;
         survivalFlg = _survivalFlg;
+        objectType = _objectType;
     }
 
     public byte[] GetData()
@@ -253,7 +255,8 @@ class FinishData
         index += sizeof(int);
         Buffer.BlockCopy(Convert.Conversion(survivalFlg), 0, data, index, sizeof(bool));
         index += sizeof(bool);
-
+        data[index] = objectType;
+        index += sizeof(byte);
         return data;
     }
 
