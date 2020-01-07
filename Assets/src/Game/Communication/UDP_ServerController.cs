@@ -63,7 +63,7 @@ public class UDP_ServerController : MonoBehaviour
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
-            sendData.Add(user.GetStatusComplete());
+            if(!user.deadFlg)sendData.Add(user.GetStatusComplete());
             if (user.port >= 0)addressList.Add(user.GetUserAddress());
             
 
@@ -94,7 +94,7 @@ public class UDP_ServerController : MonoBehaviour
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
-            sendData.Add(user.GetStatus());
+            if (!user.deadFlg) sendData.Add(user.GetStatus());
             if (user.port >= 0)
             {
                 addressList.Add(user.GetUserAddress());

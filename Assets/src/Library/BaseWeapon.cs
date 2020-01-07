@@ -38,7 +38,7 @@ public class MachineGun : BaseWeapon
     public MachineGun(Action _atack)
     {
         interval = 50;
-        power = 5;
+        power = 8;
         reloadTime = 1000;      //1秒
         magazine = 60;
         remainingBullet = magazine;

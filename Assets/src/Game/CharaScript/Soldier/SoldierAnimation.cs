@@ -116,6 +116,7 @@ public class SoldierAnimation : BaseAnimation
             //if (collider) collider.center = center;
             baseController.hp = 100;
             baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
+            baseController.End();
         }
         );
     }

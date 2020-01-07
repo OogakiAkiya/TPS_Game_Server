@@ -34,6 +34,10 @@ public class BaseController : MonoBehaviour
 
     public BaseComponent current;
 
+    //残機
+    public int STOCKLIMIT = 1;
+    public int stock=0;
+    public bool deadFlg = false;
 
     protected virtual void Awake() {
         current.Init();
@@ -41,12 +45,15 @@ public class BaseController : MonoBehaviour
 
     protected virtual void Start()
     {
+        stock = STOCKLIMIT;
         gameController = GameObject.FindGameObjectWithTag("Server").GetComponent<GameController>();
         animator = this.GetComponent<Animator>();
         userAnimation = current.GetComponent<BaseAnimation>();
     }
     protected virtual void Update()
     {
+        if (deadFlg == true) return;
+
         //回転
         Vector3 nowRotation = rotat;
         nowRotation.x = 0;
@@ -57,7 +64,7 @@ public class BaseController : MonoBehaviour
     {
         return Task.Run(() =>
         {
-
+            if (deadFlg == true) return 0;
             current.weapon.state.Update();
 
             //ダウンだけ検出するキーの初期化
@@ -148,7 +155,7 @@ public class BaseController : MonoBehaviour
         current.ChangeWeapon(_up, () => { nowKey = nowKey ^ KEY.LEFT_BUTTON; });
     }
 
-    public bool Damage(int _damage = 1)
+    public virtual bool Damage(int _damage = 1)
     {
         //敵を倒した時trueを返す
         if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
@@ -157,6 +164,7 @@ public class BaseController : MonoBehaviour
         if (hp <= 0)
         {
             hp = 0;
+            stock--;
             userAnimation.animationState.ChangeState(ANIMATION_KEY.Dying);
             DamageTemple();
             return true;
@@ -216,6 +224,11 @@ public class BaseController : MonoBehaviour
 
     public virtual void End()
     {
+        if (stock < 0)
+        {
+            this.gameObject.layer = LayerMask.NameToLayer("Default");
+            deadFlg = true;
+        }
         current.End();
     }
 }

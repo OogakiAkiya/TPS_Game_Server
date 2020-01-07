@@ -7,7 +7,7 @@ public class MonsterController : BaseController
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
     private int changeCounter=0;
-    private int changeUP = 10;
+    public int CHANGEUP = 10;
     override protected void Awake()
     {
         ChangeModele("Maynard");
@@ -75,7 +75,7 @@ public class MonsterController : BaseController
         base.Start(); // 親クラスのメソッドを呼ぶ
 
     }
-
+    
     public override void End()
     {
         base.End();
@@ -84,7 +84,7 @@ public class MonsterController : BaseController
 
     private void Second5000Invoke()
     {
-        changeCounter+=changeUP;
+        changeCounter+=CHANGEUP;
 
     }
 }
