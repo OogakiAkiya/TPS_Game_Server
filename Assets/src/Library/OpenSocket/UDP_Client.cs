@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 class ClientState
 {
     public UdpClient socket = null;
-    public IPEndPoint endPoint=null;
+    public IPEndPoint endPoint;
     private List<KeyValuePair<IPEndPoint, byte[]>> recvDataList = new List<KeyValuePair<IPEndPoint, byte[]>>();
     private System.Object lockObject = new System.Object();
 
@@ -24,9 +24,10 @@ class ClientState
     public KeyValuePair<IPEndPoint, byte[]> GetRecvData()
     {
         KeyValuePair<IPEndPoint, byte[]> returnByte;
+        returnByte = recvDataList[0];
+
         lock (lockObject)
         {
-            returnByte = recvDataList[0];
             recvDataList.RemoveAt(0);
         }
         return returnByte;
@@ -34,10 +35,19 @@ class ClientState
 
     public void AddRecvData(IPEndPoint _iPEndPoint, byte[] _data)
     {
-        KeyValuePair<IPEndPoint, byte[]> addData = new KeyValuePair<IPEndPoint, byte[]>(_iPEndPoint, _data);
         lock (lockObject)
         {
-            recvDataList.Add(addData);
+            int count = 0;
+            while (true)
+            {
+                int size = System.BitConverter.ToInt32(_data, count);
+                if (_data.Length - count < size) return;
+                KeyValuePair<IPEndPoint, byte[]> addData = new KeyValuePair<IPEndPoint, byte[]>(_iPEndPoint, new byte[size - sizeof(int)]);
+                Array.Copy(_data, (count + sizeof(int)), addData.Value, 0, addData.Value.Length);
+                recvDataList.Add(addData);
+                count += size;
+                if (_data.Length - count < sizeof(int)) return;
+            }
         }
     }
 
@@ -55,30 +65,30 @@ class ClientState
 
 class UDP_Client
 {
-    
-    public ServerState server { get; private set; } = new ServerState();
-    private ClientState sender = new ClientState();
 
-    int port = 0;
+    public ClientState server { get; private set; } = new ClientState();
+
+    int port = 12343;
     int sendPort = 12344;
     uint sequence = 0;
 
-
-    public void Init(int _port)
+    public void Init(int _sendPort)
     {
-        port = _port;
-        server.socket = new UdpClient(port);
+        sendPort = _sendPort;
+        server.socket = new UdpClient();
         server.socket.BeginReceive(new AsyncCallback(ReceiveCallback), server);
-        sender.socket = new UdpClient();
+
     }
 
     public void Init(int _port, int _sendPort)
     {
         port = _port;
         sendPort = _sendPort;
-        server.socket = new UdpClient(port);
+        //System.Net.IPEndPoint localEP =new System.Net.IPEndPoint(IPAddress.Any, port);
+        server.socket = new UdpClient();
+        //server.socket = new UdpClient(localEP);
+
         server.socket.BeginReceive(new AsyncCallback(ReceiveCallback), server);
-        sender.socket = new UdpClient();
     }
 
     //本来ならsendPortはportに変わる
@@ -88,7 +98,9 @@ class UDP_Client
         List<byte> sendData = new List<byte>();
         sendData.AddRange(BitConverter.GetBytes(sequence));
         sendData.AddRange(_data.Value);
-        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
+        //sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
+        server.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _data.Key.Address.ToString(), sendPort);
+
         CountUPSequence();
 
     }
@@ -99,7 +111,8 @@ class UDP_Client
         List<byte> sendData = new List<byte>();
         sendData.AddRange(BitConverter.GetBytes(sequence));
         sendData.AddRange(_data);
-        sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
+        //sender.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
+        server.socket.SendAsync(sendData.ToArray(), sendData.ToArray().Length, _IP, _port);
         CountUPSequence();
 
     }
@@ -115,10 +128,10 @@ class UDP_Client
 
     private void ReceiveCallback(IAsyncResult ar)
     {
-        ServerState client = (ServerState)ar.AsyncState;
-        byte[] buf = client.socket.EndReceive(ar, ref client.endPoint);
-        client.AddRecvData(client.endPoint, buf);
+        ClientState client = (ClientState)ar.AsyncState;
+        byte[] decodeData = CompressionWrapper.Decode(client.socket.EndReceive(ar, ref client.endPoint));
+        client.AddRecvData(client.endPoint, decodeData);
         client.socket.BeginReceive(ReceiveCallback, client);
     }
-    
+
 }

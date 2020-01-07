@@ -60,39 +60,26 @@ public class ServerState
 public class UDP_Server
 {
     public ServerState server { get; private set; } = new ServerState();
-    private ClientState sender = new ClientState();
     public uint sequence { get; private set; } = 0;
     int port = 0;
-    int sendPort = 12343;
 
     public void Init(int _port)
     {
         port = _port;
         server.socket = new UdpClient(port);
         server.socket.BeginReceive(new AsyncCallback(ReceiveCallback), server);
-        sender.socket = new UdpClient();
-
-    }
-
-    public void Init(int _port, int _sendPort)
-    {
-        port = _port;
-        sendPort = _sendPort;
-        server.socket = new UdpClient(port);
-        server.socket.BeginReceive(new AsyncCallback(ReceiveCallback), server);
-        sender.socket = new UdpClient();
 
     }
 
 
-
-    public void Send(byte[] _data, string _IP) {
+    public void Send(KeyValuePair<string,int> _address,byte[] _data) {
         byte[] encodeData = CompressionWrapper.Encode(_data);
-        sender.socket.SendAsync(encodeData,encodeData.Length, _IP, sendPort);
+        server.socket.SendAsync(encodeData,encodeData.Length, _address.Key,_address.Value);
         CountUPSequence();
 
     }
     //本来ならsendPortはportに変わる
+    /*
     public void AllClientSend(List<string> _ipList, List<byte[]> _data)
     {
         List<byte> sendDataList = new List<byte>();
@@ -106,11 +93,51 @@ public class UDP_Server
         byte[] encodeData=CompressionWrapper.Encode(sendDataList.ToArray());
         for (int ip = 0; ip < _ipList.Count; ip++)
         {
-            sender.socket.SendAsync(encodeData,encodeData.Length, _ipList[ip], sendPort);
+            server.socket.SendAsync(encodeData,encodeData.Length, _ipList[ip], sendPort);
         }
         CountUPSequence();
 
     }
+    */
+    public void AllClientSend(List<KeyValuePair<string, int>> _address,List<byte[]> _data)
+    {
+        List<byte> sendDataList = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+        for (int i = 0; i < _data.Count; i++)
+        {
+            sendDataList.AddRange(BitConverter.GetBytes((_data[i].Length + sequenceByte.Length + sizeof(int))));
+            sendDataList.AddRange(sequenceByte);
+            sendDataList.AddRange(_data[i]);
+        }
+        byte[] encodeData = CompressionWrapper.Encode(sendDataList.ToArray());
+        for (int i = 0; i < _address.Count; i++)
+        {
+            server.socket.SendAsync(encodeData, encodeData.Length, _address[i].Key, _address[i].Value);
+            FileController.GetInstance().Write("SendData", "IP:" + _address[i].Key + ",Port:" + _address[i].Value);
+        }
+        CountUPSequence();
+
+    }
+
+    public void AllClientSend(List<KeyValuePair<string, int>> _address, List<byte> _data)
+    {
+        List<byte> sendDataList = new List<byte>();
+        byte[] sequenceByte = BitConverter.GetBytes(sequence);
+        sendDataList.AddRange(BitConverter.GetBytes((_data.Count + sequenceByte.Length + sizeof(int))));
+        sendDataList.AddRange(sequenceByte);
+        sendDataList.AddRange(_data);
+
+        byte[] encodeData = CompressionWrapper.Encode(sendDataList.ToArray());
+        for (int i = 0; i < _address.Count; i++)
+        {
+            server.socket.SendAsync(encodeData, encodeData.Length, _address[i].Key, _address[i].Value);
+            FileController.GetInstance().Write("SendData", "IP:" + _address[i].Key + ",Port:" + _address[i].Value);
+        }
+        CountUPSequence();
+
+    }
+
+
     public byte[] EncodeData(byte[] _data)
     {
         List<byte> data = new List<byte>();

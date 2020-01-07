@@ -45,7 +45,7 @@ public class Grenade : MonoBehaviour
 
         List<byte> data = new List<byte>();
         GameHeader head = new GameHeader();
-        head.CreateNewData(GameHeader.ID.GAME,this.name, (byte)GameHeader.GameCode.GRENEDEDATA);
+        head.CreateNewData(GameHeader.ID.GAME,GameHeader.UserTypeCode.GRENEDED,this.name, (byte)GameHeader.GameCode.GRENEDEDATA);
         data.AddRange(head.GetHeader());
         data.AddRange(Convert.GetByteVector3(pos));
         data.AddRange(Convert.GetByteVector3(direction));
@@ -53,7 +53,7 @@ public class Grenade : MonoBehaviour
         return data.ToArray();
     }
 
-    public void Delete(UserController userController)
+    public void Delete(BaseController userController)
     {
         explosion.GetComponent<Explosion>().userController = userController;
         Destroy(this.gameObject);

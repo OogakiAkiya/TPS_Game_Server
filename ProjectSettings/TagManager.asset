@@ -8,6 +8,9 @@ TagManager:
   - Bom
   - BomList
   - View
+  - Soldier
+  - Monster
+  - Server
   layers:
   - Default
   - TransparentFX

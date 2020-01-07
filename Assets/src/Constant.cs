@@ -1,8 +1,5 @@
 ﻿using System;
 
-
-
-
 public enum KEY : short
 {
     W = 0x001,
@@ -36,6 +33,7 @@ public enum ANIMATION_KEY : int
     JumpStay,
     JumpDown,
     Reloading,
+    Attack,
     Dying
 }
 
@@ -44,8 +42,8 @@ public enum WEAPONTYPE:int
 {
     BASE,
     MACHINEGUN,
-    HANDGUN
-
+    HANDGUN,
+    CLAW
 }
 
 public enum WEAPONSTATE : int
@@ -53,6 +51,15 @@ public enum WEAPONSTATE : int
     WAIT,
     ATACK,
     RELOAD
-
 }
 
+public static class Tags
+{
+    public static readonly string SOLDIER = "Soldier";
+    public static readonly string MONSTER = "Monster";
+}
+public enum MonsterType:byte
+{
+    MAYNARD=0x0001,
+    MUTANT=0x0002 
+}

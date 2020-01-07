@@ -4,7 +4,7 @@ using System.IO;
 public class FileController
 {
     private static FileController _instance=new FileController();
-
+    private object lockd=new object();
     public static FileController GetInstance()
     {
         return _instance;
@@ -14,7 +14,10 @@ public class FileController
     {
         string writeData=_writeData;
         if (_newLine) writeData=_writeData + "\n";
-        File.AppendAllText(@_fileName + ".log", writeData);
+        lock (lockd)
+        {
+            File.AppendAllText(@_fileName + ".log", writeData);
+        }
     }
 
 }
