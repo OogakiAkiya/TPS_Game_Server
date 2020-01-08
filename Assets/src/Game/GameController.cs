@@ -22,10 +22,11 @@ public class GameController : MonoBehaviour
     private UDP_ServerController udp_Controller;
     private TCP_ServerController tcp_Controller;
     private List<AddUserState> addUserList = new List<AddUserState>();
-    private const int userAmount = 40;                                                 //ログイン最大数
+    private const int userAmount = 50;                                                 //ログイン最大数
 
     public System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
     [SerializeField] public int GAMEFINISHUMINUTES = 5;
+    [SerializeField] int HUMANAMOUNT = 2;
     //デバッグ用
     TimeMeasurment timeMeasurment = new TimeMeasurment();
 
@@ -74,9 +75,11 @@ public class GameController : MonoBehaviour
         //TCPとUDPのUpdate処理を終わるのをまつ
         Task.WaitAll(tasks);
 
+        //ユーザーがいない場合ここで終了
+        if (users.Length == 0) return;
 
         //ゲーム終了処理
-        if (timer.Elapsed.Minutes >= GAMEFINISHUMINUTES && timer.Elapsed.Seconds > 0)
+        if (JudgeEnd())
         {
             for (int i = 0; i < users.Length; i++)
             {
@@ -159,7 +162,7 @@ Application.Quit();                                                             
         for (int i = 0; i < userAmount; i++)
         {
             GameObject add;
-            if (i < 2)
+            if (i < HUMANAMOUNT)
             {
                 add = Instantiate(userPrefab, userListObj.transform) as GameObject;
             }
@@ -177,6 +180,33 @@ Application.Quit();                                                             
 
     }
 
+    private bool JudgeEnd()
+    {
+        //時間制限でゲーム終了
+        if (timer.Elapsed.Minutes >= GAMEFINISHUMINUTES && timer.Elapsed.Seconds > 0) return true;
+
+        //どちらかの陣営が全滅したとき
+        int scount = 0;
+        int sdeath = 0;
+        int mcount = 0;
+        int mdeath = 0;
+        for (int i = 0; i < users.Length; i++)
+        {
+            if (users[i].type == GameHeader.UserTypeCode.SOLDIER) {
+                scount++;
+                if (users[i].deadFlg) sdeath++;
+            }
+            if (users[i].type == GameHeader.UserTypeCode.MONSTER )
+            {
+                mcount++;
+                if (users[i].deadFlg) mdeath++;
+            }
+        }
+        if (scount!=0&&scount==sdeath) return true;
+        if (mcount!=0&&mcount==mdeath) return true;
+        return false;
+    }
+
 
     private void UsersUpdate()
     {
@@ -189,7 +219,7 @@ Application.Quit();                                                             
     }
     public void SecondInvoke()
     {
-        udp_Controller.SendAllClientScoreData();
+        //udp_Controller.SendAllClientScoreData();
         udp_Controller.SendTimeData();
     }
     public void SecondTempInvoke()

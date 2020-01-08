@@ -37,7 +37,7 @@ public class BaseController : MonoBehaviour
     //残機
     public int STOCKLIMIT = 1;
     public int stock=0;
-    public bool deadFlg = false;
+    public bool deadFlg { get; protected set; } = false;
 
     protected virtual void Awake() {
         current.Init();
@@ -52,7 +52,7 @@ public class BaseController : MonoBehaviour
     }
     protected virtual void Update()
     {
-        if (deadFlg == true) return;
+        if (deadFlg) return;
 
         //回転
         Vector3 nowRotation = rotat;
@@ -64,7 +64,7 @@ public class BaseController : MonoBehaviour
     {
         return Task.Run(() =>
         {
-            if (deadFlg == true) return 0;
+            if (deadFlg) return 0;
             current.weapon.state.Update();
 
             //ダウンだけ検出するキーの初期化
@@ -216,7 +216,7 @@ public class BaseController : MonoBehaviour
         header.CreateNewData(GameHeader.ID.GAME, this.type, this.name, (byte)GameHeader.GameCode.CHECKDATA);
         returnData.AddRange(header.GetHeader());
         FinishData finish = new FinishData();
-        finish.SetData(this.killAmount, this.deathAmount, 1, 1, true,(byte)this.type);
+        finish.SetData(this.killAmount, this.deathAmount, 1, 1, deadFlg,(byte)this.type);
         returnData.AddRange(finish.GetData());
         return returnData.ToArray();
 
@@ -224,7 +224,7 @@ public class BaseController : MonoBehaviour
 
     public virtual void End()
     {
-        if (stock < 0)
+        if (stock <= 0)
         {
             this.gameObject.layer = LayerMask.NameToLayer("Default");
             deadFlg = true;

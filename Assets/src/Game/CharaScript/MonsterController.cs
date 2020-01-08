@@ -10,7 +10,9 @@ public class MonsterController : BaseController
     public int CHANGEUP = 10;
     override protected void Awake()
     {
+        stock = 10;
         ChangeModele("Maynard");
+        type = GameHeader.UserTypeCode.MONSTER;
 
         /*
         if (current) Destroy(current.gameObject);
