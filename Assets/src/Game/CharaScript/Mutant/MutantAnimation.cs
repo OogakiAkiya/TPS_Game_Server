@@ -24,6 +24,7 @@ public class MutantAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Idle,
              () =>
              {
+                 
                  animator.CrossFadeInFixedTime("Idle", 0.0f);
              },
 
@@ -200,7 +201,10 @@ public class MutantAnimation : BaseAnimation
             },
             () =>
             {
-                if (animatorBehaviour.NormalizedTime < 0.3f) Move(jumpMoveSpeed);
+                if (animatorBehaviour.NormalizedTime < 0.3f)
+                {
+                    Move(jumpMoveSpeed);
+                }
                 if (animatorBehaviour.NormalizedTime >= 0.95f) animationState.ChangeState(ANIMATION_KEY.Idle);
             }
             );

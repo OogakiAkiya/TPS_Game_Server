@@ -34,6 +34,7 @@ public enum ANIMATION_KEY : int
     JumpDown,
     Reloading,
     Attack,
+    ModelChange,
     Dying
 }
 

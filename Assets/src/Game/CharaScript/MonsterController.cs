@@ -7,7 +7,7 @@ public class MonsterController : BaseController
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
     private int changeCounter=0;
-    public int CHANGEUP = 10;
+    private int CHANGEUP = 100;
     override protected void Awake()
     {
         stock = 10;
@@ -30,7 +30,8 @@ public class MonsterController : BaseController
         if (changeCounter > 100&&castCurrent.monsterType==MonsterType.MAYNARD)
         {
             changeCounter = 0;
-            ChangeModele("Mutant");
+            userAnimation.animationState.ChangeState(ANIMATION_KEY.ModelChange);
+            
         }
         base.Update();    // 親クラスのメソッドを呼ぶ
     }

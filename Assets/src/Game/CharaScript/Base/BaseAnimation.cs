@@ -43,6 +43,11 @@ public class BaseAnimation : MonoBehaviour
         animationState.Update();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(this.transform.position - new Vector3(0, groundCheckRadius / 3, 0), groundCheckRadius);
+    }
+
     protected void GrandCheck()
     {
         groundflg = true;

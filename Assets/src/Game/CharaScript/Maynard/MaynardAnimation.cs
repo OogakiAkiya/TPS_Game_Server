@@ -6,7 +6,8 @@ public class MaynardAnimation : BaseAnimation
 {
 
     private bool jumpFlg=false;
-
+    protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+    private int changeTime = 3000;
     // Start is called before the first frame update
     void Start()
     {
@@ -93,6 +94,25 @@ public class MaynardAnimation : BaseAnimation
 
         }
         );
+
+        animationState.AddState(ANIMATION_KEY.ModelChange, () =>
+        {
+            timer.Restart();
+        },
+        () =>
+        {
+            if (timer.ElapsedMilliseconds >changeTime)
+            {
+                animationState.ChangeState(ANIMATION_KEY.Idle);
+            }
+        },
+        () =>
+        {
+            MonsterController controller=(MonsterController)baseController;
+            controller.ChangeModele("Mutant");
+        }
+        );
+        
     }
     private void AddWalkState()
     {

@@ -149,7 +149,7 @@ MonoBehaviour:
   walkSpeed: 1
   runSpeed: 3
   checkLayer: Ground
-  groundCheckRadius: 0.2
+  groundCheckRadius: 0.4
   rebornRange: 2
   groundflg: 1
 --- !u!114 &8784504743754587234
