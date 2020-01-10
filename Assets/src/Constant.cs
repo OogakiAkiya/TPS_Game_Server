@@ -44,6 +44,7 @@ public enum WEAPONTYPE:int
     BASE,
     MACHINEGUN,
     HANDGUN,
+    UMP45,
     CLAW
 }
 

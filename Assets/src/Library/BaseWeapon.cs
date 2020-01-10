@@ -94,6 +94,68 @@ public class MachineGun : BaseWeapon
 
 }
 
+public class UMP45 : BaseWeapon
+{
+    public UMP45(Action _atack)
+    {
+        interval = 20;
+        power = 3;
+        reloadTime = 500;      //1秒
+        magazine = 120;
+        remainingBullet = magazine;
+        range = 15;
+        atackMethod = _atack;
+        type = WEAPONTYPE.UMP45;
+
+        state.AddState(WEAPONSTATE.WAIT);
+        state.AddState(WEAPONSTATE.ATACK,
+            () =>
+            {
+                timer.Restart();
+                atackMethod();
+                remainingBullet--;
+            },
+            () =>
+            {
+                if (timer.ElapsedMilliseconds > interval)
+                {
+                    if (remainingBullet <= 0)
+                    {
+                        state.ChangeState(WEAPONSTATE.RELOAD);
+                        return;
+                    }
+                    state.ChangeState(WEAPONSTATE.WAIT);
+                }
+            },
+            () =>
+            {
+                timer.Stop();
+            }
+            );
+        state.AddState(WEAPONSTATE.RELOAD,
+            () =>
+            {
+            },
+            () =>
+            {
+            },
+            () =>
+            {
+                remainingBullet = magazine;
+            }
+            );
+
+        state.ChangeState(WEAPONSTATE.WAIT);
+    }
+
+    public override byte[] GetStatus()
+    {
+        return GetStatus(type);
+    }
+
+}
+
+
 public class HandGun : BaseWeapon
 {
     public HandGun(Action _atack)

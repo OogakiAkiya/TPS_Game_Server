@@ -157,6 +157,18 @@ public class TCP_ServerController : MonoBehaviour
 
     }
 
+    public void AllClientSend(byte _id, byte _code = 0x0001,byte[] _data=null)
+    {
+        List<byte> sendData = new List<byte>();
+        header.CreateNewData((GameHeader.ID)_id, GameHeader.UserTypeCode.SOLDIER, "Debug", _code);
+        sendData.AddRange(header.GetHeader());
+        if (_data != null) sendData.AddRange(_data);
+
+        for(int i = 0; i < socket.clientList.Count; i++)
+        {
+            Task task=socket.clientList[i].Send(sendData.ToArray(), sendData.Count);
+        }
+    }
 
     private byte[] FinishData()
     {
