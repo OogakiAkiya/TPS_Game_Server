@@ -51,9 +51,9 @@ MonoBehaviour:
   type: 1
   rotat: {x: 0, y: 0, z: 0}
   current: {fileID: 0}
+  STOCKLIMIT: 1
+  stock: 10
   next: {fileID: 0}
-  count: 0
-  flg: 1
 --- !u!54 &6183703173576191970
 Rigidbody:
   m_ObjectHideFlags: 0

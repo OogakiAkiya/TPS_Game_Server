@@ -150,19 +150,26 @@ public class UDP_ServerController : MonoBehaviour
         //sendData作成
         List<byte> sendData = new List<byte>();
         GameHeader lheader = new GameHeader();
-
+        int soldier=0, monster = 0;
         for (int i = 0; i < gameController.users.Length; i++)
         {
             BaseController user = gameController.users[i];
             if (user.port >= 0) addressList.Add(user.GetUserAddress());
+
+            //勢力データ作成
+            if (user.type == GameHeader.UserTypeCode.SOLDIER) soldier += user.stock;
+            if (user.type == GameHeader.UserTypeCode.MONSTER) monster += user.stock;
         }
 
-        if (addressList.Count <= 0) return;
 
+
+        if (addressList.Count <= 0) return;
         lheader.CreateNewData(GameHeader.ID.ALERT, GameHeader.UserTypeCode.SOLDIER, "Timer", (byte)GameHeader.GameCode.CHECKDATA);
         sendData.AddRange(lheader.GetHeader());
         sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Minutes));
         sendData.AddRange(Convert.Conversion(gameController.timer.Elapsed.Seconds));
+        sendData.AddRange(Convert.Conversion(soldier));
+        sendData.AddRange(Convert.Conversion(monster));
 
 
         //送信処理

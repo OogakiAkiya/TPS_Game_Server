@@ -10,7 +10,6 @@ public class MonsterController : BaseController
     private int CHANGEUP = 100;
     override protected void Awake()
     {
-        stock = 10;
         ChangeModele("Maynard");
         type = GameHeader.UserTypeCode.MONSTER;
 
@@ -21,6 +20,12 @@ public class MonsterController : BaseController
         base.Awake();
         base.Start(); // 親クラスのメソッドを呼ぶ
         */
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        stock = 10;
     }
 
     override protected void Update()
