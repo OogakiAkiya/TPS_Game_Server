@@ -7,7 +7,7 @@ public class BaseComponent:MonoBehaviour
     [SerializeField] public BaseController myController;
     //武器
     public BaseWeapon weapon { get; protected set; }
-    public List<BaseWeapon> weaponList = new List<BaseWeapon>();
+    public List<BaseWeapon> weaponList { get; protected set; } = new List<BaseWeapon>();
     public int weaponListIndex = 0;
     public GameHeader.UserTypeCode type = GameHeader.UserTypeCode.SOLDIER;
 

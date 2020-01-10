@@ -152,7 +152,10 @@ public class BaseController : MonoBehaviour
 
     public void ChangeWeapon(bool _up = true)
     {
-        current.ChangeWeapon(_up, () => { nowKey = nowKey ^ KEY.LEFT_BUTTON; });
+        current.ChangeWeapon(_up, () => {
+            if(nowKey.HasFlag(KEY.LEFT_BUTTON))nowKey = nowKey ^ KEY.LEFT_BUTTON;
+            if(nowKey.HasFlag(KEY.RIGHT_BUTTON))nowKey = nowKey ^ KEY.RIGHT_BUTTON;
+        });
     }
 
     public virtual bool Damage(int _damage = 1)
