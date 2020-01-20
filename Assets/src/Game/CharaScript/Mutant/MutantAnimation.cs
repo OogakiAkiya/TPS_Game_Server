@@ -94,11 +94,11 @@ public class MutantAnimation : BaseAnimation
         {
             if (animatorBehaviour.NormalizedTime >= 0.2f&& animatorBehaviour.NormalizedTime <= 0.5f)
             {
-                if (collider.center.y < 1.4) collider.center += new Vector3(0, 0.002f, 0);
+                if (collider.center.y < 1.5) collider.center += new Vector3(0, 0.003f, 0);
             }
             if (animatorBehaviour.NormalizedTime >= 0.6f)
             {
-                if (collider.height > 0.8f) collider.height -= 0.001f;
+                if (collider.height > 0.7f) collider.height -= 0.002f;
                 if (!flg)
                 {
                     this.transform.position = position - new Vector3(0, 0.5f, 0);

@@ -157,8 +157,8 @@ public class UDP_ServerController : MonoBehaviour
             if (user.port >= 0) addressList.Add(user.GetUserAddress());
 
             //勢力データ作成
-            if (user.type == GameHeader.UserTypeCode.SOLDIER) soldier += user.stock;
-            if (user.type == GameHeader.UserTypeCode.MONSTER) monster += user.stock;
+            if (user.type == GameHeader.UserTypeCode.SOLDIER) soldier += user.stock+1;
+            if (user.type == GameHeader.UserTypeCode.MONSTER) monster += user.stock+1;
         }
 
 
