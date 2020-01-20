@@ -5,6 +5,7 @@ using UnityEngine;
 public class MutantComponent : MonsterComponent
 {
     [SerializeField] Vector3 attackRange = new Vector3(1.4f, 1f, 1.1f);
+
     // Start is called before the first frame update
     public override void Init()
     {

@@ -36,7 +36,7 @@ public class BaseController : MonoBehaviour
 
     //残機
     public int STOCKLIMIT = 1;
-    public int stock=0;
+    public int stock=1;
     public bool deadFlg { get; protected set; } = false;
 
     protected virtual void Awake() {
@@ -45,7 +45,7 @@ public class BaseController : MonoBehaviour
 
     protected virtual void Start()
     {
-        stock = STOCKLIMIT;
+        //stock = STOCKLIMIT;
         gameController = GameObject.FindGameObjectWithTag("Server").GetComponent<GameController>();
         animator = this.GetComponent<Animator>();
         userAnimation = current.GetComponent<BaseAnimation>();

@@ -152,6 +152,7 @@ MonoBehaviour:
   groundCheckRadius: 0.4
   rebornRange: 2
   groundflg: 1
+  collider: {fileID: 5311369343225126746}
 --- !u!114 &8784504743754587234
 MonoBehaviour:
   m_ObjectHideFlags: 0

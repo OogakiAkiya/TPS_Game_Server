@@ -5,11 +5,20 @@ using UnityEngine;
 public class MutantAnimation : BaseAnimation
 {
     private bool jumpFlg = false;
+    [SerializeField]protected CapsuleCollider collider;
+    protected Vector3 center;
+    protected Vector3 position;
+    protected float hight;
+    protected float radius;
+
+    protected bool flg=false;
+
     // Start is called before the first frame update
     void Start()
     {
         base.Init();
         animationState.ChangeState(ANIMATION_KEY.Idle);
+        //collider = this.GetComponent<CapsuleCollider>();
     }
 
     // Update is called once per frame
@@ -73,12 +82,32 @@ public class MutantAnimation : BaseAnimation
 
         animationState.AddState(ANIMATION_KEY.Dying, () =>
         {
-            
             animator.CrossFadeInFixedTime("Dying", 0.0f);
-
+            if (collider)
+            {
+                center = collider.center;
+                position = this.transform.position;
+                hight = collider.height;
+                radius = collider.radius;
+            }
         },
         () =>
         {
+            if (animatorBehaviour.NormalizedTime >= 0.2f&& animatorBehaviour.NormalizedTime <= 0.5f)
+            {
+                if (collider.center.y < 1.4) collider.center += new Vector3(0, 0.002f, 0);
+            }
+            if (animatorBehaviour.NormalizedTime >= 0.6f)
+            {
+                if (collider.height > 0.8f) collider.height -= 0.001f;
+                if (!flg)
+                {
+                    this.transform.position = position - new Vector3(0, 0.5f, 0);
+                    collider.center = center;
+                    flg = true;
+                }
+            }
+
             if (animatorBehaviour.NormalizedTime >= 0.95f&&animatorBehaviour.NormalizedTime<=1)
             {
                 animationState.ChangeState(ANIMATION_KEY.Idle);
@@ -86,9 +115,18 @@ public class MutantAnimation : BaseAnimation
         },
         () =>
         {
+            if (collider)
+            {
+                collider.center = center;
+                this.transform.position = position;
+                collider.height = hight;
+                collider.radius = radius;
+            }
+
             baseController.hp = 100;
             baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
             baseController.End();
+            
         }
         );
     }

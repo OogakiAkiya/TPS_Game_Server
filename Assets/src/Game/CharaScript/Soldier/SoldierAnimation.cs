@@ -96,24 +96,24 @@ public class SoldierAnimation : BaseAnimation
             if (!collider) return;
             if (animatorBehaviour.NormalizedTime <= 0.1f && animatorBehaviour.NormalizedTime >= 0.0f)
             {
-                //if (collider.center.y < 0.89) collider.center += new Vector3(0, 0.001f, 0);
+                if (collider.center.y < 0.89) collider.center += new Vector3(0, 0.001f, 0);
             }
 
             if (animatorBehaviour.NormalizedTime >= 0.4f)
             {
-                //if (collider.center.y < 1.7) collider.center += new Vector3(0, 0.003f, 0);
+                if (collider.center.y < 1.7) collider.center += new Vector3(0, 0.003f, 0);
             }
 
             if (animatorBehaviour.NormalizedTime >= 0.95f)
             {
-                //collider.center = new Vector3(0, 0.85f, 0.1f);
+                collider.center = new Vector3(0, 0.85f, 0.1f);
                 animationState.ChangeState(ANIMATION_KEY.Idle);
             }
         },
         () =>
         {
 
-            //if (collider) collider.center = center;
+            if (collider) collider.center = center;
             baseController.hp = 100;
             baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
             baseController.End();

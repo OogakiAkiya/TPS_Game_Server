@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userListObj: {fileID: 67459942}
   users: []
-  GAMEFINISHUMINUTES: 1
+  GAMEFINISHUMINUTES: 5
   HUMANAMOUNT: 2
 --- !u!1 &67459942
 GameObject:
@@ -212,7 +212,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67459942}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.9027084, y: 0.85, z: 4.156906}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 293868055}
@@ -1134,18 +1134,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1959763992 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 520292741352293976, guid: 5d13a787678434356bffab7139087873,
-    type: 3}
-  m_PrefabInstance: {fileID: 8927101965139531214}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c37ebc1c1b8d4267933708dfcfe4a21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2064360298
 GameObject:
   m_ObjectHideFlags: 0
@@ -2192,6 +2180,6 @@ PrefabInstance:
         type: 3}
       propertyPath: myController
       value: 
-      objectReference: {fileID: 1959763992}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d13a787678434356bffab7139087873, type: 3}
