@@ -168,6 +168,7 @@ MonoBehaviour:
   myController: {fileID: 0}
   weaponListIndex: 0
   type: 1
+  defense: 2
   attackRange: {x: 1.4, y: 1, z: 1.1}
 --- !u!1 &5311369341828800227
 GameObject:

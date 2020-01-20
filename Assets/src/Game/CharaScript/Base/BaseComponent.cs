@@ -11,6 +11,7 @@ public class BaseComponent:MonoBehaviour
     public int weaponListIndex = 0;
     public GameHeader.UserTypeCode type = GameHeader.UserTypeCode.SOLDIER;
 
+    [SerializeField]public int defense = 0;
     public virtual void Init() {
         if(myController)myController.type = type;
     }

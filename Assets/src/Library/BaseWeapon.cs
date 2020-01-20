@@ -219,10 +219,10 @@ public class HandGun : BaseWeapon
 
 public class Claw : BaseWeapon
 {
-    public Claw(Action _atack)
+    public Claw(Action _atack,int _power)
     {
         interval = 2000;
-        power = 20;
+        power = _power;
         reloadTime = 1000;      //1秒
         magazine = 99;
         remainingBullet = magazine;

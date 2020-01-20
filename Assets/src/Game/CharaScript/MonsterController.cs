@@ -7,7 +7,7 @@ public class MonsterController : BaseController
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
     private int changeCounter=0;
-    private int CHANGEUP = 100;
+    private int CHANGEUP = 10;
     override protected void Awake()
     {
         ChangeModele("Maynard");
@@ -38,6 +38,13 @@ public class MonsterController : BaseController
             userAnimation.animationState.ChangeState(ANIMATION_KEY.ModelChange);
             
         }
+
+        if (castCurrent.monsterType == MonsterType.MAYNARD && nowKey.HasFlag(KEY.RIGHT_CLICK))
+        {
+           nowKey=nowKey ^KEY.RIGHT_CLICK;
+            changeCounter = 100;
+        }
+
         base.Update();    // 親クラスのメソッドを呼ぶ
     }
 
@@ -88,6 +95,11 @@ public class MonsterController : BaseController
     {
         base.End();
         changeCounter = 0;
+    }
+
+    public void ChangeCountUP(int _up)
+    {
+        changeCounter= _up;
     }
 
     private void Second5000Invoke()

@@ -5,13 +5,14 @@ using UnityEngine;
 public class MaynardComponent : MonsterComponent
 {
     [SerializeField] Vector3 attackRange = new Vector3(0.55f, 0.3f, 0.55f);
+    [SerializeField] int ATTACKCHARGECOUNT = 20;
     // Start is called before the first frame update
     public override void Init()
     {
         monsterType = MonsterType.MAYNARD;
         base.Init();
         //武器関係
-        weaponList.Add(new Claw(Attack));
+        weaponList.Add(new Claw(Attack,20));
         weapon = weaponList[weaponListIndex];
 
     }
@@ -25,6 +26,8 @@ public class MaynardComponent : MonsterComponent
 
     public override void Attack()
     {
+        MonsterController controller = (MonsterController)myController;
+        controller.ChangeCountUP(20);
         Vector3 vector = this.transform.position + this.transform.forward * 0.3f + this.transform.up;
         //Vector3 vector = this.transform.forward * 0.4f + new Vector3(0, 1, 0.2f);
         Collider[] colliders = Physics.OverlapBox(vector, attackRange, this.transform.localRotation, 1 << 10);

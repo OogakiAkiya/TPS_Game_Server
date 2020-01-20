@@ -14,7 +14,7 @@ public class BaseController : MonoBehaviour
     public int port = -1;
     public uint sequence = 0;
     public Tcp_Server_Socket socket;
-    public KEY nowKey { get; private set; } = 0;
+    public KEY nowKey = 0;
     public int hp = 100;
 
     protected List<byte[]> recvDataList = new List<byte[]>();
@@ -163,7 +163,8 @@ public class BaseController : MonoBehaviour
         //敵を倒した時trueを返す
         if (userAnimation.animationState.currentKey == ANIMATION_KEY.Dying) return false;
 
-        hp -= _damage;
+        int damageAmount = _damage - current.defense;
+        if(damageAmount>=0)hp -= damageAmount;
         if (hp <= 0)
         {
             hp = 0;

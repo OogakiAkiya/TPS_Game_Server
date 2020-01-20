@@ -12,7 +12,7 @@ public class MutantComponent : MonsterComponent
         monsterType = MonsterType.MUTANT;
         base.Init();
         //武器関係
-        weaponList.Add(new Claw(Attack));
+        weaponList.Add(new Claw(Attack,50));
         weapon = weaponList[weaponListIndex];
     }
 
