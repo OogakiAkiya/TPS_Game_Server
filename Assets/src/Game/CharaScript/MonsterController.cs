@@ -7,7 +7,7 @@ public class MonsterController : BaseController
     [SerializeField]BaseComponent next;
     private MonsterComponent castCurrent;
     private int changeCounter=0;
-    private int CHANGEUP = 100;
+    private int CHANGEUP = 5;
     override protected void Awake()
     {
         ChangeModele("Maynard");

@@ -8,9 +8,8 @@ public class MutantAnimation : BaseAnimation
     [SerializeField]protected CapsuleCollider collider;
     protected Vector3 center;
     protected Vector3 position;
-    protected float hight;
+    protected float height;
     protected float radius;
-
     protected bool flg=false;
 
     // Start is called before the first frame update
@@ -87,7 +86,7 @@ public class MutantAnimation : BaseAnimation
             {
                 center = collider.center;
                 position = this.transform.position;
-                hight = collider.height;
+                height = collider.height;
                 radius = collider.radius;
             }
         },
@@ -119,7 +118,7 @@ public class MutantAnimation : BaseAnimation
             {
                 collider.center = center;
                 this.transform.position = position;
-                collider.height = hight;
+                collider.height = height;
                 collider.radius = radius;
             }
 

@@ -1302,6 +1302,7 @@ MonoBehaviour:
   groundCheckRadius: 0.2
   rebornRange: 2
   groundflg: 1
+  collider: {fileID: 6442916202435845196}
 --- !u!114 &645835413244767573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2099,7 +2100,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6442916202704861493}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6442916200783955328}

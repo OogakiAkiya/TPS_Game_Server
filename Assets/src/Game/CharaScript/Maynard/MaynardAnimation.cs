@@ -8,6 +8,14 @@ public class MaynardAnimation : BaseAnimation
     private bool jumpFlg=false;
     protected System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
     private int changeTime = 3000;
+
+    [SerializeField] protected CapsuleCollider collider;
+    protected Vector3 center;
+    protected Vector3 position;
+    protected float height;
+    protected float radius;
+    protected bool flg = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,9 +86,19 @@ public class MaynardAnimation : BaseAnimation
         animationState.AddState(ANIMATION_KEY.Dying, () =>
         {
             animator.CrossFadeInFixedTime("Dying", 0.0f);
+            if (collider)
+            {
+                center = collider.center;
+                height = collider.height;
+
+            }
         },
         () =>
         {
+            if(animatorBehaviour.NormalizedTime >= 0.2f)
+            {
+                if (collider.height > 0.01) collider.height -= 0.005f;
+            }
             if (animatorBehaviour.NormalizedTime >= 0.95f&&animatorBehaviour.NormalizedTime<=1)
             {
                 animationState.ChangeState(ANIMATION_KEY.Idle);
@@ -88,6 +106,13 @@ public class MaynardAnimation : BaseAnimation
         },
         () =>
         {
+            if (collider)
+            {
+                collider.center=center;
+                collider.height=height;
+
+            }
+
             baseController.hp = 100;
             baseController.transform.position = new Vector3(Random.Range(-rebornRange, rebornRange), 0, Random.Range(-rebornRange, rebornRange));
             baseController.End();
